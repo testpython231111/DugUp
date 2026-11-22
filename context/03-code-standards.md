@@ -12,14 +12,17 @@
 - Kommentarer forklarer *hvorfor*, ikke *hva*. Behold seksjonsheaderne (`/* ===== NAVN ===== */`).
 
 ## Feilhåndtering
-- Nettverkskall: alltid `AbortController`-timeout, sjekk `r.ok`, fall tilbake stille til offline-modus **og** oppdater `dataBadge` slik at brukeren ser status.
+- Spillet gjør **ingen** nettverkskall (testen «the game itself never calls fetch» håndhever det). Data fra Wikipedia hentes av verktøyene i `tools/`.
+- Verktøy som henter data: timeout på hver forespørsel, sjekk `r.ok`, få forsøk på nytt, pause mellom forespørsler, og skriv **ingenting** hvis for mange forespørsler feiler. En halvferdig generert fil skal aldri erstatte en hel.
+- Data som lastes valgfritt (`RARITY`, `SUMMARIES`) leses med `typeof X !== 'undefined'`, og appen må fungere uten.
 - Ingen tomme `catch {}` utenom `store` (der er det bevisst: privat modus / full lagring).
 
 ## Data (`PROMPT_DATA`)
 - Én linje per svar: `tier|Display|WikiTitle|alias;alias`.
 - `tier` er heltall 1–6. Display er unikt innen et prompt.
 - Wikipedia-tittel må være den kanoniske artikkeltittelen (redirects håndteres, men unngå dem).
-- Nye prompts: unik `id` (kort, lowercase), eksisterende `cat`.
+- Nye prompts: unik `id` (kort, lowercase), eksisterende `cat`. Legges inn i rotasjonen med `node tools/check.mjs --add-prompt <id>`, aldri ved å redigere `ROTATION` for hånd.
+- `js/data/rarity.js` og `js/data/summaries.js` er genererte. Rediger dem aldri for hånd; kjør scriptene i `tools/`.
 
 ## Stil
 - Følg eksisterende kompakte stil (korte enlinjers hjelpere er ok).

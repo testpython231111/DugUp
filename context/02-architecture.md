@@ -7,20 +7,24 @@
 | `<canvas>` | All pikselgrafikk (scene, sprites, tekst-font `FONT`) | Ikke bruk bildefiler — sprites er definert som tekst-rader i `SPR` |
 | Web Audio API | All lyd, syntetisert i `Sound` | Ikke legg til lydfiler |
 | `localStorage` via `store.get/set` | All persistens | Aldri kall `localStorage` direkte — bruk `store` (har try/catch) |
-| Wikipedia API (pageviews) | Kun `tools/rarity.mjs`, månedlig (Spec 05) | Spillet selv kaller ingen eksterne API-er (`npm test` sjekker at ingen script bruker `fetch`) |
+| Wikipedia API (pageviews, extracts) | Kun `tools/rarity.mjs` og `tools/summaries.mjs`, månedlig (Spec 05, 06) | Spillet selv kaller ingen eksterne API-er (`npm test` sjekker at ingen script bruker `fetch`) |
 | Vercel (statisk hosting + Web Analytics) | Deploy ved push til `main` | Ingen serverless functions |
 | Google Fonts (Pixelify Sans) + innebygd `DugUp Digits` (base64 woff2) | Typografi | — |
 
-## Filstruktur (nåværende, Spec 03)
-Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.html` fungerer både på Vercel og åpnet direkte (`file://`). Klassiske scripts (ikke ES-moduler); de deler globalt scope, så `PROMPT_DATA`/`ROTATION` fra data-filen er synlige for appen.
+## Filstruktur (etter Spec 06)
+Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.html` fungerer både på Vercel og åpnet direkte (`file://`). Klassiske scripts (ikke ES-moduler); de deler globalt scope, så `PROMPT_DATA`/`ROTATION`, `RARITY` og `SUMMARIES` fra data-filene er synlige for appen. Rekkefølge nederst i `index.html`: `prompts.js`, `rarity.js`, `app.js`, og til slutt `summaries.js` (`async`).
 
 | Fil | Innhold |
 |---|---|
 | `index.html` (~160 linjer) | `<head>` (Vercel Analytics, Google Fonts), HTML: header, `#scene`, seks `<section class="screen">`, footer, og script-taggene nederst i `<body>` |
 | `css/style.css` | `@font-face` (`DugUp Digits`, base64), all CSS (`:root`-tokens øverst) |
-| `js/data/prompts.js` (~410 KB) | **`PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er). Lastes **før** `app.js`. `tools/check.mjs --freeze-until` og `--add-prompt` skriver hit. |
+| `js/data/prompts.js` (~440 KB) | **`PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er). Lastes **før** `app.js`. `tools/check.mjs --freeze-until` og `--add-prompt` skriver hit. |
 | `js/data/rarity.js` (~290 KB, ~125 KB gzip) | **`RARITY`** — tier og 60-dagers sidevisninger per `prompt-id` + `display`. **Generert** av `tools/rarity.mjs`; rediger aldri for hånd. Lastes etter `prompts.js`, før `app.js`. |
 | `js/data/summaries.js` (~930 KB, ~320 KB gzip) | **`SUMMARIES`** — 1–2 setninger fra Wikipedia (CC BY-SA) per svar med tier ≥ 4, nøkkel `prompt-id` + `display`. **Generert** av `tools/summaries.mjs`. Lastes `async` etter `app.js`; appen leser den først ved reveal (`summaryFor`), og uten den vises ingen oppsummering (Spec 06). |
+| `tools/check.mjs` | `npm test` (data, matching, rotasjon, rarity, summaries) og rotasjonskommandoene `--add-prompt`, `--freeze-until`, `--freeze-season`, `--write-snapshot`. |
+| `tools/load-game.mjs` | Laster `index.html` og script-filene i `node:vm` med en DOM-stub. Brukes av de tre andre verktøyene. |
+| `tools/rarity.mjs`, `tools/summaries.mjs` | Månedlige generatorer for `rarity.js` og `summaries.js` (se «Månedlig oppdatering»). |
+| `tools/rotation-snapshot.json` | Append-only logg over låste digs (Spec 04). |
 | `js/app.js` | **Appen** i én IIFE, delt i seksjoner: |
 | | `CONFIG` (ROUND_SIZE, TIME_LIMIT, EPOCH, TIERS) |
 | | `SMALL UTILS` (store, hashStr, mulberry32, shuffle, esc, datoer) |
@@ -40,11 +44,14 @@ tier|Display name|Wikipedia title (tom = display)|alias1;alias2
 ...`}
 ```
 - `tier` 1 (Topsoil, vanligst) … 6 (Forgotten by History, sjeldnest). Offline-estimat; overstyres ved oppstart av `liveTier`/`views` fra `RARITY` når svaret finnes der.
-
-### Slik oppdaterer du sjeldenhet (månedlig, Spec 05)
-`node tools/rarity.mjs` (~6 min, ~700 forespørsler) → sjekk diffen i `js/data/rarity.js` → `npm test` → commit. Scriptet bruker samme rangering som den gamle live-koden og skriver ingenting hvis mer enn 5 % av forespørslene feiler. `--dry-run` henter og rapporterer uten å skrive.
-Kjør deretter `node tools/summaries.mjs` (~4 min, ~290 forespørsler). Den velger rare svar ut fra den nye `RARITY`, så rekkefølgen betyr noe. Kun tekst, aldri bilder (eiers beslutning: bilder bryter pikselstilen).
 - Valgfritt: `nope` (nesten-svar som skal forklares), tvetydighetskart.
+
+## Månedlig oppdatering — `RARITY` og `SUMMARIES` (Spec 05, 06)
+1. `node tools/rarity.mjs` (~6 min, ~700 forespørsler) skriver `js/data/rarity.js`. Rangering: svarene i hvert prompt sorteres etter 60-dagers sidevisninger, og kvantilene 0,12 / 0,27 / 0,47 / 0,67 / 0,85 gir tier 1–6. Har færre enn `max(3, 60 %)` av svarene visninger, får promptet ingen oppføring (offline-tier brukes).
+2. **Deretter** `node tools/summaries.mjs` (~4 min, ~290 forespørsler) skriver `js/data/summaries.js` for svar med tier ≥ 4 etter den nye `RARITY`. Rekkefølgen betyr derfor noe. Teksten kuttes til 1–2 setninger (≤ 220 tegn), parenteser fjernes, og pekersider droppes. Kun tekst, aldri bilder.
+3. Sjekk diffen, kjør `npm test`, og commit.
+
+Begge scriptene sender `User-Agent: DugUpRarity/1.0 (https://dugup.eu)`, venter 200 ms mellom forespørsler, og skriver ingenting hvis mer enn 5 % av forespørslene feiler. `--dry-run` henter og rapporterer uten å skrive. Rediger aldri de genererte filene for hånd. Glemmer man en måned, blir tallene bare eldre.
 
 ## Daglig rotasjon — `ROTATION` (Spec 02, ADR-003)
 - `ROTATION` er en liste med **sesonger**, hver en frossen liste med prompt-id-er. Sesongene spilles etter hverandre, 7 id-er per dig: Dig #n = posisjon `(n-1)*7 … (n-1)*7+6` i den sammenslåtte listen.
@@ -85,5 +92,5 @@ Kjør deretter `node tools/summaries.mjs` (~4 min, ~290 forespørsler). Den velg
 4. **`PRACTICE_IDS`-prompts skal aldri være i daglig rotasjon**, og practice teller aldri mot museum/outfits/streak.
 5. **Eksisterende `localStorage`-format er bakoverkompatibelt.** Nye felt må ha default (se `getStats()`-mønsteret). Aldri endre betydningen av et eksisterende felt.
 6. **Alt brukerinput og all data som settes inn i HTML går gjennom `esc()`.**
-7. **Appen må fungere uten Wikipedia.** Spillet kaller ikke Wikipedia (kun lenker); mangler `rarity.js` eller et svar i den, brukes offline-tier.
+7. **Appen må fungere uten Wikipedia.** Spillet kaller ikke Wikipedia (kun lenker). Mangler `rarity.js` eller et svar i den, brukes offline-tier. Mangler `summaries.js` (eller er den ikke lastet ennå), vises ingen oppsummering.
 8. **Ingen dato-logikk med UTC vs. lokal tid blandes ad hoc** — bruk `dateKey`, `dayNumber`, `dateKeyAgo`.
