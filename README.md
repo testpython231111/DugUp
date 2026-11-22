@@ -42,24 +42,33 @@ On the live site, each answer is ranked by how often its Wikipedia article was r
 
 ## Tech
 
-- **A single static `index.html`** with no framework, no build step on the server and no dependencies. Graphics are drawn on `<canvas>`, sound uses the Web Audio API, and the font is [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans).
+- **Plain static files** with no framework, no build step and no dependencies: `index.html` (markup), `css/style.css`, `js/data/prompts.js` (all prompts and answers, plus the daily rotation) and `js/app.js` (the game). Opening `index.html` straight from disk works too. Graphics are drawn on `<canvas>`, sound uses the Web Audio API, and the font is [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans).
 - **Hosting:** GitHub → [Vercel](https://vercel.com). Every push to `main` deploys automatically.
 - **Live rarity:** the [Wikipedia API](https://www.mediawiki.org/wiki/API:Main_page), using page views.
 - **Analytics:** [Vercel Web Analytics](https://vercel.com/docs/analytics). It is privacy-friendly and uses no cookies.
 
 ### Updating the site
 
-Replace `index.html` in this repository (on GitHub: **Add file → Upload files**, then **Commit changes**). Vercel publishes the new version within a minute.
+Edit the file that holds what you want to change:
+
+| To change | Edit |
+|---|---|
+| Prompts, answers, aliases, the daily rotation | `js/data/prompts.js` |
+| Colours, layout, fonts | `css/style.css` |
+| Game logic, pixel art, sound | `js/app.js` |
+| Page text and structure | `index.html` |
+
+Then push to `main` with git. If you use the GitHub website instead, open the file in its folder and use the pencil (**Edit**) button, or drag the changed file into the matching folder with **Add file → Upload files**. Uploading only `index.html` is no longer enough. Vercel publishes the new version within a minute.
 
 ### Running checks
 
-Run the automated checks before every change to `index.html`. They need [Node.js](https://nodejs.org) 20 or newer and have no dependencies.
+Run the automated checks before every change. They need [Node.js](https://nodejs.org) 20 or newer and have no dependencies.
 
 ```sh
 npm test            # or: node tools/check.mjs
 ```
 
-The checks load `index.html` without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, and the daily rotation. Dig #1–#30 are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter daily digs that players have already seen. Only regenerate the snapshot (`node tools/check.mjs --write-snapshot`) when you mean to change the rotation.
+The checks load `index.html` and its scripts without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, and the daily rotation. Dig #1–#30 are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter daily digs that players have already seen. Only regenerate the snapshot (`node tools/check.mjs --write-snapshot`) when you mean to change the rotation.
 
 ## Privacy
 

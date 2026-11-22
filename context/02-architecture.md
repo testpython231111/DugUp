@@ -11,15 +11,15 @@
 | Vercel (statisk hosting + Web Analytics) | Deploy ved push til `main` | Ingen serverless functions |
 | Google Fonts (Pixelify Sans) + innebygd `DugUp Digits` (base64 woff2) | Typografi | — |
 
-## Filstruktur (nåværende)
-Alt ligger i `index.html` (~540 KB, ~14 800 linjer):
+## Filstruktur (nåværende, Spec 03)
+Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.html` fungerer både på Vercel og åpnet direkte (`file://`). Klassiske scripts (ikke ES-moduler); de deler globalt scope, så `PROMPT_DATA`/`ROTATION` fra data-filen er synlige for appen.
 
-| Linjer (ca.) | Innhold |
+| Fil | Innhold |
 |---|---|
-| 1–249 | `<head>`, `@font-face`, CSS (`:root`-tokens øverst) |
-| 250–392 | HTML: header, `#scene`, seks `<section class="screen">`, footer |
-| 393–12925 | **Script 1: `PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er) |
-| 12926–slutt | **Script 2: appen** i én IIFE, delt i seksjoner: |
+| `index.html` (~160 linjer) | `<head>` (Vercel Analytics, Google Fonts), HTML: header, `#scene`, seks `<section class="screen">`, footer, og script-taggene nederst i `<body>` |
+| `css/style.css` | `@font-face` (`DugUp Digits`, base64), all CSS (`:root`-tokens øverst) |
+| `js/data/prompts.js` (~410 KB) | **`PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er). Lastes **før** `app.js`. `tools/check.mjs --freeze-season` skriver hit. |
+| `js/app.js` | **Appen** i én IIFE, delt i seksjoner: |
 | | `CONFIG` (ROUND_SIZE, TIME_LIMIT, EPOCH, TIERS) |
 | | `SMALL UTILS` (store, hashStr, mulberry32, shuffle, esc, datoer) |
 | | `PIXEL ART` (PAL, SPR, sprCanvas, frames) |

@@ -22,8 +22,8 @@ Flytte innhold ut av den 540 KB store `index.html` til egne filer, slik at data,
 - IKKE endre logikk, data eller CSS-verdier.
 
 ## 4. Verification Checklist
-- [ ] Spec 01-testene og snapshot grønne.
+- [x] Spec 01-testene og snapshot grønne.
 - [ ] Siden fungerer lokalt og på en Vercel preview-deploy (full daily-runde, practice, museum, wardrobe, past digs, lyd av/på).
 - [ ] Eksisterende `localStorage` fra produksjon fungerer uendret.
-- [ ] README «Updating the site» oppdatert.
-- [ ] `02-architecture.md` filstruktur oppdatert.
+- [x] README «Updating the site» oppdatert.
+- [x] `02-architecture.md` filstruktur oppdatert.
