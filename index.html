@@ -378,7 +378,7 @@ body.playing .top{padding:0}
     <section id="screen-wardrobe" class="screen hidden">
       <div class="panel frame-parch">
         <h2>Wardrobe</h2>
-        <p class="small"><span id="wardSummary"></span> Keep digging to unlock more.</p>
+        <p class="small"><span id="wardSummary"></span> Keep digging to unlock more &mdash; practice digs don't count.</p>
         <div class="ward-grid" id="wardGrid"></div>
         <button class="linkish" type="button" data-back>&larr; Back to camp</button>
       </div>
@@ -13421,10 +13421,13 @@ function pickRound(seed){
 
 /* Daily rotation: one fixed, category-spread order of every prompt.
    Dig #n takes the next seven, so nothing repeats until the whole list has been dug. */
+/* Practice is always the same seven prompts, and they never appear in a daily dig, so practice can't spoil anything. */
+const PRACTICE_IDS = ['uspres', 'greekgods', 'inv2', 'castles', 'pirates', 'ww2', 'explorers'];
+function practicePrompts(){ return PRACTICE_IDS.map(id => PROMPTS.find(p => p.id === id)).filter(Boolean); }
 const ORDER = (function(){
   const rnd = mulberry32(hashStr('dugup-order-v1'));
   const byCat = {};
-  PROMPTS.forEach((p, i) => { (byCat[p.cat] = byCat[p.cat] || []).push(i); });
+  PROMPTS.forEach((p, i) => { if (!PRACTICE_IDS.includes(p.id)) (byCat[p.cat] = byCat[p.cat] || []).push(i); });
   const items = [];
   Object.keys(byCat).sort().forEach(c => {
     const arr = shuffle(byCat[c].slice(), rnd), off = rnd();
@@ -14320,6 +14323,8 @@ function getStats(){ return Object.assign({streak: 0, last: null, best: 0, digs:
 
 /* ---------- museum: every real find, kept forever ---------- */
 function museumGet(){ return store.get('dugup:museum', {}); }
+// practice prompts never appear in real digs, so anything from them on the shelves came from practice
+(function purgePractice(){ const m = museumGet(); let ch = false; for (const k in m) if (PRACTICE_IDS.includes(m[k].p)){ delete m[k]; ch = true; } if (ch) store.set('dugup:museum', m); })();
 function museumAdd(p, a, tier){
   const m = museumGet(), k = p.id + '|' + a.display, e = m[k];
   if (e){ e.n = (e.n || 1) + 1; e.t = Math.max(e.t, tier); }
@@ -14376,7 +14381,7 @@ function startRound(mode, opt){
     state.prompts = dailyPrompts(num);
   } else {
     state.dayKey = null; state.dayNum = 0;
-    state.prompts = pickRound('practice|' + Date.now() + '|' + Math.random());
+    state.prompts = practicePrompts();
   }
   Sound.start();
   state.mode = mode; state.idx = 0; state.rows = []; state.score = 0; state.unlocked0 = unlockedIds();
@@ -14441,7 +14446,7 @@ function finishPrompt(input, timeout, res){
   clearInterval(state.timer);
   const p = state.prompts[state.idx];
   let tier = 0, a = null;
-  if (!timeout && res && res.type === 'ok'){ a = res.answer; tier = tierOf(a); museumAdd(p, a, tier); }
+  if (!timeout && res && res.type === 'ok'){ a = res.answer; tier = tierOf(a); if (state.mode !== 'practice') museumAdd(p, a, tier); }
   const pts = TIERS[tier].pts;
   state.score += pts;
   state.rows.push({q: p.q, cat: p.cat, input: input || '', answer: a ? a.display : null, wiki: a ? a.wiki : null, tier, pts, timeout: !!timeout, views: a && a.views ? a.views : null});
@@ -14507,9 +14512,11 @@ function onNext(){
 function finishRound(){
   const res = {mode: state.mode, key: state.dayKey, num: state.dayNum, score: state.score, rows: state.rows, live: Live.status === 'live'};
   const st = getStats();
-  st.digs = (st.digs || 0) + 1;
-  st.maxDepth = Math.max(st.maxDepth || 0, state.score);
-  if (state.rows.every(r => r.tier > 0)) st.perfect = (st.perfect || 0) + 1;
+  if (state.mode !== 'practice'){   // practice never counts toward the museum, stats or outfits
+    st.digs = (st.digs || 0) + 1;
+    st.maxDepth = Math.max(st.maxDepth || 0, state.score);
+    if (state.rows.every(r => r.tier > 0)) st.perfect = (st.perfect || 0) + 1;
+  }
   if (state.mode === 'daily'){
     const today = state.dayKey;
     if (st.last !== today){ st.streak = (st.last === yesterdayKey()) ? (st.streak || 0) + 1 : 1; st.last = today; }
@@ -14589,8 +14596,8 @@ function openMuseum(){
   const byTier = [0,0,0,0,0,0,0]; list.forEach(e => byTier[e.t]++);
   const prompts = new Set(list.map(e => e.p)).size;
   $('musSummary').innerHTML = list.length
-    ? '<b>' + list.length + '</b> different find' + (list.length === 1 ? '' : 's') + ' from <b>' + prompts + '</b> prompt' + (prompts === 1 ? '' : 's') + '. Every real answer you dig up gets a place on these shelves.'
-    : 'Your shelves are empty &mdash; go dig something up! Every real answer you find is kept here.';
+    ? '<b>' + list.length + '</b> different find' + (list.length === 1 ? '' : 's') + ' from <b>' + prompts + '</b> prompt' + (prompts === 1 ? '' : 's') + '. Every real answer from your daily and past digs gets a place on these shelves.'
+    : 'Your shelves are empty &mdash; go dig something up! Finds from daily and past digs are kept here (practice does not count).';
   let c = '';
   for (let t = 6; t >= 1; t--) c += '<span class="mc' + (byTier[t] ? '' : ' dim') + '" title="' + TIERS[t].name + '"><img class="px" src="' + sprURL(TIERS[t].spr) + '" alt="">' + byTier[t] + '</span>';
   $('musCounts').innerHTML = c;
@@ -14701,7 +14708,7 @@ document.addEventListener('keydown', e => {
 });
 
 // test hook (harmless in production)
-window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, ORDER, Live, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
+window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, ORDER, Live, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
 })();
 
 </script>
