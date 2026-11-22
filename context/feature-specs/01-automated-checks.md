@@ -18,8 +18,8 @@ Et Node-skript (`npm test` / `node tools/check.mjs`) som verifiserer data og kje
 - IKKE endre `index.html` (med mindre en DOM-stub er umulig — stopp og spør i så fall).
 
 ## 4. Verification Checklist
-- [ ] `node tools/check.mjs` (eller `npm test`) kjører grønt på dagens `index.html`.
-- [ ] Endring av ett tegn i en prompt-id gjør testen rød.
-- [ ] Ingen nye runtime-filer lastes av nettsiden.
-- [ ] README får en kort seksjon «Kjør sjekker».
-- [ ] `06-progress-tracker.md` oppdatert.
+- [x] `node tools/check.mjs` (eller `npm test`) kjører grønt på dagens `index.html`.
+- [x] Endring av ett tegn i en prompt-id gjør testen rød.
+- [x] Ingen nye runtime-filer lastes av nettsiden.
+- [x] README får en kort seksjon «Kjør sjekker».
+- [x] `06-progress-tracker.md` oppdatert.

@@ -51,6 +51,16 @@ On the live site, each answer is ranked by how often its Wikipedia article was r
 
 Replace `index.html` in this repository (on GitHub: **Add file → Upload files**, then **Commit changes**). Vercel publishes the new version within a minute.
 
+### Running checks
+
+Run the automated checks before every change to `index.html`. They need [Node.js](https://nodejs.org) 20 or newer and have no dependencies.
+
+```sh
+npm test            # or: node tools/check.mjs
+```
+
+The checks load `index.html` without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, and the daily rotation. Dig #1–#30 are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter daily digs that players have already seen. Only regenerate the snapshot (`node tools/check.mjs --write-snapshot`) when you mean to change the rotation.
+
 ## Privacy
 
 Your progress (streak, stats, museum, outfit and past results) is stored only in your own browser, in `localStorage`. There are no accounts and no cookies. Clearing your browser data resets your progress.
