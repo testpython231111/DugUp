@@ -12921,6 +12921,60 @@ nope:{
 }}
 );
 
+/* Daily rotation — frozen seasons of prompt ids, played back to back, seven per dig (Feature Spec 02).
+   Dig #1 = first seven ids of season 1. Published digs never change as long as you only ADD ids at the END of the
+   LAST season. See context/02-architecture.md "Slik legger du til et nytt prompt". Freeze the next season with:
+   node tools/check.mjs --freeze-season */
+const ROTATION = [
+[ // season 1 — seed 'dugup-order-v1'
+  'wars','space','hre','polis','medthinkers','latam','koreanpeople',
+  'libraries','epics','coldwar','medbattles','greekleaders','scots','mesogods',
+  'byzantine','chinapeople','russrev','enlight','civs','asiabattles','capitals',
+  'inv1','hoaxes','pope','traderoutes','rome','soviet','china',
+  'reformation','finds','ottoman','ukpm','ww2cmd','heroes','thegreat',
+  'korea','architects','worship','spies','pyramids','commanders','womensci',
+  'crusades','unsg','engmon','mughal','republic','shipsx','outlaws',
+  'sculptures','chinaemp','norsegods','speeches','crusadebattles','bridges','provinces',
+  'classwriters','spain','revs','treasures','shogun','hyw','empires',
+  'aviation','vikings','romanbuild','documents','renaissance','tsars','troy',
+  'olympics','japanemp','polar','usvp','amrev','hellenistic','paintings',
+  'khans','frenchrev','queens','samurai','romebattles','pharaoh','pandemics',
+  'medwomen','novels','canals','decolon','egyptgods','wives','ruins',
+  'suffrage','indiapeople','napoleon','animals','persia','wrecks','impress',
+  'founders','greekmonu','houses','walls','greekbattles','japan','maths',
+  'romangods','playwrights','universities','moon','wonders','britindep','nicknames',
+  'treaties','naval','poets','india','hansa','scripts','expeditions',
+  'firstlady','arthur','norway','acw','islamic','scientists','knights',
+  'chphil','islamrulers','lost','mesopotamia','trials','greekphil','palaces',
+  'disasters','ww1','france','ancientwomen','seasia','aztecgods','assassinations',
+  'africa','archaeologists','composers',
+],
+[ // season 2 — seed 'dugup-order-v2', frozen 2026-11-22
+  'republic','amrev','universities','samurai','rome','reformation','hyw',
+  'usvp','mesogods','islamrulers','expeditions','chinapeople','maths','impress',
+  'disasters','ancientwomen','palaces','thegreat','ruins','decolon','commanders',
+  'crusades','russrev','composers','hellenistic','japan','bridges','spain',
+  'africa','acw','troy','firstlady','trials','enlight','provinces',
+  'scientists','korea','engmon','traderoutes','unsg','ww1','capitals',
+  'medthinkers','greekleaders','playwrights','ukpm','byzantine','koreanpeople','norway',
+  'aztecgods','asiabattles','treaties','pharaoh','islamic','womensci','libraries',
+  'china','lost','outlaws','houses','romebattles','khans','civs',
+  'shipsx','pope','novels','suffrage','egyptgods','animals','japanemp',
+  'greekmonu','wars','hre','revs','epics','hansa','inv1',
+  'mughal','wonders','coldwar','crusadebattles','chinaemp','wives','greekphil',
+  'knights','heroes','archaeologists','founders','scripts','canals','greekbattles',
+  'renaissance','shogun','queens','moon','empires','aviation','polis',
+  'latam','naval','classwriters','arthur','chphil','medwomen','scots',
+  'hoaxes','olympics','finds','frenchrev','ottoman','wrecks','sculptures',
+  'medbattles','speeches','india','tsars','mesopotamia','space','assassinations',
+  'paintings','norsegods','walls','napoleon','vikings','pyramids','seasia',
+  'britindep','france','spies','poets','ww2cmd','romanbuild','polar',
+  'documents','indiapeople','nicknames','worship','pandemics','romangods','architects',
+  'treasures','soviet','persia',
+],
+];
+
+
 
 </script>
 <script>
@@ -13419,26 +13473,56 @@ function pickRound(seed){
   return out;
 }
 
-/* Daily rotation: one fixed, category-spread order of every prompt.
-   Dig #n takes the next seven, so nothing repeats until the whole list has been dug. */
 /* Practice is always the same seven prompts, and they never appear in a daily dig, so practice can't spoil anything. */
 const PRACTICE_IDS = ['uspres', 'greekgods', 'inv2', 'castles', 'pirates', 'ww2', 'explorers'];
 function practicePrompts(){ return PRACTICE_IDS.map(id => PROMPTS.find(p => p.id === id)).filter(Boolean); }
-const ORDER = (function(){
-  const rnd = mulberry32(hashStr('dugup-order-v1'));
+
+/* Daily rotation: the frozen seasons in ROTATION (data script) are played back to back, seven ids per dig.
+   A dig only depends on the ids before it, so appending to the last season never moves a published dig.
+   When the frozen seasons run out, the next season is generated from seed 'dugup-order-v<season>'
+   (freeze it with `node tools/check.mjs --freeze-season` so new prompts can't reshuffle it). */
+const PROMPT_BY_ID = {};
+PROMPTS.forEach(p => { PROMPT_BY_ID[p.id] = p; });
+// One category-spread order of every non-practice prompt (the algorithm season 1 was made with).
+function seasonOrder(seed){
+  const rnd = mulberry32(hashStr(seed));
   const byCat = {};
-  PROMPTS.forEach((p, i) => { if (!PRACTICE_IDS.includes(p.id)) (byCat[p.cat] = byCat[p.cat] || []).push(i); });
+  PROMPTS.forEach(p => { if (!PRACTICE_IDS.includes(p.id)) (byCat[p.cat] = byCat[p.cat] || []).push(p.id); });
   const items = [];
   Object.keys(byCat).sort().forEach(c => {
     const arr = shuffle(byCat[c].slice(), rnd), off = rnd();
-    arr.forEach((i, j) => items.push({i, pos: (j + off) / arr.length, tie: rnd()}));
+    arr.forEach((id, j) => items.push({id, pos: (j + off) / arr.length, tie: rnd()}));
   });
   items.sort((a, b) => a.pos - b.pos || a.tie - b.tie);
-  return items.map(x => x.i);
-})();
+  return items.map(x => x.id);
+}
+const FROZEN_SEASONS = (typeof ROTATION !== 'undefined' && Array.isArray(ROTATION)) ? ROTATION.length : 0;
+// Unknown or practice ids are skipped so a data mistake can't crash the page (tools/check.mjs reports them).
+const STREAM = [].concat.apply([], FROZEN_SEASONS ? ROTATION : []).filter(id => PROMPT_BY_ID[id] && !PRACTICE_IDS.includes(id));
+const SEASON_START = [0];
+(FROZEN_SEASONS ? ROTATION : []).forEach(s => SEASON_START.push(SEASON_START[SEASON_START.length - 1] + s.filter(id => PROMPT_BY_ID[id] && !PRACTICE_IDS.includes(id)).length));
+// Next season after the stream so far; nothing from the last two digs comes back in the first two digs of the new one.
+function generateSeason(s){
+  const order = seasonOrder('dugup-order-v' + s), W = ROUND_SIZE * 2, recent = STREAM.slice(-W);
+  const head = order.filter(id => !recent.includes(id)).slice(0, W);
+  return head.concat(order.filter(id => !head.includes(id)));
+}
+function extendStream(pos){
+  while (pos >= STREAM.length){
+    const next = generateSeason(SEASON_START.length);
+    if (!next.length) break;
+    next.forEach(id => STREAM.push(id));
+    SEASON_START.push(STREAM.length);
+  }
+}
+function seasonIds(s){ // ids of season s (1-based), generating it if needed
+  while (SEASON_START.length <= s) extendStream(STREAM.length);
+  return STREAM.slice(SEASON_START[s - 1], SEASON_START[s]);
+}
 function dailyPrompts(n){
-  const N = ORDER.length, out = [];
-  for (let k = 0; k < ROUND_SIZE; k++) out.push(PROMPTS[ORDER[(((n - 1) * ROUND_SIZE + k) % N + N) % N]]);
+  const start = (Math.max(1, n) - 1) * ROUND_SIZE, out = [];
+  extendStream(start + ROUND_SIZE - 1);
+  for (let k = 0; k < ROUND_SIZE; k++) out.push(PROMPT_BY_ID[STREAM[start + k]]);
   return out;
 }
 function dateKeyAgo(k){ const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() - k); return dateKey(d); }
@@ -14776,7 +14860,7 @@ document.addEventListener('keydown', e => {
 });
 
 // test hook (harmless in production)
-window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, ORDER, Live, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
+window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, Live, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
 })();
 
 </script>
