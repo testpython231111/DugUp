@@ -6,7 +6,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Mål: sikkerhetsnett (tester) før strukturelle endringer.
 
 ## In Progress
-- _(ingen)_
+- Spec 05 — Forhåndsberegnet sjeldenhet (branch `feature/05-precomputed-rarity`).
 
 ## Completed
 - [x] 2026-11-22: **Spec 04 — Frys rotasjonen et år fram.** Sesong 3–20 frosset (dekker til Dig #408, ca. 3. jan 2028). Nye verktøy: `--freeze-until <dato>`, `--add-prompt <id>` og en snapshot som bare kan vokse. Dig #1–#440 er identiske før og etter. 18 tester grønne. Eier har testet lokalt i nettleser, og alt så riktig ut. Vercel preview bygget uten feil. Merget til `main` 2026-11-22 etter eiers beslutning.
@@ -19,7 +19,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 
 ## Neste (i prioritert rekkefølge)
 1. **Verifiser Spec 04 på dugup.eu** (eier): dagens dig, practice og past digs.
-2. **Spec 05 — Forhåndsberegnet sjeldenhet** (`feature-specs/05-precomputed-rarity.md`). Skisse. Script regner ut tiers fra Wikipedia på forhånd, så nettleseren ikke henter noe. Gir lik dybde for alle spillere. Endrer ADR-002.
+2. **Spec 05 — Forhåndsberegnet sjeldenhet** (`feature-specs/05-precomputed-rarity.md`). Godkjent, i arbeid. Script regner ut tiers fra Wikipedia på forhånd, så nettleseren ikke henter noe. Gir lik dybde for alle spillere. Endrer ADR-002.
 3. **Spec 06 — Kort oppsummering på reveal** (`feature-specs/06-reveal-summary.md`). Skisse. 1–2 setninger fra Wikipedia om sjeldne funn. Ingen bilder (bryter pikselstilen).
 
 ## Arkitekturbeslutninger
