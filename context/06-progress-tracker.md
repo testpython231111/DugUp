@@ -6,9 +6,10 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Mål: sikkerhetsnett (tester) før strukturelle endringer.
 
 ## In Progress
-- [ ] **Spec 03 — Del opp `index.html`** (branch `feature/03-split-files`). Kode og dokumentasjon er ferdig og testene er grønne lokalt. Gjenstår: commit, en full manuell runde på en Vercel preview-deploy (inkludert eksisterende `localStorage`) og så merge.
+- _(ingen)_
 
 ## Completed
+- [x] 2026-11-22: **Spec 03 — Del opp `index.html`.** Filene er nå `css/style.css`, `js/data/prompts.js` og `js/app.js`, uten byggesteg. 16 tester grønne. Merget til `main` etter eiers beslutning, uten preview-sjekk først.
 - [x] 2026-11-22: Spec 02 merget til `main` og verifisert live på dugup.eu av eier.
 - [x] 2026-11-22: **Spec 02 — Stabil daglig rotasjon.** `ROTATION` (frosne sesonger med id-er) i data-scriptet; sesong 1 = opprinnelig rekkefølge, sesong 2 frosset. Nye prompts legges til på slutten av siste sesong. `node tools/check.mjs --freeze-season` fryser neste. 16 tester grønne.
 - [x] 2026-11-22: **Spec 01 — Automatiske sjekker.** `npm test` / `node tools/check.mjs` (11 tester: data, practice, matching, rotasjon mot snapshot Dig #1–#30). Grønn på dagens `index.html`. Merget til `main`.
@@ -16,7 +17,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - [x] 2026-11-22: Kontekstsystem satt opp (`CLAUDE.md`, `context/01–06`, `.gitignore`, feature-spec-mal).
 
 ## Neste (i prioritert rekkefølge)
-1. **Spec 03:** sjekk preview-deploy og merge.
+1. **Sjekk dugup.eu etter Spec 03:** spill en hel runde og sjekk practice, museum, wardrobe, past digs, lyd og at gammel fremgang er der. Feiler noe, revert merge-commiten.
 2. **Frys sesong 3** før ca. 17. des 2026 (testen blir rød da): `node tools/check.mjs --freeze-season`.
 
 ## Arkitekturbeslutninger
