@@ -20,13 +20,14 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 | `css/style.css` | `@font-face` (`DugUp Digits`, base64), all CSS (`:root`-tokens øverst) |
 | `js/data/prompts.js` (~410 KB) | **`PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er). Lastes **før** `app.js`. `tools/check.mjs --freeze-until` og `--add-prompt` skriver hit. |
 | `js/data/rarity.js` (~290 KB, ~125 KB gzip) | **`RARITY`** — tier og 60-dagers sidevisninger per `prompt-id` + `display`. **Generert** av `tools/rarity.mjs`; rediger aldri for hånd. Lastes etter `prompts.js`, før `app.js`. |
+| `js/data/summaries.js` (~930 KB, ~320 KB gzip) | **`SUMMARIES`** — 1–2 setninger fra Wikipedia (CC BY-SA) per svar med tier ≥ 4, nøkkel `prompt-id` + `display`. **Generert** av `tools/summaries.mjs`. Lastes `async` etter `app.js`; appen leser den først ved reveal (`summaryFor`), og uten den vises ingen oppsummering (Spec 06). |
 | `js/app.js` | **Appen** i én IIFE, delt i seksjoner: |
 | | `CONFIG` (ROUND_SIZE, TIME_LIMIT, EPOCH, TIERS) |
 | | `SMALL UTILS` (store, hashStr, mulberry32, shuffle, esc, datoer) |
 | | `PIXEL ART` (PAL, SPR, sprCanvas, frames) |
 | | `OUTFITS` (SKINS, palettbytter) |
 | | `TEXT NORMALISATION & MATCHING` (normalize, lev, buildPrompts, matchAnswer, pickRound, seasonOrder, generateSeason, dailyPrompts) |
-| | `RARITY` (RARITY_DATA, RARITY_MONTH, applyRarity, updateBadge) |
+| | `RARITY` (RARITY_DATA, RARITY_MONTH, applyRarity, summaryFor, updateBadge) |
 | | `SOUND` |
 | | `SCENE` (ERAS, PHASES, canvas-animasjon) |
 | | `GAME` (state, skjermer, runder, resultater, museum, wardrobe, archive, deling) |
@@ -42,6 +43,7 @@ tier|Display name|Wikipedia title (tom = display)|alias1;alias2
 
 ### Slik oppdaterer du sjeldenhet (månedlig, Spec 05)
 `node tools/rarity.mjs` (~6 min, ~700 forespørsler) → sjekk diffen i `js/data/rarity.js` → `npm test` → commit. Scriptet bruker samme rangering som den gamle live-koden og skriver ingenting hvis mer enn 5 % av forespørslene feiler. `--dry-run` henter og rapporterer uten å skrive.
+Kjør deretter `node tools/summaries.mjs` (~4 min, ~290 forespørsler). Den velger rare svar ut fra den nye `RARITY`, så rekkefølgen betyr noe. Kun tekst, aldri bilder (eiers beslutning: bilder bryter pikselstilen).
 - Valgfritt: `nope` (nesten-svar som skal forklares), tvetydighetskart.
 
 ## Daglig rotasjon — `ROTATION` (Spec 02, ADR-003)

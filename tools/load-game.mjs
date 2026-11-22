@@ -75,6 +75,7 @@ export function loadGame(htmlFile, html, overrides = {}){
     PROMPT_DATA: vm.runInContext('PROMPT_DATA', ctx),
     ROTATION: Array.from(vm.runInContext('typeof ROTATION === "undefined" ? [] : ROTATION', ctx), s => Array.from(s)),
     RARITY: vm.runInContext('typeof RARITY === "undefined" ? null : RARITY', ctx),
+    SUMMARIES: vm.runInContext('typeof SUMMARIES === "undefined" ? null : SUMMARIES', ctx),
     PRACTICE_IDS: hook.practicePrompts().map(p => p.id),
     ...hook
   };
