@@ -11,11 +11,11 @@
 <script defer src="/_vercel/insights/script.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* DugUp Digits: Pixelify Sans digits (SIL Open Font License 1.1) with a redrawn 5 */
-@font-face{font-family:'DugUp Digits';font-weight:400;font-display:swap;unicode-range:U+0030-0039;src:url(data:font/woff2;base64,d09GMgABAAAAAANcAA8AAAAAB5wAAAMCAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcKgZgP1NUQVQuADQRCAqFHIQPATYCJAMeCxgABCAFhBAHIAwHG/EFCJ4FdqNzGe8TJMvBMmmxH42H7+3++7VP97s10xhAMYRIiqTI2YRm5eOMisH0K6Kjf6fmNrFEJsFHxDyZ5Q1+LrGQ9TolkyIGnZqtieaBgiEYq/PuugaVAlb174N09X8hfe3/u5r+oV1c4OsgSDyRvX/XQd281mFFDfWieCnAGqAOrKFsNM0SDJRTUG+AUvl591aBQi8J6MzZ1cxj5NAECBSGSMEwttj2NdPDi8PE8zwNjpNaSE/SYRw9s8QXhvvblIboT8d/3fsiQ7Wzi/9/R3Y5+kMExKv0BP3gQmgl0AmKXrC9m+6TD0mGFBEnSU9AQoZOcIFOCP0gcrnAuCYMbWp+ECBEk7agBF0g2kF8RvgZAXJAEkJI/cVMqvKqV6+qVadORTBALrI0iqyMWpkKa+usWtpSKKKMUomQGEWlkJWqSh1xTtCwKFfWRJXsHPnGOivkq2tVrBGb4JyQow5VDzXnSBctqjUtlVSjHEQjPlhmGKTqxkL8fLlq9Yc0q/UR0nWNRw2/lX0W4HImz1RhXHFcZzcbb2DuWSG71Vi98SJA5y8XJrfancBBJ5cL3cu72ywJiO6p5I18wSoBXjfbdishn4dZpZfQH22//D2NNs9XJDfbreU0g1twJZOB+ayjlZkRBPvDmw3VZqC1sLbjy4dBILj93/T3Lp34N5Nl38E3yR0lhG9T574wsflUp70QDQkEad1JT1dZv0DYVHNgfX2arxdnTTzTdj9BUeoFB2HDK+yDi7w17nBnhG4+RtLGayMz2W83R40WPaKb0dAnhuttjI4FvqCK/f0I3t89g8EUsUkEIhdQUVJRBhyJIGBLEoJUEl4EOGDpHMCWzSCDrlzAmMclMthYPTUHO6fJ0VEcCSTwkYdTcGXQFEEZ7JArVJQs5flpMx7BiQmYkfi+5tiDBB4Vy1ZWUNrlXWubtnCuyx+bfXkuozNox2mJQQe4ohbbzSivBlFtHjmuPq6ZmvYVOFfVc9UoOIKijYWlCygOI7hNueaQ4ZYfRLMHcQwAAAA=) format('woff2')}
-@font-face{font-family:'DugUp Digits';font-weight:500;font-display:swap;unicode-range:U+0030-0039;src:url(data:font/woff2;base64,d09GMgABAAAAAANYAA8AAAAAB6QAAAL/AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcKgZgP1NUQVQqADQRCAqFBIQPATYCJAMeCxgABCAFhDIHIAwHGw8GERWcyQi+OuAN0ac+hERAWFENLapxqR8dI9J6nTkPL0ZQPwf+3ktKSUpIiiSxQpCd+kokWWEQFYICUu1nzP2fenmeC3A+ZxEE19I1QUdbL1WsQtevXeTXWUFXWo+t+dtSuTiX5Mksg9+ANwmA1Nwk/fur6fvbeYP1xxNLPJG9D+oGL2uppcU4DKgWqENb6rgwTSiNAoWAJduWmBDUp0Q2uyKc9Ng+3z1VoNBFNzF9putBYznUNSBQ6GeAhAVrtnnFNkAHGNmfp8HxawPS9XTDLh0k3hnl76450H86/tlw2wgTs2P/f5GdCB0BcS9dRw+ZEBoLtBHoIm1fV20KJAGR4ldIyNBGJtBGrgdyucDEusaIuq6fBwhR15qDErRDC7zCd4AckIQQUlmbSVVedelSNW7TJpEV8nsWRpGV0VSZCivLrFjYoFBEGaUSQaGEQaPArqRMYZEyKoym4oqoWNHJ15atqFicLsJqGgYzb1QRmBFa01FqUaxINBV8BJS+FZjHING+Vxwu42XvhIjTd0rd9vfsh7LNzGiYGHrbgMExmQxP/F1B7KIUnvx72TinMbR6HhIOR7BdKunRU+VzPSVPojSmXQv+6RSlUQyT/1//4GXDvCK+jCV4YsP8h0DuaYwYhstlMAhO8R4CDUvIk58g5Sx+GqkNOlDeMfJiEAg6lj1nl9qU3xpn2Rf41H1xAJ8H3N9NqX9NrdMONJRA8KXNdKclTZ0jdFIOTK5Oc0yJk6ZoL/GRQKmLDAQOqxyRibwJznOFQwfncdLMI5yZ4rU/R3EDnaIdbqhbjMDNjItZ/hZr9Zaq2GmFFNunJPtfPY0WhFWMSqcwHo5H8NYC7lgKi7KCF/ETuMfBX7AUtlmqgziBpk7TMFkPBgpTndE+C9xAoBRpOXBO9MJbh0x9Qjjg3sOSp1CZJfGoPxTv3Fxv1+Nmv5DbvYuJeGPmviJuYwD5YacQYTp3ejP2PtidsBhD+Nv9BG0/iNXgdjoz/IQXcRpdq/qC8ejlqPfT+W4AAA==) format('woff2')}
-@font-face{font-family:'DugUp Digits';font-weight:600;font-display:swap;unicode-range:U+0030-0039;src:url(data:font/woff2;base64,d09GMgABAAAAAANYAA8AAAAAB6wAAAL+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcKgZgP1NUQVQqADQRCAqFBIQPATYCJAMeCxgABCAFhDoHIAwHGxcGERWciQh+JNhuo54h07WVEHZ27uPheb2nzn3JKBnYnVxNSaFzpV5aqLar9e8WTAAcresdVb3xjeQk5cMsTwzt///zp3fU7w/WtQgST+Tt+6f+3HBZo0bDeBhQDSjfGdVfwyLLogAlCLeGCUZ+UobpKWONHvX59lSBQkedxeSp06arL4eqAgQKvfWVWLLG65ds36gtPg3yNCzNVof0UjqL8zJJfGW4v4v+wPzp+G97zVAjsqv//yC7Ht0QEG+ll9BVJoT6Ai0FOkq7Vq3eHpAERJZmg4QMLWUCLeW6IpcLjKgqDK2q6r0AIapKE1CC1miKD/ErIAckIYR0HMykhnnDjh0b1m/ZUpIM+SMzosjKaKRMhaVlVsyoUyiijFJJqFCjw1DgNLSVCtuU0ZAxob4kGnLVKF9ZnnXFrGIRdqPosPNmQw/sCCMZL50oluQaiTYiZS7FKDBIjO0Nl4qZcz6bM7vv7LmfzZ1Z7KtdrP1aFKNm7dwfYaczxODSR3NmlmdqGfpaH8xtwllr1wHJov0Hds6qnS33weGwuR+Fe24Ud5Z/MGfW7FlzZ797ann/2jebWfNmzTb67+VnV7wDc2b2ncl3lGdWHPiCI9/+XbNqZ8oRxhmchRuChRjmw+Z8YClMkHrzTO1uRJofPFA5PPJmEAje2PL6mUVNRv9WP8t+gO+6bB0K3/e99NWY6rfUNu1HXQkEX9pKb6O8MTFCIedgdXmaYUzcNkaGVR8JlDrKQIhZDV2WibwBHtHC0NYjTBp7EzPjfR7NKeqyylHGnHpMMW8ez2hxrVtSjH9PSDSMq25k/VfvTSt2GKEeMjY0NoK8KSB3FoHGcIy8JMMlQcfkoKgMt770qOkwV1M9zbPctYEBwmCaL/cppj4AFsnBiwbGuV52y8EnHws5MN3j3CcQX5Ockb5htdi43vbY40ZfTIzNb0FnO1NTv+C4zDSQruhjPY165ij80UFXcZiF1b7yF2p9pkMGbqezC/iJL+OmFYOqx8b8z6I6cS+/AAAAAA==) format('woff2')}
-@font-face{font-family:'DugUp Digits';font-weight:700;font-display:swap;unicode-range:U+0030-0039;src:url(data:font/woff2;base64,d09GMgABAAAAAANEAA8AAAAAB3QAAALtAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcKgZgP1NUQVQqADQRCAqFBIQPATYCJAMeCxgABCAFhAQHIAwHG+EFKB4HTpm9GPFFnGiijQhPzR/x8Py6/1/7zDzNzIcQ5aSQoCRFoYENDsUIUUpkvD/+mf9rXhQdj+59XFRTFV9EEQxLYIQz2v7fWtYo8A/UIRr+7W2URtFNP2wA1nH///dOf3uB9SyCxBO7r7EG+JwUcBjQ74E2trWtEw7ArUG4NdTwEYT6EGtXjLVC6PPtqgKFvhjwzNmlB0oOdQ0IFIbLQhAZvX5J20CGbgd5mpgeaCI9SAdwqCOJt8b4q/oBfnT8cPgYpZed+P+D7FQMAgmIF+kBBkKF0CrQFYy+kM2r6jaCdIWVPxMJGbpCBbrCDATJ5QKT6xqj6rp+JkCIutYBlKA7SEeQl/gLyAFJCCGVOZlU5VXfvlVr1655tVD5OXOjyMpop0yFpWVWzG0qFFFGqQSMcMQYIMVfiaLCIGVUCIJ8SVTGFs9XlkWumC8swtcuxvi0p3KABdCBE00US3jtupgAhD1LMiMqgekRR4q5C27hlPVWivd+2vLDn8LouWFJVPAXIMt5xOOWTyuVll9KuPUTz9ZhMtwC/xPuZTGnT7jEszi/5BIWUl5tSfE/rF2VBIaNJenPwYRSwnQetyy1j5/oMs/NPpwjAF/UVuqs2cASMk4uQ7McHtF+M9dcoeV9dwaBYMO/HbMqmdZoRbMf8HGAlwLE95GPy/S6kZi0C6xZAsGH9qY3hG/UB6za8uPq5WmxUZwzvevW/gKj1BcKQt1U2AUVeRtuMEChpy9KWj1EmUl+vTlETXpHhZr1j+Ha9ibETJ2gim2ByJVvPYPNkfKoZIoAUFdVVwNcKETAgSohMqgkKeCMZfFBrcemEfEao2ZCAYXNQ46s9qqAw9dXUSFT2aoQp4xnM1WIBuSiQKJiyyttzlkKya4cwJKquso3ZzMIasqq7dcDO3s7K4PNHD2ly4kb0Tm9ymYBahbbzhwv6ZDur0z4+Kn6HdRR1k0YynPZIKvYW9u4E00+AVUN1TeNkX0n6t1X8sM=) format('woff2')}
+/* DugUp Digits: Pixelify Sans digits (SIL Open Font License 1.1) with redrawn 2, 3 and 5 */
+@font-face{font-family:'DugUp Digits';font-weight:400;font-display:swap;unicode-range:U+0030-0039;src:url(data:font/woff2;base64,d09GMgABAAAAAANwAA8AAAAAB4AAAAMXAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcKgZgP1NUQVQuADQRCAqFAINrATYCJAMeCxgABCAFhBAHIAwHG80FEVWcZoKfB7ax9MECv2xU33i16cYZpDHrCDiQZp3S4uH/12j3/T+7CyOIeFRJHLKYdhrNLIlVskv2jCeIZB1kkx2GpUYH53ZJZfFmCTHNP+wuseCRRIr4vdN1MrYcyxbHQxli/90xh61QWHAY19jaNEIxlAfN1aX6pYl/SiOIeES+tL3U8g3TCsby9BPAFzyhVApI01gEIxIwie+Zr1qpsZJIf29EVNV2ue6lAqVhRohFixcHpJsC2hYQKE0wScLwehzYmvrIIJh0uUjj45wjPUkncErjxGdT/cbyg/Kn47+OvDDZnHzx/0/y5RiNgHjVJxglC6GbQD+BYdLB3WaKQpKRIuIc6QlIyOgnC/RTGIVCITCnbTG5bdsPAoRoWz1BBQagF17hI6AAJCGEdB3IUl3UffrV3fr1K+pEFA9bGWWuolGl0rYm1ys7SmVUUamKzY1amZqoo+nZZdRJieqtjWDrXKkSacWuJpdgPZoTpUozjCZqR9BBtOIsRr21oyYbGSVCb3aVQbeRCqgYGJFgwK543/Nl4idzm+UpVL/kfjnnVzVC0XbDvGGJnHrvc9IAtz+bi9YzsULxaH3d0OdNTFSalN+6VenZMBMJ2+u5lQuWkBA59XzWOd5umdokmVAjuWw/jv90s6Pc20FZg/gQ1+kc2VYfTC0rNm3fiAqSbLxzc4qHVB82iM0+KJ55MwgE11bfhvN649ct558Qvg/ikYPwI3plGu0Xa9JBB9EpgeDL1tJDgmaEwKAAtq+dOY14OA0dJL6CojIMDgK7VjoEF+uOO5BWPAzyjSc9vI5nC/3DBRrvMCSa8U4jYhzrYWaonKDOkWaE9Wf3BUKVmMVgSgESgUQEHJggYMNSglwWXQXYU/kSwEYsYIMuUkBXJmUKxBgiiizSQ4ka3jZY4LmMhnMR8PCgBz6UKvHOPHudNJAxHIWAAcv2tsQOZMi4VDERRxDjupV1jh6q2xu0jzWxT+AefUuAhYGpucQu2SwlBu5sJy4nhpDsBGcMrlaOdMXAWxtZOIPewYZjhdqUZPNB/A/fKO4AAA==) format('woff2')}
+@font-face{font-family:'DugUp Digits';font-weight:500;font-display:swap;unicode-range:U+0030-0039;src:url(data:font/woff2;base64,d09GMgABAAAAAAOEAA8AAAAAB4gAAAMrAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcKgZgP1NUQVQqADQRCAqEaINrATYCJAMeCxgABCAFhDIHIAwHG+sFCC4KbGPa4MVBEVriIadkqtl+2WaBhwi+nyP3/eQKSY4LRKosgTSyIllhAMAoQoWky6o3vsD5+7X2/pk2hsRJckM8me4uYiv/bB1P4SRCItMhLlSxUjwpsuGGBsNT7Kcc9FtrC6Dw35+q7yfpwA3Wdx6xildkzGVr4pgU4ArlAtQ1fVGvWqFqqaBQYKm5NdpgDzF0LNUzbIiP+nx7qkChnx5o1vjEAljkUNeAQGGEAB0mzLVlS2lAN0ycztPY+GIk3dHtB3DQCon3Ur5l2sH4p+OfClcSitv87wDZeTQYCIjHcwfAIHohdBHoBqEf3Q6WUxAgCYgUXwESMnSjF+jGYBCQywWmtcak1vUbCISoa82gBD2AFuAu8BaAHHyrIaQ0WyZVedXWrbJ062b1AQwPW0S2rIxGZSqsf/pikdGmiDJKZb7GCZUiNUYVjTV7QaZg0qZoalXXIUeUKpBvjg6qb4kTiiiUuKyKRpujqcdojc5qVKwjjQbUNGjBbWSsmpC8MioMktH3glP2ZeQtwk9QtxFO/vus17LbnJWGwFDfEYHycW1LSf+jgDu2Sl1HnITW7a4OJ5wQ4h467z0tL3EaklyhCO2c//t9fIVaIaD8uc7lDfEx+zXxuNpYfJx/t8CvfLctoW7WgA6c0r+J3zRQuTFEauWc1tCh16H2vrjYIK8LlpHaPs7DnhcDBII7C+3zG+7eb5Ys6wB8HiglAPgy6vxSb7+m9nQIoJMEgu/qTw+TVN8USObIgc7dmYHedKDXTlIfQSj1oweBz1VO04u8K66AEoZeLjBp8hwzM71wcxQb9EkXdjIgCWwyOVPclnuaVo7YGQgkOupK7X/1CJ7gkARjcRReKQkpSV4LODSvGdgBWg3GOOQ1b0uDzGuGhFdB26HwGqJScHgSmVcAR6EQyEri4liYgqPaFrODVxdHwxg0xYG4syQ6P2iUirVI4CWC2ZhCNoderqrZIkmKSah3lk2ZNmVMeb5NElGTTbLLVtUtoUn8GK/BO9O2wrgko7LQ5I27ZTskmAB/O0aG1cTwJKy4aeMmGJZtLxLSy3TVV6W034h614X8EAAA) format('woff2')}
+@font-face{font-family:'DugUp Digits';font-weight:600;font-display:swap;unicode-range:U+0030-0039;src:url(data:font/woff2;base64,d09GMgABAAAAAAOUAA8AAAAAB5AAAAM9AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcKgZgP1NUQVQqADQRCAqEaINrATYCJAMeCxgABCAFhDoHIAwHG/MFCC4HbCLTg6uiCFpzoYzlViOLemF85+jLlf+T4L9vjP19u4vNLC6JrJo4XTzhJXjUatFC1UwmNBLJvoTK8fvN+5hHEryImCdmUpH7Lq0tL3vaSl6K46H+zLebT0kwiAUP9rZ6ySvU8YD2Gi8W8Dp+/lxv2sCzSIJhlY5G1bRdEh5xFfgHvUZYIHOXfN/o/V9YX/v/v3faWCCBjUmQeCL3vddYw9bEMekDf8EH1Jq0tRMWWRaFgUkQbo0QjKTIsVTPGEN61OfbQxEwLXKo0bRuQEQC/AIACJhOBT5Gl1qtZSlkMZf9KbtziSDCkFvAuabRWY9/mb7gPx3/bfiFLsPq+jfiJliAANrlAOjgJ1JMoAYFWvjWO0mGAQQCqApLABBABDX8BGoEdACSRGD4D9D19z8RANGfNAAHUAeoALwCvAMAJAAQiEjYxkahTbmqa4trOg2Jk+42L4uuUjyN9SbafIFh4XK8rJaSWZYqq7RmNU0SkWQnrfKaslyopW2X0dWXYmE4xzae7Eh6sMbOUtkatxRRMmjiFoqrhGTxyIyT2PeGi9pa/rjPnON9vEd89/9x/2L1aF90gVOsUWHya0OYy9IPbnV55ek9zqmx9dNFN1vRWT9+66U+LW7uk2N7znlJQI2ffNuByast6u3etTjLe3iPxMmy/4F/U1faaGMPnoOz5dzw/3M5MlB6uE33Vs7cvOYCMrC5L9oX9rVV7bk9x37U82IABISry/g7Zsau+OMX4COvawDwWXj9Mf0/s7kHUCgAEL6rN+xPiSkLSmZLoHUz55nGvakeJd5CAdfCD0DCoeySn0oJ8ABKcmnwJg/KvMmjKX/MROUFmqJJXqgt+uRlBmKGWXFPVikTxzqCHNcBxfaz1xQqj47DYJmIloaWJuIeCxHXOC4k4tA8xJ0DmUHadQoeOpnMWrKYWAqdOQrmINRVhpF6gsHBXZajmhOFpA496JHJVXcWVw8XbVgYD1TEBmd7nOEWYlhEB7qmmoYojF26Wlm3xvaWiH2+iyScFYXo7BHSGTgKGbG1zDEc41U9NPrR7YYTHUfFjprxB4pqFDpG3ZWdvSk4T5aXCfhlhn6npfkl/m3LAQ==) format('woff2')}
+@font-face{font-family:'DugUp Digits';font-weight:700;font-display:swap;unicode-range:U+0030-0039;src:url(data:font/woff2;base64,d09GMgABAAAAAANoAA8AAAAAB1gAAAMOAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcKgZgP1NUQVQqADQRCAqEaINrATYCJAMeCxgABCAFhAQHIAwHG70FCK4GbGOy0iiKFdaYGaHSLOfJdhfp6z8X/P+33+s+8yZ0Z8KgsiKJFQlF+H5IWMKWJfDyrSJU1RGuikjo5mptey9AIpOYi4h5Msv2bimRLJNJkZbg+erEtz9nCQYxoDcRiZe8ap1CKxVreO//VpP1KeACOgXDZt4MWBTd9MP5vRdRKMe1uyQbv/1fWF/7/7+f+tdAA4skmPhooPcuqigqaYb/PNBF+zQwAFunMDewe9TEfl6vioCpE4eOsaKECA84BwAETLMEAiOLXmlTQwxm0O7Tkw/QGNW5GeD6mEQ/7f46ygJ/On44vCloLnf+/0LyVAgQQO98AGhCEsklUAaBOsRjo2o8AKfFGs8EDiSgDEmgDKUJ4HkCfQ20tn4RAFFTCCAAqAAUAT4CnwAADwAcEXHthoTbfCzZY27Z7mNE+bNNyJKgfEKMzJrYRJZhFRQIYy6fyJKvqPylsClGGGKFa/lUUaEn5deDjIEzHysj4GDHHom4BcZA5stSRr51wrgW16OwiEiSUBGjAtwTbhhOP0wxySPoX/ri/+Cf0TathpTdkEHnn/pmfDr/Xs6M4/zMK6hF5aW8MVWdiSWsL/CwNb2ZGIU2l2a/s+JBkKFzp8GPrGOMlehKs5lxX+AHdJoJENAPKqAesr4wYlTIvRzxPR+/JZKwa9wWcJamvWZiq/48dwZAQDh+9L0vBYN3Lpn8AnxuNGMA+Nny0e27ePZBsjkAwndNuI+hnto0QDB6oHs1c3TrMd3xtN5fEAjqkAAkOmb2kTTygBfAnFCqfIVOrjNhotdv1qPCLDUVhdkaqllQoLtGFASxtt3ytm89TKMLmAQcng0rKSgpwvZ4DGxN4GPIBKwAtnOmspBek0bEuFqZN+Sw8TQmZk5Y32fTWVry8jhCvc9xkXOlUeQxDHKGzZcn87LHkyYcnAMdNiHY3WcZ0chuinIKvV+2La0sTbVrfWDP6oePGN/pBRoVtqcnTybhrDo09Zxhy/VeXTrYnLMcluVu5ggnb2Vm7oRx92GkjqrzUVL9Rv+ejAUAAAA=) format('woff2')}
 
 :root{
   --ink:#3b2312; --ink-soft:#6e4a2c; --ink-faint:#9a7650;
@@ -13693,6 +13693,23 @@ const ERAS = [
 ];
 function eraAt(m){ let e = ERAS[0]; for (const x of ERAS) if (m >= x.top) e = x; return e; }
 
+/* Time of day, from the player's local clock (no location needed) */
+const PHASES = {
+  night:  {bands:['#0e1330','#121a3c','#172148','#1c2954','#223160','#29396a','#314272'], cloud:['#3b4675','#2d365e'], amb:'rgba(14,18,52,0.42)', moon:true, stars:1, birds:false, lights:true},
+  dawn:   {bands:['#3a4c8e','#5f5b9d','#9a6a9e','#d4828f','#f3a184','#fbc58e','#ffe2ad'], cloud:['#ffd9cc','#e3aec0'], amb:'rgba(110,70,120,0.16)', sun:{x:0.3, y:-19, c:['#fff4d6','#ffcf7d','#ffb47e']}, stars:0.25, birds:true, lights:true},
+  day:    {bands:['#4fa6d8','#66b6e0','#83c7e8','#a3d7ec','#c6e6e6','#e9e9cf','#fbe2ad'], cloud:['#ffffff','#dceef5'], amb:null, sun:{x:-22, y:15, c:['#fffbe6','#fff0a8','#fde7a6']}, birds:true},
+  golden: {bands:['#5b9ccc','#77afd3','#9cc2d3','#c9d2c0','#ecd3a0','#f9c58a','#fdb675'], cloud:['#fff2e0','#f2d0b2'], amb:'rgba(255,160,80,0.07)', sun:{x:-30, y:28, c:['#fff3d0','#ffd27a','#ffbb6a']}, birds:true},
+  dusk:   {bands:['#252f68','#3c3b7a','#6a4885','#a25880','#da6f71','#f29462','#fac078'], cloud:['#ee9f98','#b1728b'], amb:'rgba(60,34,90,0.26)', sun:{x:0.7, y:-17, c:['#ffe7c2','#ff9f63','#f57a5a']}, stars:0.35, birds:false, lights:true}
+};
+function phaseAt(d){
+  const h = d.getHours() + d.getMinutes() / 60;
+  if (h < 5 || h >= 21.5) return 'night';
+  if (h < 7) return 'dawn';
+  if (h < 17) return 'day';
+  if (h < 19) return 'golden';
+  return 'dusk';
+}
+
 const Scene = (function(){
   const cv = $('scene'); let ctx = cv.getContext('2d');
   const MPX = 2, SKY = 64, DEPTH = 440, SHOVEL = 14;
@@ -13702,6 +13719,7 @@ const Scene = (function(){
   let shakeT = 0, flashA = 0, blink = 3, exclT = -9, sweatT = -9;
   let item = null, floatTxt = null, job = null;
   let skin = SKINS[0], lampPos = null;
+  let phase = phaseAt(new Date()), PH = PHASES[phase], phaseCheck = 0, forcedPhase = null, stars = [];
   const hooks = {impact(){}, toss(){}, clonk(){}, find(){}};
 
   /* ---------- poses: shovel = grip point + angle; hands = point on the shovel (t) or free (x,y) ---------- */
@@ -13961,15 +13979,36 @@ const Scene = (function(){
     const img = g.createImageData(W, SKY + DEPTH), D = img.data;
     const put = (x, y, c) => { const k = (y*W + x)*4; D[k] = c[0]; D[k+1] = c[1]; D[k+2] = c[2]; D[k+3] = 255; };
     const bay = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
-    const bands = ['#4fa6d8','#66b6e0','#83c7e8','#a3d7ec','#c6e6e6','#e9e9cf','#fbe2ad'].map(hx);
+    const bands = PH.bands.map(hx);
     for (let y=0;y<SKY;y++){
       const f = (y / (SKY - 1)) * (bands.length - 1), base = Math.floor(f), fr = f - base;
       for (let x=0;x<W;x++) put(x, y, (fr > bay[y%4][x%4]/16 && base + 1 < bands.length) ? bands[base + 1] : bands[base]);
     }
-    const sx = W - 22, sy = 15;
-    for (let y=sy-11;y<=sy+11;y++) for (let x=sx-11;x<=sx+11;x++){
-      if (x < 0 || x >= W || y < 0) continue; const d = Math.hypot(x - sx, y - sy);
-      if (d <= 4.5) put(x, y, hx('#fffbe6')); else if (d <= 6.5) put(x, y, hx('#fff0a8')); else if (d <= 9 && bay[y%4][x%4] < 6) put(x, y, hx('#fde7a6'));
+    stars = [];
+    if (PH.stars){
+      const sr = mulberry32(77), n = Math.round(W * (SKY - 18) / 55 * PH.stars);
+      for (let i=0;i<n;i++){
+        const x = Math.floor(sr()*W), y = Math.floor(sr()*(SKY - 20)), b = sr();
+        put(x, y, hx(b < 0.15 ? '#ffffff' : b < 0.55 ? '#c9d3ff' : '#8d98c8'));
+        if (b < 0.3) stars.push({x, y, ph: sr()*6.28, c: b < 0.15 ? '#ffffff' : '#dfe5ff'});
+      }
+    }
+    if (PH.sun){
+      const sx = PH.sun.x < 1 && PH.sun.x > 0 ? Math.round(W * PH.sun.x) : (PH.sun.x < 0 ? W + PH.sun.x : PH.sun.x);
+      const sy = PH.sun.y < 0 ? SKY + PH.sun.y : PH.sun.y, c = PH.sun.c.map(hx);
+      for (let y=sy-11;y<=sy+11;y++) for (let x=sx-11;x<=sx+11;x++){
+        if (x < 0 || x >= W || y < 0 || y >= SKY) continue; const d = Math.hypot(x - sx, y - sy);
+        if (d <= 4.5) put(x, y, c[0]); else if (d <= 6.5) put(x, y, c[1]); else if (d <= 9 && bay[y%4][x%4] < 6) put(x, y, c[2]);
+      }
+    }
+    if (PH.moon){
+      const mx = Math.round(W * 0.62), my = 12;
+      for (let y=my-9;y<=my+9;y++) for (let x=mx-9;x<=mx+9;x++){
+        if (x < 0 || x >= W || y < 0) continue;
+        const d = Math.hypot(x - mx, y - my), cut = Math.hypot(x - mx - 2.5, y - my + 1.5);
+        if (d <= 4.6 && cut > 4.1) put(x, y, hx(d > 3.6 ? '#e8e2bd' : '#fbf6d8'));
+        else if (d <= 7.5 && d > 4.6 && bay[y%4][x%4] < 3) put(x, y, hx('#3a4677'));
+      }
     }
     const far = hx('#a7cf85'), farTop = hx('#c3e3a0'), near = hx('#7cb35a'), nearTop = hx('#98cc6e');
     for (let x=0;x<W;x++){
@@ -14068,7 +14107,7 @@ const Scene = (function(){
         g.fillStyle = col; g.fillRect(x, y, 1, 1);
       }
     }
-    g.fillStyle = '#3e2614';
+    g.fillStyle = PH.lights ? '#ffcf6a' : '#3e2614';
     for (let r=6;r<th;r++){ const half = Math.floor((r - 6)*3/5); g.fillRect(apex - half, base - th + r, half*2 + 1, 1); }
     g.fillStyle = '#5a3a20'; g.fillRect(apex, base - th - 3, 1, 3);
     g.fillStyle = '#c8442f'; g.fillRect(apex + 1, base - th - 3, 3, 2);
@@ -14149,9 +14188,15 @@ const Scene = (function(){
     for (const c of clouds){
       const y = Math.round(c.y - SKY - camR); if (y > H || y < -8) continue;
       const x = Math.round(c.x), w = c.w;
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(x + 3, y, w - 7, 1); ctx.fillRect(x + 1, y + 1, w - 3, 1); ctx.fillRect(x, y + 2, w, 2);
-      ctx.fillStyle = '#dceef5'; ctx.fillRect(x + 1, y + 4, w - 2, 1);
+      ctx.fillStyle = PH.cloud[0]; ctx.fillRect(x + 3, y, w - 7, 1); ctx.fillRect(x + 1, y + 1, w - 3, 1); ctx.fillRect(x, y + 2, w, 2);
+      ctx.fillStyle = PH.cloud[1]; ctx.fillRect(x + 1, y + 4, w - 2, 1);
     }
+    for (const s of stars){
+      const y = s.y - SKY - camR; if (y < 0 || y >= H) continue;
+      const v = Math.sin(t * 1.7 + s.ph);
+      if (v > 0.55){ ctx.fillStyle = s.c; ctx.fillRect(s.x, y, 1, 1); if (v > 0.93){ ctx.globalAlpha = 0.5; ctx.fillRect(s.x - 1, y, 3, 1); ctx.fillRect(s.x, y - 1, 1, 3); ctx.globalAlpha = 1; } }
+    }
+    if (!PH.birds) return;
     ctx.fillStyle = '#3b2a2a';
     for (const b of birds){
       const y = Math.round(b.y - SKY - camR), x = Math.round(b.x); if (y > H || y < -4) continue;
@@ -14162,6 +14207,8 @@ const Scene = (function(){
 
   function update(dt){
     t += dt;
+    phaseCheck -= dt;
+    if (phaseCheck <= 0){ phaseCheck = 20; const ph = forcedPhase || phaseAt(new Date()); if (ph !== phase){ phase = ph; PH = PHASES[ph]; build(); } }
     stepAnim(dt);
     const diff = depthT - depth;
     depth = Math.abs(diff) < 0.05 ? depthT : depth + diff * Math.min(1, dt * 9);
@@ -14186,6 +14233,24 @@ const Scene = (function(){
     const fx = charX(), fy = feet - camR;
     drawRig(fx, fy);
     drawParts(camR, false);
+    if (PH.amb){
+      const gy = -camR + 4;
+      if (gy > 0){
+        ctx.fillStyle = PH.amb; ctx.fillRect(-2, -2, W + 4, Math.min(H + 2, gy + 2));
+        const fade = ctx.createLinearGradient(0, gy, 0, gy + 12); fade.addColorStop(0, PH.amb); fade.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = fade; ctx.fillRect(-2, gy, W + 4, 12);
+      }
+      if (PH.lights && -camR > 0){
+        const tx = Math.max(3, cx - 46) + 9, ty = -camR - 3;
+        const gl = ctx.createRadialGradient(tx, ty, 1, tx, ty, 14); gl.addColorStop(0, 'rgba(255,196,110,0.32)'); gl.addColorStop(1, 'rgba(255,196,110,0)');
+        ctx.fillStyle = gl; ctx.fillRect(tx - 15, ty - 15, 30, 30);
+      }
+    }
+    if (feet <= 6 && lampPos && PH.lights){
+      const [x0, y0] = lampPos;
+      ctx.fillStyle = 'rgba(255,236,170,0.14)'; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + 30, y0 + 2); ctx.lineTo(x0 + 26, y0 + 22); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(255,246,200,0.13)'; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + 18, y0 + 4); ctx.lineTo(x0 + 15, y0 + 13); ctx.closePath(); ctx.fill();
+    }
     if (feet > 6){
       const surf = Math.max(0, -camR), dark = Math.min(0.52, 0.1 + depth / 1400);
       const gx = fx, gy = fy - 10;
@@ -14195,7 +14260,7 @@ const Scene = (function(){
       grad.addColorStop(1, 'rgba(18,10,28,' + dark.toFixed(3) + ')');
       ctx.fillStyle = grad; ctx.fillRect(-2, surf, W + 4, H - surf + 2);
       if (lampPos){
-        const [x0, y0] = lampPos, k = Math.min(1, depth / 160);
+        const [x0, y0] = lampPos, k = Math.max(Math.min(1, depth / 160), PH.lights ? 0.7 : 0);
         ctx.fillStyle = 'rgba(255,236,170,' + (0.2 * k).toFixed(3) + ')';
         ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + 30, y0 + 2); ctx.lineTo(x0 + 26, y0 + 22); ctx.closePath(); ctx.fill();
         ctx.fillStyle = 'rgba(255,246,200,' + (0.18 * k).toFixed(3) + ')';
@@ -14296,6 +14361,9 @@ const Scene = (function(){
       queue('holdup', 0.24, 'out', () => celebrateFX(tier)); queue('holdup', 1.8, 'lin'); queue('idle', 0.3, 'io', release);
     },
     setSkin(id){ skin = skinById(id); },
+    // force a time of day (tests); null goes back to the clock
+    setPhase(name){ forcedPhase = PHASES[name] ? name : null; phaseCheck = 0; },
+    phase(){ return phase; },
     // draw the archaeologist (idle, standing) into another canvas — used by the wardrobe
     preview(c2, id){
       const keep = [ctx, skin, pose, blink, sweatT, exclT, lampPos];
