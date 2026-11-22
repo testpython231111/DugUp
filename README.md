@@ -38,13 +38,13 @@ Dug Up is a daily history trivia game in cosy pixel art. You get seven prompts a
 
 ## How rarity works
 
-On the live site, each answer is ranked by how often its Wikipedia article was read over the last 60 days, compared with the other answers to the same prompt. Less-read history scores more. If Wikipedia can't be reached, the game uses built-in rarity estimates instead.
+Each answer is ranked by how often its Wikipedia article was read over 60 days, compared with the other answers to the same prompt. Less-read history scores more. The ranking is computed about once a month and shipped with the site, so every player gets the same depth for the same answer and the game never has to call Wikipedia while you play. Answers without enough data use built-in rarity estimates.
 
 ## Tech
 
 - **Plain static files** with no framework, no build step and no dependencies: `index.html` (markup), `css/style.css`, `js/data/prompts.js` (all prompts and answers, plus the daily rotation) and `js/app.js` (the game). Opening `index.html` straight from disk works too. Graphics are drawn on `<canvas>`, sound uses the Web Audio API, and the font is [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans).
 - **Hosting:** GitHub → [Vercel](https://vercel.com). Every push to `main` deploys automatically.
-- **Live rarity:** the [Wikipedia API](https://www.mediawiki.org/wiki/API:Main_page), using page views.
+- **Rarity:** page views from the [Wikipedia API](https://www.mediawiki.org/wiki/API:Main_page), fetched monthly by `tools/rarity.mjs` into `js/data/rarity.js`.
 - **Analytics:** [Vercel Web Analytics](https://vercel.com/docs/analytics). It is privacy-friendly and uses no cookies.
 
 ### Updating the site
@@ -54,6 +54,7 @@ Edit the file that holds what you want to change:
 | To change | Edit |
 |---|---|
 | Prompts, answers, aliases, the daily rotation | `js/data/prompts.js` |
+| Answer rarity (generated monthly, don't edit) | `js/data/rarity.js` |
 | Colours, layout, fonts | `css/style.css` |
 | Game logic, pixel art, sound | `js/app.js` |
 | Page text and structure | `index.html` |
@@ -71,6 +72,10 @@ npm test            # or: node tools/check.mjs
 The checks load `index.html` and its scripts without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, and the daily rotation. Daily digs that are already published (or due within 14 days) are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter digs that players have already seen. The snapshot only ever grows: `node tools/check.mjs --write-snapshot` adds the digs up to 14 days ahead and refuses to rewrite an existing one.
 
 To add a prompt, put it in `PROMPT_DATA` in `js/data/prompts.js` and run `node tools/check.mjs --add-prompt <id>`. That puts it into every frozen season of the rotation that hasn't started yet, so it shows up within a few weeks. The rotation is frozen until early January 2028. When the checks say so, freeze further with `node tools/check.mjs --freeze-until <YYYY-MM-DD>`.
+
+### Updating rarity
+
+About once a month, run `node tools/rarity.mjs`. It takes about six minutes, fetches page views for every answer and rewrites `js/data/rarity.js` (never edit that file by hand). Check the diff, run `npm test` and commit. If more than 5 % of the requests fail, it writes nothing. `--dry-run` fetches and reports without writing.
 
 ## Privacy
 

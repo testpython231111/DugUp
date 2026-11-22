@@ -9,6 +9,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - _(ingen)_
 
 ## Completed
+- [x] 2026-11-22: **Spec 05 — Forhåndsberegnet sjeldenhet.** `tools/rarity.mjs` skriver `js/data/rarity.js` (291 KB, 125 KB gzip), og spillet kaller ikke Wikipedia lenger. Rangeringen er identisk med den gamle live-koden. 23 tester grønne. Eier har testet lokalt, inkludert Network-fanen. Vercel preview bygget uten feil. Merget til `main` 2026-11-22 etter eiers beslutning.
 - [x] 2026-11-22: **Spec 04 — Frys rotasjonen et år fram.** Sesong 3–20 frosset (dekker til Dig #408, ca. 3. jan 2028). Nye verktøy: `--freeze-until <dato>`, `--add-prompt <id>` og en snapshot som bare kan vokse. Dig #1–#440 er identiske før og etter. 18 tester grønne. Eier har testet lokalt i nettleser, og alt så riktig ut. Vercel preview bygget uten feil. Merget til `main` 2026-11-22 etter eiers beslutning.
 - [x] 2026-11-22: **Spec 03 — Del opp `index.html`.** Filene er nå `css/style.css`, `js/data/prompts.js` og `js/app.js`, uten byggesteg. 16 tester grønne. Merget til `main` etter eiers beslutning, uten preview-sjekk først. Eier har verifisert hele siden på dugup.eu etterpå, og alt fungerer.
 - [x] 2026-11-22: Spec 02 merget til `main` og verifisert live på dugup.eu av eier.
@@ -19,24 +20,28 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 
 ## Neste (i prioritert rekkefølge)
 1. **Verifiser Spec 04 på dugup.eu** (eier): dagens dig, practice og past digs.
-2. **Spec 05 — Forhåndsberegnet sjeldenhet** (`feature-specs/05-precomputed-rarity.md`). Skisse. Script regner ut tiers fra Wikipedia på forhånd, så nettleseren ikke henter noe. Gir lik dybde for alle spillere. Endrer ADR-002.
+2. **Verifiser Spec 05 på dugup.eu** (eier): merket viser «Rarity from Wikipedia · Nov 2026», og Network-fanen viser ingen Wikipedia-forespørsler under spill.
+- **Månedlig:** `node tools/rarity.mjs` (neste gang ca. 22. des 2026).
 3. **Spec 06 — Kort oppsummering på reveal** (`feature-specs/06-reveal-summary.md`). Skisse. 1–2 setninger fra Wikipedia om sjeldne funn. Ingen bilder (bryter pikselstilen).
 
 ## Arkitekturbeslutninger
 - **ADR-001:** Ingen backend/rammeverk. Statisk side på Vercel, all state i `localStorage`.
 - **ADR-002:** Rarity fra Wikipedia pageviews (60 dager), offline-tiers som fallback.
+  - **Endret (Spec 05, 2026-11-22):** Rangeringen forhåndsberegnes månedlig av `tools/rarity.mjs` til `js/data/rarity.js`, i stedet for live i hver nettleser. Begrunnelse: lik dybde for alle spillere, ingen forespørsler under spill, ingen kappløp mellom sjekk og runde. Pris: tallene er opptil en måned gamle, og oppdateringen er et manuelt steg.
 - **ADR-003 (2026-11-22):** Daglig rotasjon er en eksplisitt, append-only liste av frosne sesonger med prompt-id-er (`ROTATION`), ikke beregnet fra `PROMPTS`. Når sesongene er brukt opp, genereres neste med seed `dugup-order-v<n>` og fryses i god tid. Begrunnelse: innhold kan legges til uten å flytte publiserte digs. Pris: nye prompts dukker først opp når siste sesong er spilt ut, og frysing er et manuelt steg (testen varsler 14 dager før).
   - **Tillegg (Spec 04, 2026-11-22):** Rotasjonen fryses ~et år fram (`--freeze-until`). Nye prompts settes inn i alle frosne sesonger som starter etter de låste digsene (snapshoten + i dag + 14 dager), på en seedet plass utenom sømmen (`--add-prompt`). Snapshoten er append-only. Begrunnelse: en sesong varer bare ~20 dager, så manuell frysing hver 3. uke var for skjørt, og nye prompts skal komme inn i spillet raskt. Pris: `ROTATION` vokser ~2 KB per sesong (~35 KB per år), og frysing må gjøres én gang i året.
 
 ## Kjente risikoer
 - Frysing er fortsatt manuelt, men bare én gang i året (neste gang ca. desember 2027). `npm test` varsler, men Vercel kjører ikke testene.
 - Legger man et prompt rett i `ROTATION` for hånd i stedet for med `--add-prompt`, havner det bare i én sesong. Testen «every frozen season that has not started holds every daily prompt» fanger det.
-- Testene dekker data, matching og rotasjon, men ikke UI/Scene/Sound — det verifiseres fortsatt manuelt i nettleser.
+- Sjeldenhet oppdateres manuelt hver måned (`node tools/rarity.mjs`). Glemmer man det, blir tallene eldre, men ingenting går i stykker.
+- Testene dekker data, matching, rotasjon og rarity, men ikke UI/Scene/Sound — det verifiseres fortsatt manuelt i nettleser.
 - `package.json` i rot er nytt for Vercel-deployen (ingen avhengigheter/build-script). Sjekk preview-deploy før merge til `main`.
 - `js/data/prompts.js` (~410 KB) er fortsatt stor. Den kan senere deles opp per kategori, og `app.js` kan deles i moduler; det blir egne specs.
 - Etter Spec 03 er det ikke lenger nok å laste opp bare `index.html` via GitHub-webgrensesnittet (se README «Updating the site»).
 
 ## Sesjonsnotater
+- **2026-11-22 (Spec 05):** Lasteren (DOM-stub + vm) er flyttet fra `tools/check.mjs` til `tools/load-game.mjs`, så `tools/rarity.mjs` kan bruke den. `rankPrompt` ga samme tier og visningstall som `Live.prepare` for alle 11 033 svar (engangssjekk med kunstige visningstall før Live ble fjernet). Ekte kjøring: 202 batcher, 683 forespørsler, 0 feil, ~6 min; 10 932 av 11 033 svar rangert, ingen prompts falt tilbake til offline. `rarity.js` er 291 KB (125 KB gzip), under grensen på 400 KB, så ingen avrunding. Funn: bare 38 % av svarene har samme tier live som offline (45 % ±1, 17 % ±2 eller mer), så spillere uten Wikipedia fikk tidligere ganske annen dybde. Med `--api` mot en død adresse avbryter scriptet etter 12 feilede batcher og skriver ingenting. Headless Edge viser «● Rarity from Wikipedia · Nov 2026». Underveis mistet to regexer backslashene sine da jeg skrev filer via script (rettet, og månedstesten fanger det nå), og `tools/check.mjs` ble en gang overskrevet ved et uhell og gjenopprettet fra git. 23 tester grønne. Eier har etterpå testet lokalt i nettleser, inkludert Network-fanen, og alt fungerer. Ikke verifisert: Vercel preview.
 - **2026-11-22 (Spec 04):** `tools/check.mjs` leser og skriver `ROTATION` som en liste av sesonger, og nekter å skrive hvis den ikke kan gjenskape filen byte for byte. Filen bruker CRLF i arbeidskopien, og verktøyet skriver tilbake med samme linjeskift. `--freeze-until 2027-12-31` fryste sesong 3–20, og en ny kjøring gjør ingenting. Verifisert: Dig #1–#440 identiske med `main` (sammenlignet med et eget script). Kjørt på en kopi: `--add-prompt` med testprompt satte det inn i sesong 3–20, Dig #1–#30 uendret, 18/18 grønne. Ukjent id, practice-id og id som allerede er i ROTATION gir feil, og filene er uendret etterpå. `--write-snapshot` med en endret dig i snapshoten nekter å skrive. Headless Edge over `file://` starter med Dig #1 og Live-badge. `app.js` er ikke endret. Ikke verifisert: at snapshoten vokser forbi Dig #30 (skjer først når i dag + 14 > 30, ca. 8. des), full spillrunde i ekte nettleser, og Vercel preview.
 - **2026-11-22 (planlegging):** Spec 04 (utkast), 05 og 06 (skisser) skrevet. Ingen kodeendringer. Funn: en sesong varer bare ~20 dager, så manuell frysing ville vært nødvendig hver ~3. uke. Live-rarity hentes per spiller og lagres ikke, så dybden kan variere mellom spillere. Eier har bestemt: ingen bilder fra Wikipedia (pikselstil).
 - **2026-11-22:** Innført Spec-Driven Development etter pensumet «Systemarkitektur og Spec-Driven Utvikling med AI». Ingen kodeendringer i `index.html`.

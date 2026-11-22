@@ -19,7 +19,7 @@ Dug Up er et daglig historie-quizspill i pikselkunst (dugup.eu). Spilleren får 
 
 ## In Scope
 - Daglig dig, practice, past digs, museum, wardrobe/outfits, streaks/stats, deling.
-- Live rarity fra Wikipedia pageviews (60 dager) med offline fallback.
+- Rarity fra Wikipedia pageviews (60 dager), forhåndsberegnet månedlig (`tools/rarity.mjs`), med offline fallback.
 - Legge til/redigere prompts og svar.
 - Lyd (Web Audio, syntetisert) og canvas-grafikk.
 
