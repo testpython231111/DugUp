@@ -23,7 +23,7 @@ Flytte innhold ut av den 540 KB store `index.html` til egne filer, slik at data,
 
 ## 4. Verification Checklist
 - [x] Spec 01-testene og snapshot grønne.
-- [ ] Siden fungerer lokalt og på en Vercel preview-deploy (full daily-runde, practice, museum, wardrobe, past digs, lyd av/på).
-- [ ] Eksisterende `localStorage` fra produksjon fungerer uendret.
+- [x] Siden fungerer lokalt og på produksjon (verifisert av eier på dugup.eu i stedet for preview-deploy) (full daily-runde, practice, museum, wardrobe, past digs, lyd av/på).
+- [x] Eksisterende `localStorage` fra produksjon fungerer uendret.
 - [x] README «Updating the site» oppdatert.
 - [x] `02-architecture.md` filstruktur oppdatert.
