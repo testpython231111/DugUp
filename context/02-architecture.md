@@ -7,7 +7,7 @@
 | `<canvas>` | All pikselgrafikk (scene, sprites, tekst-font `FONT`) | Ikke bruk bildefiler — sprites er definert som tekst-rader i `SPR` |
 | Web Audio API | All lyd, syntetisert i `Sound` | Ikke legg til lydfiler |
 | `localStorage` via `store.get/set` | All persistens | Aldri kall `localStorage` direkte — bruk `store` (har try/catch) |
-| Wikipedia API (`WIKI_API`, pageviews) | Live rarity, i `Live` | Ikke kall andre eksterne API-er |
+| Wikipedia API (pageviews) | Kun `tools/rarity.mjs`, månedlig (Spec 05) | Spillet selv kaller ingen eksterne API-er (`npm test` sjekker at ingen script bruker `fetch`) |
 | Vercel (statisk hosting + Web Analytics) | Deploy ved push til `main` | Ingen serverless functions |
 | Google Fonts (Pixelify Sans) + innebygd `DugUp Digits` (base64 woff2) | Typografi | — |
 
@@ -19,13 +19,14 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 | `index.html` (~160 linjer) | `<head>` (Vercel Analytics, Google Fonts), HTML: header, `#scene`, seks `<section class="screen">`, footer, og script-taggene nederst i `<body>` |
 | `css/style.css` | `@font-face` (`DugUp Digits`, base64), all CSS (`:root`-tokens øverst) |
 | `js/data/prompts.js` (~410 KB) | **`PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er). Lastes **før** `app.js`. `tools/check.mjs --freeze-until` og `--add-prompt` skriver hit. |
+| `js/data/rarity.js` (~290 KB, ~125 KB gzip) | **`RARITY`** — tier og 60-dagers sidevisninger per `prompt-id` + `display`. **Generert** av `tools/rarity.mjs`; rediger aldri for hånd. Lastes etter `prompts.js`, før `app.js`. |
 | `js/app.js` | **Appen** i én IIFE, delt i seksjoner: |
 | | `CONFIG` (ROUND_SIZE, TIME_LIMIT, EPOCH, TIERS) |
 | | `SMALL UTILS` (store, hashStr, mulberry32, shuffle, esc, datoer) |
 | | `PIXEL ART` (PAL, SPR, sprCanvas, frames) |
 | | `OUTFITS` (SKINS, palettbytter) |
 | | `TEXT NORMALISATION & MATCHING` (normalize, lev, buildPrompts, matchAnswer, pickRound, seasonOrder, generateSeason, dailyPrompts) |
-| | `LIVE WIKIPEDIA` (Live.probe, fetchViews, liveTier) |
+| | `RARITY` (RARITY_DATA, RARITY_MONTH, applyRarity, updateBadge) |
 | | `SOUND` |
 | | `SCENE` (ERAS, PHASES, canvas-animasjon) |
 | | `GAME` (state, skjermer, runder, resultater, museum, wardrobe, archive, deling) |
@@ -37,7 +38,10 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 tier|Display name|Wikipedia title (tom = display)|alias1;alias2
 ...`}
 ```
-- `tier` 1 (Topsoil, vanligst) … 6 (Forgotten by History, sjeldnest). Offline-estimat; overstyres av `liveTier` når Wikipedia svarer.
+- `tier` 1 (Topsoil, vanligst) … 6 (Forgotten by History, sjeldnest). Offline-estimat; overstyres ved oppstart av `liveTier`/`views` fra `RARITY` når svaret finnes der.
+
+### Slik oppdaterer du sjeldenhet (månedlig, Spec 05)
+`node tools/rarity.mjs` (~6 min, ~700 forespørsler) → sjekk diffen i `js/data/rarity.js` → `npm test` → commit. Scriptet bruker samme rangering som den gamle live-koden og skriver ingenting hvis mer enn 5 % av forespørslene feiler. `--dry-run` henter og rapporterer uten å skrive.
 - Valgfritt: `nope` (nesten-svar som skal forklares), tvetydighetskart.
 
 ## Daglig rotasjon — `ROTATION` (Spec 02, ADR-003)
@@ -79,5 +83,5 @@ tier|Display name|Wikipedia title (tom = display)|alias1;alias2
 4. **`PRACTICE_IDS`-prompts skal aldri være i daglig rotasjon**, og practice teller aldri mot museum/outfits/streak.
 5. **Eksisterende `localStorage`-format er bakoverkompatibelt.** Nye felt må ha default (se `getStats()`-mønsteret). Aldri endre betydningen av et eksisterende felt.
 6. **Alt brukerinput og all data som settes inn i HTML går gjennom `esc()`.**
-7. **Appen må fungere uten Wikipedia** (timeout + fallback til offline-tier).
+7. **Appen må fungere uten Wikipedia.** Spillet kaller ikke Wikipedia (kun lenker); mangler `rarity.js` eller et svar i den, brukes offline-tier.
 8. **Ingen dato-logikk med UTC vs. lokal tid blandes ad hoc** — bruk `dateKey`, `dayNumber`, `dateKeyAgo`.

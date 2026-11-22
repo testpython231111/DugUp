@@ -45,12 +45,12 @@ Ikke med: oppsummeringer på reveal-skjermen (Spec 06), nye prompts, endringer i
 - IKKE rør `PROMPT_DATA`, `ROTATION`, matching, Scene, Sound eller `localStorage`-formatet.
 
 ## 4. Verification Checklist
-- [ ] Scriptet gir samme tiers som `Live.prepare` for de samme visningstallene (test med faste tall i `tools/check.mjs`).
-- [ ] Test: alle nøkler i `RARITY` peker på et eksisterende prompt og en eksisterende `display`, og alle tiers er 1–6.
-- [ ] Test: appen starter og gir offline-tiers når `rarity.js` mangler (invariant 7).
-- [ ] Scriptet med simulert nettverksfeil skriver ingenting.
-- [ ] Ingen forespørsler til `wikipedia.org` under en full runde, bortsett fra lenkene spilleren selv klikker på (Network-fanen).
-- [ ] Merket og «≈ N reads»-teksten viser riktig måned.
-- [ ] Størrelsen på `rarity.js` er målt, ukomprimert og gzip.
-- [ ] Eksisterende museum, stats og streak i `localStorage` fungerer som før.
-- [ ] `npm test` grønn, ingen feil i konsollen ved full runde (daily + practice + past digs), `06-progress-tracker.md` oppdatert.
+- [x] Scriptet gir samme tiers som `Live.prepare` for de samme visningstallene (test med faste tall i `tools/check.mjs`).
+- [x] Test: alle nøkler i `RARITY` peker på et eksisterende prompt og en eksisterende `display`, og alle tiers er 1–6.
+- [x] Test: appen starter og gir offline-tiers når `rarity.js` mangler (invariant 7).
+- [x] Scriptet med simulert nettverksfeil skriver ingenting.
+- [x] Ingen forespørsler til `wikipedia.org` under en full runde, bortsett fra lenkene spilleren selv klikker på (Network-fanen).
+- [x] Merket og «≈ N reads»-teksten viser riktig måned.
+- [x] Størrelsen på `rarity.js` er målt, ukomprimert og gzip: 291 KB / 125 KB.
+- [x] Eksisterende museum, stats og streak i `localStorage` fungerer som før.
+- [x] `npm test` grønn, ingen feil i konsollen ved full runde (daily + practice + past digs), `06-progress-tracker.md` oppdatert. Nettleser og Network-fanen er sjekket lokalt av eier 2026-11-22. Vercel preview gjenstår.

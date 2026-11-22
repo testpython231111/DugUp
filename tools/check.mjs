@@ -1,6 +1,6 @@
 // Dug Up — automated checks (Feature Spec 01).
 // Runs the scripts of index.html (inline, and local <script src> files such as js/data/prompts.js and js/app.js)
-// in a Node vm with a minimal DOM stub, then verifies the prompt data, answer matching and the daily rotation.
+// in a Node vm with a minimal DOM stub, then verifies the prompt data, answer matching, the daily rotation and rarity.
 //
 //   node tools/check.mjs                    run all checks (same as `npm test`)
 //   node tools/check.mjs --write-snapshot   extend tools/rotation-snapshot.json to today + 14 days (never rewrites a dig)
@@ -13,9 +13,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import vm from 'node:vm';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as loadGameMod from './load-game.mjs';
+import { rankPrompt } from './rarity.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SNAPSHOT_FILE = path.join(ROOT, 'tools', 'rotation-snapshot.json');
@@ -35,82 +36,10 @@ const argv = process.argv.slice(2);
 const htmlArg = argv.indexOf('--html');
 const HTML_FILE = htmlArg !== -1 ? path.resolve(argv[htmlArg + 1]) : path.join(ROOT, 'index.html');
 
-/* ---------- loading index.html without a browser ---------- */
+/* ---------- loading index.html without a browser (tools/load-game.mjs) ---------- */
 
-// A value that tolerates any use: every property is another stub, calling or constructing returns a stub,
-// and coercion gives 0 / ''. Assigned properties are remembered so `el.x = 1; el.x` behaves.
-function chameleon(){
-  const props = new Map();
-  return new Proxy(function(){}, {
-    get(_, k){
-      if (k === Symbol.toPrimitive) return hint => (hint === 'number' ? 0 : '');
-      if (k === Symbol.iterator) return function*(){};
-      if (k === 'then') return undefined; // never look like a Promise
-      if (k === 'length') return 0;
-      if (!props.has(k)) props.set(k, chameleon());
-      return props.get(k);
-    },
-    set(_, k, v){ props.set(k, v); return true; },
-    apply(){ return chameleon(); },
-    construct(){ return chameleon(); }
-  });
-}
-
-// The page's scripts in document order: inline ones, and local src files (relative paths, read from disk next to
-// the html). Absolute/remote src (Vercel analytics) is skipped. `overrides` maps a src to replacement source text.
-function pageScripts(html, overrides = {}){
-  const base = path.dirname(HTML_FILE);
-  return [...html.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)].map((m, i) => {
-    const src = ((m[1] || '').match(/\ssrc="([^"]*)"/) || [])[1];
-    if (src === undefined) return { name: `index.html#script${i + 1}`, code: m[2] };
-    if (/^(\/|[a-z]+:)/i.test(src)) return null;
-    return { name: src, file: path.join(base, src), code: src in overrides ? overrides[src] : fs.readFileSync(path.join(base, src), 'utf8') };
-  }).filter(Boolean);
-}
-
-function loadGame(html, overrides = {}){
-  const scripts = pageScripts(html, overrides);
-  if (!scripts.some(s => s.code.includes('const PROMPT_DATA'))) throw new Error('PROMPT_DATA script not found');
-
-  const mem = new Map();
-  const noop = () => 0;
-  const sandbox = {
-    console,
-    document: chameleon(),
-    navigator: chameleon(),
-    location: chameleon(),
-    performance: { now: () => 0 },
-    localStorage: {
-      getItem: k => (mem.has(k) ? mem.get(k) : null),
-      setItem: (k, v) => { mem.set(k, String(v)); },
-      removeItem: k => { mem.delete(k); }
-    },
-    // Wikipedia is "down": the game must fall back to offline tiers (invariant 7).
-    fetch: () => Promise.reject(new Error('offline (test)')),
-    AbortController,
-    URL, URLSearchParams, TextEncoder, TextDecoder,
-    setTimeout: noop, clearTimeout: noop, setInterval: noop, clearInterval: noop,
-    requestAnimationFrame: noop, cancelAnimationFrame: noop,
-    addEventListener: noop, removeEventListener: noop,
-    matchMedia: () => chameleon(),
-    Image: function(){ return chameleon(); },
-    FontFace: function(){ return chameleon(); },
-    AudioContext: function(){ return chameleon(); }
-  };
-  sandbox.window = sandbox;
-  sandbox.self = sandbox;
-  const ctx = vm.createContext(sandbox);
-  scripts.forEach(s => vm.runInContext(s.code, ctx, { filename: s.name }));
-  if (!sandbox.__dugup) throw new Error('window.__dugup test hook was not set — did BOOT fail?');
-  // PRACTICE_IDS lives inside the app IIFE; practicePrompts() drops unknown ids, which the length check catches.
-  const hook = sandbox.__dugup;
-  return {
-    PROMPT_DATA: vm.runInContext('PROMPT_DATA', ctx),
-    ROTATION: Array.from(vm.runInContext('typeof ROTATION === "undefined" ? [] : ROTATION', ctx), s => Array.from(s)),
-    PRACTICE_IDS: hook.practicePrompts().map(p => p.id),
-    ...hook
-  };
-}
+const pageScripts = (html, overrides) => loadGameMod.pageScripts(HTML_FILE, html, overrides);
+const loadGame = (html, overrides) => loadGameMod.loadGame(HTML_FILE, html, overrides);
 
 const HTML = fs.readFileSync(HTML_FILE, 'utf8');
 const G = loadGame(HTML);
@@ -444,4 +373,53 @@ test('rotation: generated seasons are complete and never repeat a prompt across 
   assert.deepEqual([...next].sort(), daily);
   const seam = prev.slice(-ROUND_SIZE * 2).filter(id => next.slice(0, ROUND_SIZE * 2).includes(id));
   assert.deepEqual(seam, [], `season ${n} starts with prompts from the end of season ${n - 1}`);
+});
+
+/* ---------- rarity (Spec 05) ---------- */
+
+test('rarity: rankPrompt uses the quantile rule and needs enough answers with views', () => {
+  const answers = Array.from({ length: 12 }, (_, i) => ({ display: 'A' + i, wiki: 'W' + i }));
+  const views = {}; for (let i = 0; i < 10; i++) views['W' + i] = 1000 - i * 100; // W10, W11 have no views
+  const r = rankPrompt(answers, views);
+  assert.deepEqual(answers.slice(0, 10).map(a => r[a.display][0]), [1, 2, 2, 3, 3, 4, 4, 5, 6, 6]);
+  assert.deepEqual(r.A0, [1, 1000]);
+  assert.equal(r.A10, undefined);
+  const few = {}; for (let i = 0; i < 6; i++) few['W' + i] = 10 + i; // 6 of 12 < max(3, floor(12 * 0.6))
+  assert.equal(rankPrompt(answers, few), null);
+});
+
+test('rarity: js/data/rarity.js only lists existing prompts and answers, with tiers 1–6', () => {
+  assert.ok(G.RARITY && G.RARITY.p, 'RARITY missing — run: node tools/rarity.mjs');
+  assert.match(G.RARITY.updated, /^\d{4}-\d{2}-\d{2}$/);
+  const bad = [];
+  for (const id of Object.keys(G.RARITY.p)){
+    const p = G.PROMPTS.find(x => x.id === id);
+    if (!p){ bad.push(`unknown prompt "${id}"`); continue; }
+    const displays = new Set(Array.from(p.answers, a => a.display));
+    for (const [d, e] of Object.entries(G.RARITY.p[id])){
+      if (!displays.has(d)) bad.push(`${id}: unknown answer "${d}" (renamed? run node tools/rarity.mjs)`);
+      if (!(Number.isInteger(e[0]) && e[0] >= 1 && e[0] <= 6 && Number.isInteger(e[1]) && e[1] >= 0)) bad.push(`${id}: bad entry for "${d}"`);
+    }
+  }
+  assert.deepEqual(bad, []);
+});
+
+test('rarity: the app uses RARITY tiers and views', () => {
+  const [id, entries] = Object.entries(G.RARITY.p)[0], [d, [tier, views]] = Object.entries(entries)[0];
+  const a = Array.from(G.PROMPTS.find(x => x.id === id).answers).find(x => x.display === d);
+  assert.equal(a.liveTier, tier);
+  assert.equal(a.views, views);
+  const [y, m] = G.RARITY.updated.split('-');
+  assert.equal(G.RARITY_MONTH, ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m - 1] + ' ' + y, 'badge month');
+});
+
+test('rarity: the app starts without rarity.js and keeps the offline tiers (invariant 7)', () => {
+  const g = loadGame(HTML, { 'js/data/rarity.js': '' });
+  assert.equal(g.RARITY, null);
+  assert.ok(Array.from(g.PROMPTS).every(p => Array.from(p.answers).every(a => !a.liveTier && a.tier >= 1 && a.tier <= 6)));
+  assert.equal(g.dailyPrompts(1).length, ROUND_SIZE);
+});
+
+test('rarity: the game itself never calls fetch (no Wikipedia requests while playing)', () => {
+  for (const s of pageScripts(HTML)) assert.ok(!/\bfetch\s*\(/.test(s.code), `${s.name} calls fetch()`);
 });

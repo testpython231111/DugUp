@@ -8,7 +8,6 @@ const ROUND_SIZE = 7;
 const TIME_LIMIT = 30;           // seconds per prompt
 const SHARE_URL = 'dugup.eu';
 const EPOCH = Date.UTC(2026, 10, 22); // Dig #1 = 22 Nov 2026
-const WIKI_API = 'https://en.wikipedia.org/w/api.php';
 
 const TIERS = [
   {name:'Just a Rock',          pts:0,   emoji:'🪨', spr:'rock'},
@@ -548,70 +547,28 @@ function dailyPrompts(n){
 function dateKeyAgo(k){ const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() - k); return dateKey(d); }
 
 /* =========================================================
-   LIVE WIKIPEDIA (switches on automatically when reachable)
+   RARITY — tiers and Wikipedia page views, precomputed monthly by tools/rarity.mjs into js/data/rarity.js
+   (Feature Spec 05). The game never calls Wikipedia; answers missing from RARITY keep their PROMPT_DATA tier.
    ========================================================= */
-const Live = {
-  status: 'checking',
-  async probe(){
-    try{
-      const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 4000);
-      const r = await fetch(WIKI_API + '?action=query&meta=siteinfo&siprop=general&format=json&formatversion=2&origin=*', {signal: ctl.signal});
-      clearTimeout(tm);
-      const j = await r.json();
-      this.status = (j && j.query && j.query.general) ? 'live' : 'offline';
-    }catch(e){ this.status = 'offline'; }
-    updateBadge();
-    return this.status;
-  },
-  async fetchViews(titles){
-    const out = {};
-    for (let i=0;i<titles.length;i+=50){
-      const batch = titles.slice(i, i+50);
-      const normMap = {}, redirMap = {}, sums = {};
-      let cont = null, guard = 0;
-      do {
-        const params = new URLSearchParams({action:'query', format:'json', formatversion:'2', origin:'*', prop:'pageviews', pvipdays:'60', redirects:'1', titles: batch.join('|')});
-        if (cont) Object.keys(cont).forEach(k => params.set(k, cont[k]));
-        const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 9000);
-        const r = await fetch(WIKI_API + '?' + params.toString(), {signal: ctl.signal});
-        clearTimeout(tm);
-        const j = await r.json(); const q = j.query || {};
-        (q.normalized || []).forEach(x => { normMap[x.from] = x.to; });
-        (q.redirects || []).forEach(x => { redirMap[x.from] = x.to; });
-        (q.pages || []).forEach(pg => {
-          if (pg.pageviews && sums[pg.title] == null){ let s = 0; for (const k in pg.pageviews) s += pg.pageviews[k] || 0; sums[pg.title] = s; }
-        });
-        cont = j.continue || null; guard++;
-      } while (cont && guard < 6);
-      batch.forEach(t => { let x = normMap[t] || t; x = redirMap[x] || x; if (sums[x] != null) out[t] = sums[x]; });
-    }
-    return out;
-  },
-  async prepare(prompts){
-    if (this.status !== 'live') return;
-    for (const p of prompts){
-      if (p.liveDone) continue;
-      try{
-        const views = await this.fetchViews(p.answers.map(a => a.wiki));
-        const ranked = p.answers.filter(a => views[a.wiki] > 0).map(a => ({a, v: views[a.wiki]})).sort((x, y) => y.v - x.v);
-        if (ranked.length >= Math.max(3, Math.floor(p.answers.length * 0.6))){
-          const N = ranked.length;
-          ranked.forEach((e, i) => {
-            const q = (i + 0.5) / N;
-            e.a.liveTier = q < 0.12 ? 1 : q < 0.27 ? 2 : q < 0.47 ? 3 : q < 0.67 ? 4 : q < 0.85 ? 5 : 6;
-            e.a.views = e.v;
-          });
-        }
-        p.liveDone = true;
-      }catch(e){ /* keep offline estimates */ }
-    }
-  }
-};
+const RARITY_DATA = (typeof RARITY !== 'undefined' && RARITY && RARITY.p) ? RARITY : null;
+const RARITY_MONTH = (function(){
+  const m = RARITY_DATA && /^(\d{4})-(\d{2})/.exec(RARITY_DATA.updated || '');
+  return m ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m[2] - 1] + ' ' + m[1] : '';
+})();
+(function applyRarity(){
+  if (!RARITY_DATA) return;
+  PROMPTS.forEach(p => {
+    const r = RARITY_DATA.p[p.id];
+    if (r) p.answers.forEach(a => {
+      const e = r[a.display];
+      if (e && e[0] >= 1 && e[0] <= 6){ a.liveTier = e[0]; a.views = e[1] || 0; }
+    });
+  });
+})();
 function updateBadge(){
   const b = $('dataBadge');
-  if (Live.status === 'live'){ b.textContent = '● Live Wikipedia rarity'; b.classList.add('live'); b.title = 'Rarity is ranked from Wikipedia page views over the last 60 days.'; }
-  else if (Live.status === 'offline'){ b.textContent = 'Offline dig records · rarity estimated'; b.classList.remove('live'); b.title = 'Wikipedia could not be reached here, so built-in rarity estimates are used.'; }
-  else b.textContent = 'Checking Wikipedia…';
+  if (RARITY_DATA){ b.textContent = '● Rarity from Wikipedia · ' + RARITY_MONTH; b.classList.add('live'); b.title = 'Rarity is ranked from Wikipedia page views over 60 days, updated monthly (last: ' + RARITY_MONTH + ').'; }
+  else { b.textContent = 'Rarity estimated'; b.classList.remove('live'); b.title = 'Built-in rarity estimates are used.'; }
 }
 
 
@@ -1558,7 +1515,6 @@ function startRound(mode, opt){
   Sound.start();
   state.mode = mode; state.idx = 0; state.rows = []; state.score = 0; state.unlocked0 = unlockedIds();
   Scene.setDepth(0, true);
-  Live.prepare(state.prompts);
   show('play');
   window.scrollTo(0, 0);
   nextPrompt();
@@ -1651,7 +1607,7 @@ function renderReveal(p, input, timeout, res, a, tier){
   if (a){
     h += '<p class="found">You dug up <a href="' + wikiURL(a.wiki) + '" target="_blank" rel="noopener"><b>' + esc(a.display) + '</b></a></p>';
     h += '<p>' + TIER_BLURB[tier] + '</p>';
-    if (a.views) h += '<p class="note">≈ ' + a.views.toLocaleString('en-US') + ' Wikipedia reads in the last 60 days</p>';
+    if (a.views) h += '<p class="note">≈ ' + a.views.toLocaleString('en-US') + ' Wikipedia reads in 60 days (' + RARITY_MONTH + ')</p>';
     else h += '<p class="note">Rarity estimated from Wikipedia popularity.</p>';
     const deeper = sampleFinds(p, a, Math.max(5, Math.min(6, tier + 1)), 3);
     if (tier < 6 && deeper.length) h += '<p class="deeper">Deeper finds: ' + findLinks(deeper) + '</p>';
@@ -1682,7 +1638,7 @@ function onNext(){
 }
 
 function finishRound(){
-  const res = {mode: state.mode, key: state.dayKey, num: state.dayNum, score: state.score, rows: state.rows, live: Live.status === 'live'};
+  const res = {mode: state.mode, key: state.dayKey, num: state.dayNum, score: state.score, rows: state.rows, live: !!RARITY_DATA};
   const st = getStats();
   if (state.mode !== 'practice'){   // practice never counts toward the museum, stats or outfits
     st.digs = (st.digs || 0) + 1;
@@ -1850,7 +1806,6 @@ Scene.hooks.find = tier => Sound.find(tier);
 Scene.init();
 applySkin();
 updateBadge();
-Live.probe();
 
 // audio may only start from a user gesture
 ['pointerdown', 'keydown', 'touchend'].forEach(ev => document.addEventListener(ev, () => Sound.init(), {capture: true, passive: true}));
@@ -1880,6 +1835,6 @@ document.addEventListener('keydown', e => {
 });
 
 // test hook (harmless in production)
-window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, Live, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
+window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
 })();
 
