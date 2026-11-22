@@ -47,12 +47,12 @@ Ikke med:
 - IKKE rør matching, rotasjon, rarity, Scene, Sound eller `localStorage`-formatet.
 
 ## 4. Verification Checklist
-- [ ] Test: kuttingen fjerner parenteser, holder seg til ≤ 221 tegn og dropper pekersider (faste eksempler).
-- [ ] Test: alle nøkler i `SUMMARIES` peker på et eksisterende prompt og en eksisterende `display`.
-- [ ] Test: `summaryFor` gir tekst bare for tier ≥ 4, og ingenting når `SUMMARIES` mangler.
-- [ ] Test: ingen script bruker `fetch` (eksisterende test).
-- [ ] Størrelsen er målt, ukomprimert og gzip.
-- [ ] Scriptet med simulert nettverksfeil skriver ingenting.
+- [x] Test: kuttingen fjerner parenteser, holder seg til ≤ 221 tegn og dropper pekersider (faste eksempler).
+- [x] Test: alle nøkler i `SUMMARIES` peker på et eksisterende prompt og en eksisterende `display`.
+- [x] Test: `summaryFor` gir tekst bare for tier ≥ 4, og ingenting når `SUMMARIES` mangler.
+- [x] Test: ingen script bruker `fetch` (eksisterende test).
+- [x] Størrelsen er målt, ukomprimert og gzip: 926 KB / 314 KB.
+- [x] Scriptet med simulert nettverksfeil skriver ingenting.
 - [ ] Sjeldent funn → oppsummering vises uten bilde. Vanlig funn → ingenting (sjekkes av eier i nettleser).
 - [ ] Mobilbredde: ingen horisontal scroll, og «Keep digging» er fortsatt synlig.
 - [ ] `npm test` grønn, ingen feil i konsollen, `06-progress-tracker.md` oppdatert.

@@ -33,9 +33,10 @@ export function rankPrompt(answers, views){
   return out;
 }
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+export const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function getJSON(url){
+// GET with the Dug Up User-Agent, a 20 s timeout and two retries. Also used by tools/summaries.mjs.
+export async function getJSON(url){
   let last;
   for (let attempt = 0; attempt < 3; attempt++){
     if (attempt) await sleep(1000 * attempt * attempt);

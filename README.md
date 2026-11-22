@@ -55,6 +55,7 @@ Edit the file that holds what you want to change:
 |---|---|
 | Prompts, answers, aliases, the daily rotation | `js/data/prompts.js` |
 | Answer rarity (generated monthly, don't edit) | `js/data/rarity.js` |
+| Reveal summaries for rare finds (generated monthly, don't edit) | `js/data/summaries.js` |
 | Colours, layout, fonts | `css/style.css` |
 | Game logic, pixel art, sound | `js/app.js` |
 | Page text and structure | `index.html` |
@@ -77,6 +78,8 @@ To add a prompt, put it in `PROMPT_DATA` in `js/data/prompts.js` and run `node t
 
 About once a month, run `node tools/rarity.mjs`. It takes about six minutes, fetches page views for every answer and rewrites `js/data/rarity.js` (never edit that file by hand). Check the diff, run `npm test` and commit. If more than 5 % of the requests fail, it writes nothing. `--dry-run` fetches and reports without writing.
 
+Then run `node tools/summaries.mjs` (about four minutes). It fetches the first sentence or two of the Wikipedia article for every rare answer (tier 4–6) and rewrites `js/data/summaries.js`, which the reveal screen shows when you dig up a rare find. Text only, never images. Same rules: check the diff, run `npm test`, commit.
+
 ## Privacy
 
 Your progress (streak, stats, museum, outfit and past results) is stored only in your own browser, in `localStorage`. There are no accounts and no cookies. Clearing your browser data resets your progress.
@@ -85,6 +88,7 @@ Your progress (streak, stats, museum, outfit and past results) is stored only in
 
 - Pixel font: **Pixelify Sans** by Stefie Justprince, under the [SIL Open Font License 1.1](https://openfontlicense.org). Digits use **DugUp Digits**, a modified subset of Pixelify Sans under the same licence.
 - History facts and links come from [Wikipedia](https://www.wikipedia.org). Dug Up is not affiliated with Wikipedia or the Wikimedia Foundation.
+- The short summaries shown for rare finds are taken from the opening of Wikipedia articles, under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), shortened, and each links to its article.
 
 ---
 

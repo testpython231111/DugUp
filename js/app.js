@@ -565,6 +565,15 @@ const RARITY_MONTH = (function(){
     });
   });
 })();
+/* Reveal summaries (Feature Spec 06): one or two sentences from Wikipedia for rare finds, precomputed by
+   tools/summaries.mjs into js/data/summaries.js. That file loads async, so until it has arrived there is no summary. */
+const SUMMARY_MIN_TIER = 4;
+function summaryFor(p, a){
+  if (!a || tierOf(a) < SUMMARY_MIN_TIER) return '';
+  const S = (typeof SUMMARIES !== 'undefined' && SUMMARIES && SUMMARIES.p) ? SUMMARIES.p : null;
+  const t = S && S[p.id] && S[p.id][a.display];
+  return typeof t === 'string' ? t : '';
+}
 function updateBadge(){
   const b = $('dataBadge');
   if (RARITY_DATA){ b.textContent = '● Rarity from Wikipedia · ' + RARITY_MONTH; b.classList.add('live'); b.title = 'Rarity is ranked from Wikipedia page views over 60 days, updated monthly (last: ' + RARITY_MONTH + ').'; }
@@ -1606,6 +1615,8 @@ function renderReveal(p, input, timeout, res, a, tier){
   let h = '';
   if (a){
     h += '<p class="found">You dug up <a href="' + wikiURL(a.wiki) + '" target="_blank" rel="noopener"><b>' + esc(a.display) + '</b></a></p>';
+    const sum = summaryFor(p, a);
+    if (sum) h += '<p class="summary">' + esc(sum) + ' <a href="' + wikiURL(a.wiki) + '" target="_blank" rel="noopener">Wikipedia</a></p>';
     h += '<p>' + TIER_BLURB[tier] + '</p>';
     if (a.views) h += '<p class="note">≈ ' + a.views.toLocaleString('en-US') + ' Wikipedia reads in 60 days (' + RARITY_MONTH + ')</p>';
     else h += '<p class="note">Rarity estimated from Wikipedia popularity.</p>';
@@ -1835,6 +1846,6 @@ document.addEventListener('keydown', e => {
 });
 
 // test hook (harmless in production)
-window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
+window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, summaryFor, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
 })();
 

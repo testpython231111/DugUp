@@ -17,6 +17,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as loadGameMod from './load-game.mjs';
 import { rankPrompt } from './rarity.mjs';
+import { trimSummary, MAX_LEN, MIN_TIER } from './summaries.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SNAPSHOT_FILE = path.join(ROOT, 'tools', 'rotation-snapshot.json');
@@ -422,4 +423,47 @@ test('rarity: the app starts without rarity.js and keeps the offline tiers (inva
 
 test('rarity: the game itself never calls fetch (no Wikipedia requests while playing)', () => {
   for (const s of pageScripts(HTML)) assert.ok(!/\bfetch\s*\(/.test(s.code), `${s.name} calls fetch()`);
+});
+
+/* ---------- reveal summaries (Spec 06) ---------- */
+
+test('summaries: trimSummary strips brackets, keeps one or two sentences and drops useless intros', () => {
+  assert.equal(trimSummary('Henry VIII (28 June 1491 – 28 January 1547) was King of England from 22 April 1509 until his death in 1547. Henry is known for his six marriages.'),
+    'Henry VIII was King of England from 22 April 1509 until his death in 1547. Henry is known for his six marriages.');
+  assert.equal(trimSummary('Jackson\'s Valley campaign was Confederate Maj. Gen. Thomas J. Jackson\'s spring 1862 campaign through the Shenandoah Valley in Virginia during the American Civil War.'),
+    'Jackson\'s Valley campaign was Confederate Maj. Gen. Thomas J. Jackson\'s spring 1862 campaign through the Shenandoah Valley in Virginia during the American Civil War.');
+  const long = trimSummary('Someone was ' + 'a very long and winding description '.repeat(10) + 'of a person.');
+  assert.ok(long.length <= MAX_LEN + 1 && long.endsWith('…'), long);
+  assert.equal(trimSummary('Mercury may refer to:'), null);
+  assert.equal(trimSummary('Ur was a city.'), null);                  // too short to be worth showing
+  assert.equal(trimSummary('X (Greek: Κ; c. 980/c. 1000 was a king.'), null); // unbalanced bracket
+  assert.equal(trimSummary(''), null);
+});
+
+test('summaries: js/data/summaries.js only lists existing rare-candidate answers, as short plain text', () => {
+  const S = G.SUMMARIES;
+  assert.ok(S && S.p, 'SUMMARIES missing — run: node tools/summaries.mjs');
+  const bad = [];
+  for (const id of Object.keys(S.p)){
+    const p = G.PROMPTS.find(x => x.id === id);
+    if (!p){ bad.push(`unknown prompt "${id}"`); continue; }
+    const displays = new Set(Array.from(p.answers, a => a.display));
+    for (const [d, t] of Object.entries(S.p[id])){
+      if (!displays.has(d)) bad.push(`${id}: unknown answer "${d}"`);
+      if (typeof t !== 'string' || t.length > MAX_LEN + 1 || /[<>()\[\]]/.test(t)) bad.push(`${id}: bad summary for "${d}"`);
+    }
+  }
+  assert.deepEqual(bad, []);
+});
+
+test('summaries: the reveal shows a summary only for finds with tier >= 4, and nothing without the file', () => {
+  const rare = [], common = [];
+  for (const p of G.PROMPTS) for (const a of p.answers){
+    const t = a.liveTier || a.tier;
+    if (t >= MIN_TIER && G.summaryFor(p, a)) rare.push(a); else if (t < MIN_TIER) common.push([p, a]);
+  }
+  assert.ok(rare.length > 1000, `only ${rare.length} rare answers have a summary`);
+  assert.ok(common.every(([p, a]) => G.summaryFor(p, a) === ''), 'a common answer got a summary');
+  const g = loadGame(HTML, { 'js/data/summaries.js': '' });
+  assert.ok(Array.from(g.PROMPTS).every(p => Array.from(p.answers).every(a => g.summaryFor(p, a) === '')));
 });
