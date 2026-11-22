@@ -6,13 +6,14 @@ Dug Up er et daglig historie-quizspill i pikselkunst (dugup.eu). Spilleren får 
 ## Mål (målbare)
 - Alle spillere får de samme 7 daglige spørsmålene for en gitt dato (deterministisk rotasjon).
 - Ingen daglige spørsmål gjentas før hele rotasjonen (≈143 spørsmål, ~20 dager) er brukt.
-- Siden laster og er spillbar uten nettverkstilgang til Wikipedia (fallback til innebygde rarity-tiers).
+- Spillet kaller aldri Wikipedia under spill. Sjeldenhet og oppsummeringer er hentet på forhånd (månedlig), og alt fungerer også om de genererte filene mangler (fallback til innebygde rarity-tiers, ingen oppsummering).
+- Alle spillere får samme dybde for samme svar.
 - Null server, null kontoer, null cookies. All fremdrift i `localStorage`.
 
 ## Core User Flow
 1. Spilleren åpner siden → **Camp** (tittelskjerm) med stats, streak og knapper.
 2. Trykker **Today's Dig** → runde med 7 prompts (`startRound('daily')`).
-3. Per prompt: skriver svar → `matchAnswer` (normalisering, typo-toleranse, aliaser, romertall) → gravanimasjon → **reveal** med tier, meter og Wikipedia-lenker.
+3. Per prompt: skriver svar → `matchAnswer` (normalisering, typo-toleranse, aliaser, romertall) → gravanimasjon → **reveal** med tier, meter og Wikipedia-lenker, og 1–2 setninger fra Wikipedia når funnet er sjeldent (tier ≥ 4).
 4. Etter 7 prompts → **Results**: total dybde, era, delbar tekst (emoji, ingen spoilere), evt. nye outfits låst opp.
 5. Resultat lagres (`dugup:daily`, `dugup:stats`, `dugup:museum`). Streak oppdateres kun for dagens dig.
 6. Sekundære flyter: **Practice Dig** (faste 7, teller ikke), **Past digs** (siste 7 dager, teller ikke for streak), **Museum**, **Wardrobe**.
@@ -20,6 +21,7 @@ Dug Up er et daglig historie-quizspill i pikselkunst (dugup.eu). Spilleren får 
 ## In Scope
 - Daglig dig, practice, past digs, museum, wardrobe/outfits, streaks/stats, deling.
 - Rarity fra Wikipedia pageviews (60 dager), forhåndsberegnet månedlig (`tools/rarity.mjs`), med offline fallback.
+- Korte oppsummeringer fra Wikipedia på reveal for sjeldne funn (`tools/summaries.mjs`). Kun tekst, aldri bilder (bryter pikselstilen).
 - Legge til/redigere prompts og svar.
 - Lyd (Web Audio, syntetisert) og canvas-grafikk.
 

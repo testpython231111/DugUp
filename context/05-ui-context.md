@@ -28,5 +28,6 @@ Canvas-farger ligger i `PAL` (JS) og skal harmonere med tokens over.
 - Knapper: `.btn` + `.btn-gold` (primær) / `.btn-wood` (sekundær), `.big`, `.small-btn`. Tekstlenker: `.linkish`.
 - Skjermer: `<section id="screen-NAME" class="screen">`, vist via `show(name)`. Tilbake-knapper bruker `data-back`.
 - Tier-ikoner er sprites (`TIERS[n].spr`), emoji brukes kun i delingstekst.
+- Reveal-oppsummering (Spec 06): `.reveal-body .summary`, med tekst i `--ink-soft`, venstrekant `var(--px)` i `--parch-3` og en liten «Wikipedia»-lenke til slutt. **Aldri bilder fra Wikipedia**: de bryter pikselstilen (eiers beslutning).
 - Tilgjengelighet: `aria-live` på toast/reveal, `aria-label` på ikonknapper, tastatur (Enter/mellomrom for skip/next) må fortsatt virke.
 - Mobil først: én kolonne, store trykkflater, `inputmode`/`enterkeyhint` på svarfeltet.
