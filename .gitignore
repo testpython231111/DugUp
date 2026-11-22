@@ -1,0 +1,12 @@
+# Feilsøkingsnotater kan inneholde tokens, URL-er og logger — skal aldri i repoet
+context/current-issues.md
+context/screenshots/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node (for lokale verktøy/tester)
+node_modules/
