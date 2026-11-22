@@ -9,7 +9,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - _(ingen)_
 
 ## Completed
-- [x] 2026-11-22: **Spec 03 — Del opp `index.html`.** Filene er nå `css/style.css`, `js/data/prompts.js` og `js/app.js`, uten byggesteg. 16 tester grønne. Merget til `main` etter eiers beslutning, uten preview-sjekk først.
+- [x] 2026-11-22: **Spec 03 — Del opp `index.html`.** Filene er nå `css/style.css`, `js/data/prompts.js` og `js/app.js`, uten byggesteg. 16 tester grønne. Merget til `main` etter eiers beslutning, uten preview-sjekk først. Eier har verifisert hele siden på dugup.eu etterpå, og alt fungerer.
 - [x] 2026-11-22: Spec 02 merget til `main` og verifisert live på dugup.eu av eier.
 - [x] 2026-11-22: **Spec 02 — Stabil daglig rotasjon.** `ROTATION` (frosne sesonger med id-er) i data-scriptet; sesong 1 = opprinnelig rekkefølge, sesong 2 frosset. Nye prompts legges til på slutten av siste sesong. `node tools/check.mjs --freeze-season` fryser neste. 16 tester grønne.
 - [x] 2026-11-22: **Spec 01 — Automatiske sjekker.** `npm test` / `node tools/check.mjs` (11 tester: data, practice, matching, rotasjon mot snapshot Dig #1–#30). Grønn på dagens `index.html`. Merget til `main`.
@@ -17,8 +17,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - [x] 2026-11-22: Kontekstsystem satt opp (`CLAUDE.md`, `context/01–06`, `.gitignore`, feature-spec-mal).
 
 ## Neste (i prioritert rekkefølge)
-1. **Sjekk dugup.eu etter Spec 03:** spill en hel runde og sjekk practice, museum, wardrobe, past digs, lyd og at gammel fremgang er der. Feiler noe, revert merge-commiten.
-2. **Frys sesong 3** før ca. 17. des 2026 (testen blir rød da): `node tools/check.mjs --freeze-season`.
+1. **Frys sesong 3** før ca. 17. des 2026 (testen blir rød da): `node tools/check.mjs --freeze-season`.
 
 ## Arkitekturbeslutninger
 - **ADR-001:** Ingen backend/rammeverk. Statisk side på Vercel, all state i `localStorage`.
