@@ -3,12 +3,13 @@
 _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arbeidsøkt._
 
 ## Nåværende fase
-**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–06 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet. Gjenstår: eiers verifisering av Spec 04–06 på dugup.eu.
+**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–06 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet. Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
 - _(ingen)_
 
 ## Completed
+- [x] 2026-11-22: Spec 04–06 sjekket live på dugup.eu av eier: «det ser bra ut».
 - [x] 2026-11-22: **Spec 06 — Kort oppsummering på reveal.** `tools/summaries.mjs` skriver `js/data/summaries.js` (5 638 tekster, 926 KB / 314 KB gzip, lastes async). Reveal viser 1–2 setninger og en Wikipedia-lenke for funn med tier ≥ 4. Ingen bilder. 26 tester grønne. Merget til `main` etter eiers beslutning, uten eiers test i nettleser og uten Vercel preview først.
 - [x] 2026-11-22: **Spec 05 — Forhåndsberegnet sjeldenhet.** `tools/rarity.mjs` skriver `js/data/rarity.js` (291 KB, 125 KB gzip), og spillet kaller ikke Wikipedia lenger. Rangeringen er identisk med den gamle live-koden. 23 tester grønne. Eier har testet lokalt, inkludert Network-fanen. Vercel preview bygget uten feil. Merget til `main` 2026-11-22 etter eiers beslutning.
 - [x] 2026-11-22: **Spec 04 — Frys rotasjonen et år fram.** Sesong 3–20 frosset (dekker til Dig #408, ca. 3. jan 2028). Nye verktøy: `--freeze-until <dato>`, `--add-prompt <id>` og en snapshot som bare kan vokse. Dig #1–#440 er identiske før og etter. 18 tester grønne. Eier har testet lokalt i nettleser, og alt så riktig ut. Vercel preview bygget uten feil. Merget til `main` 2026-11-22 etter eiers beslutning.
@@ -20,9 +21,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - [x] 2026-11-22: Kontekstsystem satt opp (`CLAUDE.md`, `context/01–06`, `.gitignore`, feature-spec-mal).
 
 ## Neste (i prioritert rekkefølge)
-1. **Verifiser Spec 04 på dugup.eu** (eier): dagens dig, practice og past digs.
-2. **Verifiser Spec 05 på dugup.eu** (eier): merket viser «Rarity from Wikipedia · Nov 2026», og Network-fanen viser ingen Wikipedia-forespørsler under spill.
-3. **Verifiser Spec 06 på dugup.eu** (eier): sjeldent funn viser tekst, vanlig funn viser ingen, mobilbredde uten sideveis scroll, ingen feil i Console.
+- _(ingen åpne oppgaver. Velg gjerne en av de mulige specene under.)_
 
 ### Faste oppgaver
 - **Månedlig:** `node tools/rarity.mjs`, **deretter** `node tools/summaries.mjs`, `npm test`, commit. Neste gang ca. 22. des 2026.

@@ -37,5 +37,5 @@ Ikke med: nye prompts, endringer i `PROMPT_DATA`-innhold, sjeldenhet (Spec 05), 
 - [x] `--add-prompt` med ukjent id eller practice-id gir tydelig feil og endrer ingenting.
 - [x] `--write-snapshot` endrer aldri eksisterende digs i filen.
 - [x] `npm test` grønn.
-- [x] Ingen feil i nettleserkonsollen ved full runde (daily + practice + past digs). Verifisert lokalt av eier 2026-11-22. Vercel preview gjenstår.
+- [x] Ingen feil i nettleserkonsollen ved full runde (daily + practice + past digs). Verifisert lokalt av eier 2026-11-22, og live på dugup.eu samme dag.
 - [x] `02-architecture.md` og `06-progress-tracker.md` oppdatert.

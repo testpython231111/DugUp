@@ -20,4 +20,4 @@ Gjøre det mulig å legge til nye prompts uten å endre dagens eller tidligere d
 - [x] Test: legg til et dummy-prompt i en kopi av data → Dig #1–#30 uendret (fast test i `tools/check.mjs`).
 - [x] Ukjent id i `ROTATION` gir tydelig feil i testen. Appen hopper over id-en og laster fortsatt (verifisert med kopi av filen med id-en `tpyo`).
 - [x] `06-progress-tracker.md` oppdatert, ADR-003 skrevet.
-- [ ] Manuell sjekk i nettleser/preview-deploy (daily, past digs) — ikke gjort av AI.
+- [x] Manuell sjekk i nettleser (daily, past digs): verifisert live på dugup.eu av eier 2026-11-22.
