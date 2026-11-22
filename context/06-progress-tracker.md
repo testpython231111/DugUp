@@ -6,10 +6,10 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Mål: sikkerhetsnett (tester) før strukturelle endringer.
 
 ## In Progress
-- _(ingen)_ — Spec 04 er ferdig på branch `feature/04-freeze-ahead`, pushet, venter på Vercel preview før merge.
+- _(ingen)_
 
 ## Completed
-- [x] 2026-11-22: **Spec 04 — Frys rotasjonen et år fram.** Sesong 3–20 frosset (dekker til Dig #408, ca. 3. jan 2028). Nye verktøy: `--freeze-until <dato>`, `--add-prompt <id>` og en snapshot som bare kan vokse. Dig #1–#440 er identiske før og etter. 18 tester grønne. Eier har testet lokalt i nettleser, og alt ser riktig ut. Ikke merget, venter på Vercel preview.
+- [x] 2026-11-22: **Spec 04 — Frys rotasjonen et år fram.** Sesong 3–20 frosset (dekker til Dig #408, ca. 3. jan 2028). Nye verktøy: `--freeze-until <dato>`, `--add-prompt <id>` og en snapshot som bare kan vokse. Dig #1–#440 er identiske før og etter. 18 tester grønne. Eier har testet lokalt i nettleser, og alt så riktig ut. Vercel preview bygget uten feil. Merget til `main` 2026-11-22 etter eiers beslutning.
 - [x] 2026-11-22: **Spec 03 — Del opp `index.html`.** Filene er nå `css/style.css`, `js/data/prompts.js` og `js/app.js`, uten byggesteg. 16 tester grønne. Merget til `main` etter eiers beslutning, uten preview-sjekk først. Eier har verifisert hele siden på dugup.eu etterpå, og alt fungerer.
 - [x] 2026-11-22: Spec 02 merget til `main` og verifisert live på dugup.eu av eier.
 - [x] 2026-11-22: **Spec 02 — Stabil daglig rotasjon.** `ROTATION` (frosne sesonger med id-er) i data-scriptet; sesong 1 = opprinnelig rekkefølge, sesong 2 frosset. Nye prompts legges til på slutten av siste sesong. `node tools/check.mjs --freeze-season` fryser neste. 16 tester grønne.
@@ -18,7 +18,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - [x] 2026-11-22: Kontekstsystem satt opp (`CLAUDE.md`, `context/01–06`, `.gitignore`, feature-spec-mal).
 
 ## Neste (i prioritert rekkefølge)
-1. **Merge Spec 04** etter preview-sjekk, før ca. 17. des 2026 (ellers blir testen rød på `main`).
+1. **Verifiser Spec 04 på dugup.eu** (eier): dagens dig, practice og past digs.
 2. **Spec 05 — Forhåndsberegnet sjeldenhet** (`feature-specs/05-precomputed-rarity.md`). Skisse. Script regner ut tiers fra Wikipedia på forhånd, så nettleseren ikke henter noe. Gir lik dybde for alle spillere. Endrer ADR-002.
 3. **Spec 06 — Kort oppsummering på reveal** (`feature-specs/06-reveal-summary.md`). Skisse. 1–2 setninger fra Wikipedia om sjeldne funn. Ingen bilder (bryter pikselstilen).
 
