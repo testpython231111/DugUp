@@ -1,0 +1,8 @@
+{
+  "name": "dugup",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tools/check.mjs"
+  }
+}
