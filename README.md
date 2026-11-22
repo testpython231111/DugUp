@@ -68,7 +68,9 @@ Run the automated checks before every change. They need [Node.js](https://nodejs
 npm test            # or: node tools/check.mjs
 ```
 
-The checks load `index.html` and its scripts without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, and the daily rotation. Dig #1–#30 are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter daily digs that players have already seen. Only regenerate the snapshot (`node tools/check.mjs --write-snapshot`) when you mean to change the rotation.
+The checks load `index.html` and its scripts without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, and the daily rotation. Daily digs that are already published (or due within 14 days) are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter digs that players have already seen. The snapshot only ever grows: `node tools/check.mjs --write-snapshot` adds the digs up to 14 days ahead and refuses to rewrite an existing one.
+
+To add a prompt, put it in `PROMPT_DATA` in `js/data/prompts.js` and run `node tools/check.mjs --add-prompt <id>`. That puts it into every frozen season of the rotation that hasn't started yet, so it shows up within a few weeks. The rotation is frozen until early January 2028. When the checks say so, freeze further with `node tools/check.mjs --freeze-until <YYYY-MM-DD>`.
 
 ## Privacy
 
