@@ -57,7 +57,7 @@ Your progress (streak, stats, museum, outfit and past results) is stored only in
 
 ## Credits and licences
 
-- Pixel font: **Pixelify Sans** by Stefie Justprince, under the [SIL Open Font License 1.1](https://openfontlicense.org). Digits come from **DugUp Digits**, a modified subset of Pixelify Sans with a redrawn **5** so that "1500" can't be misread as "1800". It is distributed under the same licence.
+- Pixel font: **Pixelify Sans** by Stefie Justprince, under the [SIL Open Font License 1.1](https://openfontlicense.org). Digits use **DugUp Digits**, a modified subset of Pixelify Sans under the same licence.
 - History facts and links come from [Wikipedia](https://www.wikipedia.org). Dug Up is not affiliated with Wikipedia or the Wikimedia Foundation.
 
 ---
