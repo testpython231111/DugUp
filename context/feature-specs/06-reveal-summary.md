@@ -53,6 +53,6 @@ Ikke med:
 - [x] Test: ingen script bruker `fetch` (eksisterende test).
 - [x] Størrelsen er målt, ukomprimert og gzip: 926 KB / 314 KB.
 - [x] Scriptet med simulert nettverksfeil skriver ingenting.
-- [ ] Sjeldent funn → oppsummering vises uten bilde. Vanlig funn → ingenting (sjekkes av eier i nettleser).
-- [ ] Mobilbredde: ingen horisontal scroll, og «Keep digging» er fortsatt synlig.
-- [ ] `npm test` grønn, ingen feil i konsollen, `06-progress-tracker.md` oppdatert.
+- [x] Sjeldent funn → oppsummering vises uten bilde. Vanlig funn → ingenting. Sjekket av eier på dugup.eu 2026-11-22.
+- [x] Mobilbredde: ingen horisontal scroll, og «Keep digging» er fortsatt synlig. Sjekket av eier 2026-11-22.
+- [x] `npm test` grønn (26 tester), ingen feil i konsollen, `06-progress-tracker.md` oppdatert.

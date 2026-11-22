@@ -53,4 +53,4 @@ Ikke med: oppsummeringer på reveal-skjermen (Spec 06), nye prompts, endringer i
 - [x] Merket og «≈ N reads»-teksten viser riktig måned.
 - [x] Størrelsen på `rarity.js` er målt, ukomprimert og gzip: 291 KB / 125 KB.
 - [x] Eksisterende museum, stats og streak i `localStorage` fungerer som før.
-- [x] `npm test` grønn, ingen feil i konsollen ved full runde (daily + practice + past digs), `06-progress-tracker.md` oppdatert. Nettleser og Network-fanen er sjekket lokalt av eier 2026-11-22. Vercel preview gjenstår.
+- [x] `npm test` grønn, ingen feil i konsollen ved full runde (daily + practice + past digs), `06-progress-tracker.md` oppdatert. Nettleser og Network-fanen er sjekket lokalt av eier 2026-11-22, og siden er sjekket live på dugup.eu samme dag.
