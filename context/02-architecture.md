@@ -18,13 +18,13 @@ Alt ligger i `index.html` (~540 KB, ~14 800 linjer):
 |---|---|
 | 1–249 | `<head>`, `@font-face`, CSS (`:root`-tokens øverst) |
 | 250–392 | HTML: header, `#scene`, seks `<section class="screen">`, footer |
-| 393–12925 | **Script 1: `PROMPT_DATA`** — 150 prompts, ~11 000 svar |
+| 393–12925 | **Script 1: `PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er) |
 | 12926–slutt | **Script 2: appen** i én IIFE, delt i seksjoner: |
 | | `CONFIG` (ROUND_SIZE, TIME_LIMIT, EPOCH, TIERS) |
 | | `SMALL UTILS` (store, hashStr, mulberry32, shuffle, esc, datoer) |
 | | `PIXEL ART` (PAL, SPR, sprCanvas, frames) |
 | | `OUTFITS` (SKINS, palettbytter) |
-| | `TEXT NORMALISATION & MATCHING` (normalize, lev, buildPrompts, matchAnswer, pickRound, ORDER, dailyPrompts) |
+| | `TEXT NORMALISATION & MATCHING` (normalize, lev, buildPrompts, matchAnswer, pickRound, seasonOrder, generateSeason, dailyPrompts) |
 | | `LIVE WIKIPEDIA` (Live.probe, fetchViews, liveTier) |
 | | `SOUND` |
 | | `SCENE` (ERAS, PHASES, canvas-animasjon) |
@@ -39,6 +39,22 @@ tier|Display name|Wikipedia title (tom = display)|alias1;alias2
 ```
 - `tier` 1 (Topsoil, vanligst) … 6 (Forgotten by History, sjeldnest). Offline-estimat; overstyres av `liveTier` når Wikipedia svarer.
 - Valgfritt: `nope` (nesten-svar som skal forklares), tvetydighetskart.
+
+## Daglig rotasjon — `ROTATION` (Spec 02, ADR-003)
+- `ROTATION` er en liste med **sesonger**, hver en frossen liste med prompt-id-er. Sesongene spilles etter hverandre, 7 id-er per dig: Dig #n = posisjon `(n-1)*7 … (n-1)*7+6` i den sammenslåtte listen.
+- En dig avhenger bare av id-ene **foran** seg. Å legge til id-er på **slutten av siste sesong** flytter derfor aldri en publisert dig.
+- Sesong 1 (seed `dugup-order-v1`) er dagens opprinnelige rekkefølge (Dig #1–#20 + starten av #21). Sesong 2 (`dugup-order-v2`) er frosset 2026-11-22 og varer til ca. Dig #40.
+- Når frosne sesonger er brukt opp, genererer appen neste sesong med seed `dugup-order-v<n>` over alle ikke-practice-prompts. Ingen prompt fra de to siste digsene i forrige sesong kommer i de to første i neste. En generert sesong er **ikke** stabil (endres når prompts legges til), så den skal fryses i god tid.
+- Ukjente id-er og practice-id-er hoppes over i nettleseren (ingen krasj); `npm test` feiler tydelig på dem.
+
+### Slik legger du til et nytt prompt
+1. Legg prompt-objektet til i `PROMPT_DATA` (hvor som helst — rekkefølgen der påvirker ikke lenger rotasjonen).
+2. Legg id-en til **på slutten av siste sesong** i `ROTATION`. Aldri inn i midten, aldri i en tidligere sesong.
+3. Kjør `npm test`. Snapshot-testen (Dig #1–#30) skal være grønn.
+4. Det nye promptet dukker opp når siste sesong er spilt ferdig. Vil du ha det tidligere, må det settes inn i en framtidig posisjon. Det endrer upubliserte digs, så snapshot-testen må oppdateres bevisst.
+
+### Slik fryser du neste sesong
+`npm test` feiler når frosne sesonger dekker færre enn 14 dager fram i tid. Kjør da `node tools/check.mjs --freeze-season`, sjekk diffen og kjør `npm test` igjen. Etter fryseing legges nye prompts i den nye siste sesongen.
 
 ## System Boundaries
 - **Data** (`PROMPT_DATA`) inneholder ingen logikk.
@@ -56,8 +72,8 @@ tier|Display name|Wikipedia title (tom = display)|alias1;alias2
 | `dugup:muted` | Bool |
 
 ## Invarianter (skal ALDRI brytes)
-1. **Daglig rotasjon er deterministisk og stabil.** `ORDER` utledes fra rekkefølgen og innholdet i `PROMPTS` + seed `'dugup-order-v1'`, og `EPOCH` = 22. nov 2026 er Dig #1. ⚠️ I dag endrer det å legge til/fjerne/flytte et prompt **hele** rotasjonen (inkl. dagens og tidligere digs). Ikke gjør det før Feature Spec 02 er løst.
-2. **`EPOCH`, `ROUND_SIZE` og seed-strengen endres aldri** etter lansering.
+1. **Daglig rotasjon er deterministisk og stabil.** Digs leses fra de frosne sesongene i `ROTATION`, og `EPOCH` = 22. nov 2026 er Dig #1. Eksisterende id-er i `ROTATION` flyttes, fjernes eller omdøpes aldri; nye id-er legges kun til på slutten av siste sesong (se «Slik legger du til et nytt prompt»). Et prompt som står i `ROTATION` kan ikke slettes fra `PROMPT_DATA`.
+2. **`EPOCH`, `ROUND_SIZE` og seed-mønsteret `dugup-order-v<n>` endres aldri** etter lansering.
 3. **Prompt-`id` og svar-`display` er stabile nøkler.** Museum bruker `id|display` — omdøping sletter i praksis spillernes funn. Bruk aliaser for nye stavemåter.
 4. **`PRACTICE_IDS`-prompts skal aldri være i daglig rotasjon**, og practice teller aldri mot museum/outfits/streak.
 5. **Eksisterende `localStorage`-format er bakoverkompatibelt.** Nye felt må ha default (se `getStats()`-mønsteret). Aldri endre betydningen av et eksisterende felt.

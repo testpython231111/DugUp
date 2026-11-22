@@ -4,6 +4,7 @@
 //
 //   node tools/check.mjs                    run all checks (same as `npm test`)
 //   node tools/check.mjs --write-snapshot   regenerate tools/rotation-snapshot.json
+//   node tools/check.mjs --freeze-season    write the next generated rotation season into ROTATION in index.html
 //   node tools/check.mjs --html <file>      check another copy of index.html
 //
 // Built-in modules only: the site has no npm dependencies and this keeps it that way.
@@ -18,6 +19,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SNAPSHOT_FILE = path.join(ROOT, 'tools', 'rotation-snapshot.json');
 const SNAPSHOT_DIGS = 30;
 const ROUND_SIZE = 7;
+const EPOCH = Date.UTC(2026, 10, 22);  // Dig #1 — must match index.html
+const FREEZE_AHEAD_DAYS = 14;          // frozen seasons must reach this far past today
 
 // Adding a category is a deliberate decision (code standards: "eksisterende cat"), so it must be listed here.
 const CATEGORIES = [
@@ -51,12 +54,11 @@ function chameleon(){
   });
 }
 
-function loadGame(file){
-  const html = fs.readFileSync(file, 'utf8');
+function loadGame(html){
   const scripts = [...html.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)]
     .filter(m => !/\ssrc=/.test(m[1] || ''))
     .map(m => m[2]);
-  if (!scripts.some(s => s.includes('const PROMPT_DATA'))) throw new Error('PROMPT_DATA script not found in ' + file);
+  if (!scripts.some(s => s.includes('const PROMPT_DATA'))) throw new Error('PROMPT_DATA script not found');
 
   const mem = new Map();
   const noop = () => 0;
@@ -90,12 +92,45 @@ function loadGame(file){
   if (!sandbox.__dugup) throw new Error('window.__dugup test hook was not set — did BOOT fail?');
   // PRACTICE_IDS lives inside the app IIFE; practicePrompts() drops unknown ids, which the length check catches.
   const hook = sandbox.__dugup;
-  return { PROMPT_DATA: vm.runInContext('PROMPT_DATA', ctx), PRACTICE_IDS: hook.practicePrompts().map(p => p.id), ...hook };
+  return {
+    PROMPT_DATA: vm.runInContext('PROMPT_DATA', ctx),
+    ROTATION: Array.from(vm.runInContext('typeof ROTATION === "undefined" ? [] : ROTATION', ctx), s => Array.from(s)),
+    PRACTICE_IDS: hook.practicePrompts().map(p => p.id),
+    ...hook
+  };
 }
 
-const G = loadGame(HTML_FILE);
+const HTML = fs.readFileSync(HTML_FILE, 'utf8');
+const G = loadGame(HTML);
 // Array.from: arrays made inside the vm have a different Array.prototype, which deepStrictEqual rejects.
-const rotation = () => Array.from({ length: SNAPSHOT_DIGS }, (_, i) => Array.from(G.dailyPrompts(i + 1), p => p.id));
+const rotationOf = g => Array.from({ length: SNAPSHOT_DIGS }, (_, i) => Array.from(g.dailyPrompts(i + 1), p => p && p.id));
+const rotation = () => rotationOf(G);
+
+/* ---------- editing the ROTATION literal (used by --freeze-season and the add-a-prompt test) ---------- */
+
+function rotationBounds(html){
+  const start = html.indexOf('const ROTATION = [');
+  if (start === -1) throw new Error('const ROTATION = [ not found in index.html');
+  const end = html.indexOf('\n];', start);           // closing bracket of ROTATION
+  const lastSeasonEnd = html.lastIndexOf('\n],', end); // closing bracket of the last season
+  if (end === -1 || lastSeasonEnd < start) throw new Error('could not parse the ROTATION literal');
+  return { start, end, lastSeasonEnd };
+}
+function seasonLiteral(ids, n, note){
+  const rows = [];
+  for (let i = 0; i < ids.length; i += ROUND_SIZE) rows.push('  ' + ids.slice(i, i + ROUND_SIZE).map(id => `'${id}'`).join(',') + ',');
+  return `\n[ // season ${n} — ${note}\n${rows.join('\n')}\n],`;
+}
+const todayDig = () => { const d = new Date(); return Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - EPOCH) / 86400000) + 1; };
+
+if (argv.includes('--freeze-season')){
+  const n = G.FROZEN_SEASONS + 1, ids = Array.from(G.seasonIds(n));
+  const b = rotationBounds(HTML);
+  const out = HTML.slice(0, b.end) + seasonLiteral(ids, n, `seed 'dugup-order-v${n}', frozen ${new Date().toISOString().slice(0, 10)}`) + HTML.slice(b.end);
+  fs.writeFileSync(HTML_FILE, out);
+  console.log(`Froze season ${n} (${ids.length} prompts) into ${HTML_FILE}. Run the checks again.`);
+  process.exit(0);
+}
 
 if (argv.includes('--write-snapshot')){
   fs.writeFileSync(SNAPSHOT_FILE, JSON.stringify({ digs: rotation() }, null, 2) + '\n');
@@ -164,8 +199,8 @@ test('practice: PRACTICE_IDS exist and are never in the daily rotation', () => {
   const ids = new Set(G.PROMPTS.map(p => p.id));
   assert.equal(G.PRACTICE_IDS.length, ROUND_SIZE, 'a PRACTICE_IDS entry points to a prompt that does not exist');
   for (const id of G.PRACTICE_IDS) assert.ok(ids.has(id), `practice prompt "${id}" does not exist`);
-  const inOrder = Array.from(G.ORDER, i => G.PROMPTS[i].id).filter(id => G.PRACTICE_IDS.includes(id));
-  assert.deepEqual(inOrder, []);
+  const inRotation = G.ROTATION.flat().filter(id => G.PRACTICE_IDS.includes(id));
+  assert.deepEqual(inRotation, [], 'practice prompts listed in ROTATION');
 });
 
 /* ---------- matching ---------- */
@@ -236,4 +271,44 @@ test('rotation: Dig #1–#30 match tools/rotation-snapshot.json', () => {
   for (let i = 0; i < SNAPSHOT_DIGS; i++){
     assert.deepEqual(now[i], snap.digs[i], `Dig #${i + 1} changed — this would change a published daily dig (invariant 1)`);
   }
+});
+
+test('rotation: ROTATION only lists known prompts, once per season', () => {
+  const ids = new Set(G.PROMPTS.map(p => p.id));
+  assert.ok(G.ROTATION.length >= 1, 'ROTATION is missing or empty');
+  G.ROTATION.forEach((season, i) => {
+    const unknown = season.filter(id => !ids.has(id));
+    assert.deepEqual(unknown, [], `season ${i + 1} lists unknown prompt ids (typo, or the prompt was removed)`);
+    const dupes = season.filter((id, j) => season.indexOf(id) !== j);
+    assert.deepEqual(dupes, [], `season ${i + 1} lists a prompt twice`);
+  });
+});
+
+test('rotation: every daily prompt is in a frozen season (add new ids to the end of the last season)', () => {
+  const listed = new Set(G.ROTATION.flat());
+  const missing = Array.from(G.PROMPTS).filter(p => !G.PRACTICE_IDS.includes(p.id) && !listed.has(p.id)).map(p => p.id);
+  assert.deepEqual(missing, []);
+});
+
+test(`rotation: frozen seasons reach at least ${FREEZE_AHEAD_DAYS} days past today`, () => {
+  const frozenDigs = Math.floor(G.ROTATION.flat().length / ROUND_SIZE), need = todayDig() + FREEZE_AHEAD_DAYS;
+  assert.ok(frozenDigs >= need, `only Dig #1–#${frozenDigs} are frozen, need #${need} — run: node tools/check.mjs --freeze-season`);
+});
+
+test('rotation: adding a prompt at the end of the last season leaves Dig #1–#30 unchanged', () => {
+  const b = rotationBounds(HTML);
+  const dataEnd = HTML.lastIndexOf('\n);', b.start); // end of the PROMPT_DATA array
+  const dummy = ",\n{id:'zzdummy', cat:'Rulers', q:'Name a test answer', hint:'test', list:`\n1|Test Answer||test\n`}";
+  const html = HTML.slice(0, dataEnd) + dummy + HTML.slice(dataEnd, b.lastSeasonEnd) + "\n  'zzdummy'," + HTML.slice(b.lastSeasonEnd);
+  const g = loadGame(html);
+  assert.ok(g.PROMPTS.some(p => p.id === 'zzdummy'), 'dummy prompt was not added');
+  assert.deepEqual(rotationOf(g), rotation());
+});
+
+test('rotation: generated seasons are complete and never repeat a prompt across the seam', () => {
+  const n = G.FROZEN_SEASONS + 1, prev = Array.from(G.seasonIds(n - 1)), next = Array.from(G.seasonIds(n));
+  const daily = Array.from(G.PROMPTS).filter(p => !G.PRACTICE_IDS.includes(p.id)).map(p => p.id).sort();
+  assert.deepEqual([...next].sort(), daily);
+  const seam = prev.slice(-ROUND_SIZE * 2).filter(id => next.slice(0, ROUND_SIZE * 2).includes(id));
+  assert.deepEqual(seam, [], `season ${n} starts with prompts from the end of season ${n - 1}`);
 });
