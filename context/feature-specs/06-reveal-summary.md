@@ -1,30 +1,58 @@
 # Feature Spec 06: Kort oppsummering på reveal-skjermen
 
-**Status:** Skisse — detaljeres og godkjennes etter Spec 05.
+**Status:** Godkjent av eier 2026-11-22 («ja B, kjør på»). Valg b: teksten hentes på forhånd, ikke under spill.
 
 ## 1. Goal
-Når spilleren finner et sjeldent svar, viser reveal-skjermen 1–2 setninger fra Wikipedia om det, slik at spilleren lærer noe om funnet.
+Når spilleren selv finner et sjeldent svar (tier 4–6), viser reveal-skjermen 1–2 setninger fra Wikipedia om svaret. Teksten er hentet på forhånd av et script, slik at spillet fortsatt aldri kaller Wikipedia.
 
-Ikke med: **bilder**. De bryter med pikselstilen (eiers beslutning 2026-11-22). Heller ikke med: endringer i poeng, tiers eller rotasjon.
+Ikke med:
+- **Bilder.** De bryter med pikselstilen (eiers beslutning).
+- Oppsummeringer i Museum, «Deeper finds» eller ved timeout.
+- En innstilling for å skru det av.
+- Endringer i poeng, tiers eller rotasjon.
 
 ## 2. Design & Architecture Decisions
-- **Kilde:** Wikipedia REST `page/summary/<tittel>`, kun feltet `extract`. Felter som `thumbnail` og `originalimage` brukes aldri.
-- **Når:** Kun når spilleren selv har funnet et svar med tier ≥ 4 (forslag, justeres av eier). Teksten vises ikke for «Deeper finds» eller ved timeout.
-- **Hentes i nettleseren, ved reveal.** Det er bare ett oppslag per funn. Å bake inn ~11 000 oppsummeringer ville gitt flere MB data. Timeout på ~3 sekunder: kommer ikke svaret, vises ingenting og reveal oppfører seg som i dag (invariant 7). Svaret lagres i minnet for resten av økten.
-- **Visning:** Avsnitt i `#revealBody` under «You dug up …», i `Pixelify Sans` med eksisterende design-tokens (`05-ui-context.md`). Teksten kuttes ved første setning eller maks ~200 tegn, og går gjennom `esc()` (invariant 6). Den skal ikke forsinke «Keep digging» eller Enter-snarveien.
-- **Åpne spørsmål til eier:**
-  1. Fra hvilken tier skal oppsummeringen vises?
-  2. Skal den også vises i Museum når man åpner et funn?
-  3. Skal den kunne skrus av (som lyd)?
+- **Kilde:** MediaWiki action API, `prop=extracts&exintro&explaintext&redirects=1`, maks 20 titler per forespørsel (API-grensen). Bare ren tekst; bildefelt hentes aldri.
+- **Script `tools/summaries.mjs`** (kun innebygde moduler, bruker `tools/load-game.mjs`):
+  - Tar med alle svar med tier ≥ 4, etter `RARITY` (eller offline-tier).
+  - Samme User-Agent, pauser og 5 %-regel som `tools/rarity.mjs`.
+  - Kjøres **etter** `tools/rarity.mjs` hver måned.
+- **Kutting av teksten:**
+  - Fjern alt i parentes (uttale, levetid), og rydd mellomrom og tegnsetting.
+  - Behold første setning. Er den kortere enn 90 tegn, tas setning nummer to med hvis begge til sammen er ≤ 220 tegn.
+  - Er første setning over 220 tegn, kuttes den ved et ordskille med «…».
+  - Tekster under 40 tegn og pekersider («may refer to») droppes.
+- **Format:** `js/data/summaries.js` = `const SUMMARIES = {updated:'YYYY-MM-DD', p:{<id>:{'<display>':'tekst', …}}};`. Nøklene er de samme stabile nøklene som i `rarity.js`.
+- **Lasting uten å bremse oppstarten:**
+  - `<script async src="js/data/summaries.js">` legges etter `app.js`.
+  - Appen leser `SUMMARIES` først når reveal vises. Er filen ikke lastet ennå, vises bare ingen oppsummering.
+- **Størrelse:** måles før merge. Er filen over 1,5 MB ukomprimert, heves grensen til tier ≥ 5 (eier bestemmer).
+- **Visning:**
+  - `<p class="summary">` i `#revealBody`, rett under «You dug up …».
+  - Teksten går gjennom `esc()` (invariant 6) og står i `Pixelify Sans`.
+  - Bakgrunn som `.deeper` (`--parch-2`), tekst i `--ink-soft`, og en liten lenke «Wikipedia» til artikkelen som kreditering. Wikipedia-tekst er lisensiert CC BY-SA 4.0, og README får en linje om det.
+- **Ingen endring i `localStorage`.**
 
 ## 3. Implementation Details & Scope Boundaries
-- Endres: `renderReveal` i `js/app.js`, en ny liten fetch-funksjon i `Live`-/Wikipedia-seksjonen og CSS for avsnittet i `css/style.css`.
-- IKKE rør matching, rotasjon, Scene, Sound eller `localStorage`-formatet.
+- Nytt:
+  - `tools/summaries.mjs`.
+  - `js/data/summaries.js` (generert).
+- Endres:
+  - `index.html`: én ny `<script async>`.
+  - `js/app.js`: en liten `summaryFor(p, a)` og ett avsnitt i `renderReveal`.
+  - `css/style.css`: `.reveal-body .summary`.
+  - `tools/check.mjs`: nye tester.
+  - README («Updating rarity» og «Credits»).
+  - `02-architecture.md` og `06-progress-tracker.md`.
+- IKKE rør matching, rotasjon, rarity, Scene, Sound eller `localStorage`-formatet.
 
 ## 4. Verification Checklist
-- [ ] Sjeldent funn → oppsummering vises, uten bilde, og teksten er kuttet pent.
-- [ ] Vanlig funn (under grensen) → ingen oppsummering og ingen forespørsel.
-- [ ] Wikipedia blokkert → reveal ser ut som i dag, uten feil i konsollen.
-- [ ] Tittel med HTML-tegn eller spesialtegn vises escapet.
-- [ ] Mobilbredde: ingen horisontal scroll, «Keep digging» er fortsatt synlig.
-- [ ] `npm test` grønn, `06-progress-tracker.md` oppdatert.
+- [ ] Test: kuttingen fjerner parenteser, holder seg til ≤ 221 tegn og dropper pekersider (faste eksempler).
+- [ ] Test: alle nøkler i `SUMMARIES` peker på et eksisterende prompt og en eksisterende `display`.
+- [ ] Test: `summaryFor` gir tekst bare for tier ≥ 4, og ingenting når `SUMMARIES` mangler.
+- [ ] Test: ingen script bruker `fetch` (eksisterende test).
+- [ ] Størrelsen er målt, ukomprimert og gzip.
+- [ ] Scriptet med simulert nettverksfeil skriver ingenting.
+- [ ] Sjeldent funn → oppsummering vises uten bilde. Vanlig funn → ingenting (sjekkes av eier i nettleser).
+- [ ] Mobilbredde: ingen horisontal scroll, og «Keep digging» er fortsatt synlig.
+- [ ] `npm test` grønn, ingen feil i konsollen, `06-progress-tracker.md` oppdatert.

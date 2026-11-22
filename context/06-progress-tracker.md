@@ -6,7 +6,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Mål: sikkerhetsnett (tester) før strukturelle endringer.
 
 ## In Progress
-- _(ingen)_
+- Spec 06 — Kort oppsummering på reveal (branch `feature/06-reveal-summary`).
 
 ## Completed
 - [x] 2026-11-22: **Spec 05 — Forhåndsberegnet sjeldenhet.** `tools/rarity.mjs` skriver `js/data/rarity.js` (291 KB, 125 KB gzip), og spillet kaller ikke Wikipedia lenger. Rangeringen er identisk med den gamle live-koden. 23 tester grønne. Eier har testet lokalt, inkludert Network-fanen. Vercel preview bygget uten feil. Merget til `main` 2026-11-22 etter eiers beslutning.
@@ -22,7 +22,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 1. **Verifiser Spec 04 på dugup.eu** (eier): dagens dig, practice og past digs.
 2. **Verifiser Spec 05 på dugup.eu** (eier): merket viser «Rarity from Wikipedia · Nov 2026», og Network-fanen viser ingen Wikipedia-forespørsler under spill.
 - **Månedlig:** `node tools/rarity.mjs` (neste gang ca. 22. des 2026).
-3. **Spec 06 — Kort oppsummering på reveal** (`feature-specs/06-reveal-summary.md`). Skisse. 1–2 setninger fra Wikipedia om sjeldne funn. Ingen bilder (bryter pikselstilen).
+3. **Spec 06 — Kort oppsummering på reveal** (`feature-specs/06-reveal-summary.md`). Godkjent (valg b, hentet på forhånd), i arbeid. 1–2 setninger fra Wikipedia om sjeldne funn. Ingen bilder (bryter pikselstilen).
 
 ## Arkitekturbeslutninger
 - **ADR-001:** Ingen backend/rammeverk. Statisk side på Vercel, all state i `localStorage`.
