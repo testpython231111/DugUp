@@ -1,11 +1,11 @@
 // Dug Up — automated checks (Feature Spec 01).
-// Runs the inline scripts of index.html in a Node vm with a minimal DOM stub,
-// then verifies the prompt data, answer matching and the daily rotation.
+// Runs the scripts of index.html (inline, and local <script src> files such as js/data/prompts.js and js/app.js)
+// in a Node vm with a minimal DOM stub, then verifies the prompt data, answer matching and the daily rotation.
 //
 //   node tools/check.mjs                    run all checks (same as `npm test`)
 //   node tools/check.mjs --write-snapshot   regenerate tools/rotation-snapshot.json
-//   node tools/check.mjs --freeze-season    write the next generated rotation season into ROTATION in index.html
-//   node tools/check.mjs --html <file>      check another copy of index.html
+//   node tools/check.mjs --freeze-season    write the next generated rotation season into ROTATION in the data script
+//   node tools/check.mjs --html <file>      check another copy of index.html (its script files are read next to it)
 //
 // Built-in modules only: the site has no npm dependencies and this keeps it that way.
 import test from 'node:test';
@@ -54,11 +54,21 @@ function chameleon(){
   });
 }
 
-function loadGame(html){
-  const scripts = [...html.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)]
-    .filter(m => !/\ssrc=/.test(m[1] || ''))
-    .map(m => m[2]);
-  if (!scripts.some(s => s.includes('const PROMPT_DATA'))) throw new Error('PROMPT_DATA script not found');
+// The page's scripts in document order: inline ones, and local src files (relative paths, read from disk next to
+// the html). Absolute/remote src (Vercel analytics) is skipped. `overrides` maps a src to replacement source text.
+function pageScripts(html, overrides = {}){
+  const base = path.dirname(HTML_FILE);
+  return [...html.matchAll(/<script(\s[^>]*)?>([\s\S]*?)<\/script>/g)].map((m, i) => {
+    const src = ((m[1] || '').match(/\ssrc="([^"]*)"/) || [])[1];
+    if (src === undefined) return { name: `index.html#script${i + 1}`, code: m[2] };
+    if (/^(\/|[a-z]+:)/i.test(src)) return null;
+    return { name: src, file: path.join(base, src), code: src in overrides ? overrides[src] : fs.readFileSync(path.join(base, src), 'utf8') };
+  }).filter(Boolean);
+}
+
+function loadGame(html, overrides = {}){
+  const scripts = pageScripts(html, overrides);
+  if (!scripts.some(s => s.code.includes('const PROMPT_DATA'))) throw new Error('PROMPT_DATA script not found');
 
   const mem = new Map();
   const noop = () => 0;
@@ -88,7 +98,7 @@ function loadGame(html){
   sandbox.window = sandbox;
   sandbox.self = sandbox;
   const ctx = vm.createContext(sandbox);
-  scripts.forEach((src, i) => vm.runInContext(src, ctx, { filename: `index.html#script${i + 1}` }));
+  scripts.forEach(s => vm.runInContext(s.code, ctx, { filename: s.name }));
   if (!sandbox.__dugup) throw new Error('window.__dugup test hook was not set — did BOOT fail?');
   // PRACTICE_IDS lives inside the app IIFE; practicePrompts() drops unknown ids, which the length check catches.
   const hook = sandbox.__dugup;
@@ -102,6 +112,9 @@ function loadGame(html){
 
 const HTML = fs.readFileSync(HTML_FILE, 'utf8');
 const G = loadGame(HTML);
+// The script that holds the ROTATION literal (js/data/prompts.js); --freeze-season and the add-a-prompt test edit it.
+const DATA = pageScripts(HTML).find(s => s.code.includes('const ROTATION = ['));
+if (!DATA || !DATA.file) throw new Error('no local <script src> file with const ROTATION = [ found');
 // Array.from: arrays made inside the vm have a different Array.prototype, which deepStrictEqual rejects.
 const rotationOf = g => Array.from({ length: SNAPSHOT_DIGS }, (_, i) => Array.from(g.dailyPrompts(i + 1), p => p && p.id));
 const rotation = () => rotationOf(G);
@@ -110,7 +123,7 @@ const rotation = () => rotationOf(G);
 
 function rotationBounds(html){
   const start = html.indexOf('const ROTATION = [');
-  if (start === -1) throw new Error('const ROTATION = [ not found in index.html');
+  if (start === -1) throw new Error(`const ROTATION = [ not found in ${DATA.name}`);
   const end = html.indexOf('\n];', start);           // closing bracket of ROTATION
   const lastSeasonEnd = html.lastIndexOf('\n],', end); // closing bracket of the last season
   if (end === -1 || lastSeasonEnd < start) throw new Error('could not parse the ROTATION literal');
@@ -125,10 +138,10 @@ const todayDig = () => { const d = new Date(); return Math.floor((Date.UTC(d.get
 
 if (argv.includes('--freeze-season')){
   const n = G.FROZEN_SEASONS + 1, ids = Array.from(G.seasonIds(n));
-  const b = rotationBounds(HTML);
-  const out = HTML.slice(0, b.end) + seasonLiteral(ids, n, `seed 'dugup-order-v${n}', frozen ${new Date().toISOString().slice(0, 10)}`) + HTML.slice(b.end);
-  fs.writeFileSync(HTML_FILE, out);
-  console.log(`Froze season ${n} (${ids.length} prompts) into ${HTML_FILE}. Run the checks again.`);
+  const src = DATA.code, b = rotationBounds(src);
+  const out = src.slice(0, b.end) + seasonLiteral(ids, n, `seed 'dugup-order-v${n}', frozen ${new Date().toISOString().slice(0, 10)}`) + src.slice(b.end);
+  fs.writeFileSync(DATA.file, out);
+  console.log(`Froze season ${n} (${ids.length} prompts) into ${DATA.file}. Run the checks again.`);
   process.exit(0);
 }
 
@@ -296,11 +309,11 @@ test(`rotation: frozen seasons reach at least ${FREEZE_AHEAD_DAYS} days past tod
 });
 
 test('rotation: adding a prompt at the end of the last season leaves Dig #1–#30 unchanged', () => {
-  const b = rotationBounds(HTML);
-  const dataEnd = HTML.lastIndexOf('\n);', b.start); // end of the PROMPT_DATA array
+  const src = DATA.code, b = rotationBounds(src);
+  const dataEnd = src.lastIndexOf('\n);', b.start); // end of the PROMPT_DATA array
   const dummy = ",\n{id:'zzdummy', cat:'Rulers', q:'Name a test answer', hint:'test', list:`\n1|Test Answer||test\n`}";
-  const html = HTML.slice(0, dataEnd) + dummy + HTML.slice(dataEnd, b.lastSeasonEnd) + "\n  'zzdummy'," + HTML.slice(b.lastSeasonEnd);
-  const g = loadGame(html);
+  const edited = src.slice(0, dataEnd) + dummy + src.slice(dataEnd, b.lastSeasonEnd) + "\n  'zzdummy'," + src.slice(b.lastSeasonEnd);
+  const g = loadGame(HTML, { [DATA.name]: edited });
   assert.ok(g.PROMPTS.some(p => p.id === 'zzdummy'), 'dummy prompt was not added');
   assert.deepEqual(rotationOf(g), rotation());
 });

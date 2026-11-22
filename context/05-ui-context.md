@@ -3,7 +3,7 @@
 ## Estetisk retning
 Koselig, varm pikselkunst — «arkeologisk utgravning». Pergament, tre, gull og jord. Skarpe piksler (`image-rendering: pixelated`, klasse `.px`), ingen myke gradienter, ingen glassmorphism, ingen generisk «AI-slop»-estetikk. Humor i små doser (Historically Inaccurate Viking).
 
-## Fargetokens (`:root` i `index.html`)
+## Fargetokens (`:root` i `css/style.css`)
 | Token | Verdi | Bruk |
 |---|---|---|
 | `--ink` | `#3b2312` | Primær tekst |
