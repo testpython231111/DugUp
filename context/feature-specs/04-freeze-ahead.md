@@ -31,11 +31,11 @@ Ikke med: nye prompts, endringer i `PROMPT_DATA`-innhold, sjeldenhet (Spec 05), 
 - IKKE rør `PROMPT_DATA`, `EPOCH`, `ROUND_SIZE` eller seed-mønsteret `dugup-order-v<n>`.
 
 ## 4. Verification Checklist
-- [ ] Før/etter: `dailyPrompts(n)` er identisk for Dig #1–#420 (snapshot fra `main` sammenlignet med ny fil).
-- [ ] `--freeze-until 2027-12-31` på en kopi → frosne sesonger dekker datoen, `npm test` grønn.
-- [ ] Test med dummy-prompt via `--add-prompt` på en kopi: alle digs i snapshoten er uendret, og promptet finnes én gang i hver sesong som ikke har startet, aldri i de første/siste 14 plassene.
-- [ ] `--add-prompt` med ukjent id eller practice-id gir tydelig feil og endrer ingenting.
-- [ ] `--write-snapshot` endrer aldri eksisterende digs i filen.
-- [ ] `npm test` grønn.
-- [ ] Ingen feil i nettleserkonsollen ved full runde (daily + practice + past digs). Sjekkes av eier på preview-deploy.
-- [ ] `02-architecture.md` og `06-progress-tracker.md` oppdatert.
+- [x] Før/etter: `dailyPrompts(n)` er identisk for Dig #1–#420 (snapshot fra `main` sammenlignet med ny fil).
+- [x] `--freeze-until 2027-12-31` på en kopi → frosne sesonger dekker datoen, `npm test` grønn.
+- [x] Test med dummy-prompt via `--add-prompt` på en kopi: alle digs i snapshoten er uendret, og promptet finnes én gang i hver sesong som ikke har startet, aldri i de første/siste 14 plassene.
+- [x] `--add-prompt` med ukjent id eller practice-id gir tydelig feil og endrer ingenting.
+- [x] `--write-snapshot` endrer aldri eksisterende digs i filen.
+- [x] `npm test` grønn.
+- [x] Ingen feil i nettleserkonsollen ved full runde (daily + practice + past digs). Verifisert lokalt av eier 2026-11-22. Vercel preview gjenstår.
+- [x] `02-architecture.md` og `06-progress-tracker.md` oppdatert.

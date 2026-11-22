@@ -18,7 +18,7 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 |---|---|
 | `index.html` (~160 linjer) | `<head>` (Vercel Analytics, Google Fonts), HTML: header, `#scene`, seks `<section class="screen">`, footer, og script-taggene nederst i `<body>` |
 | `css/style.css` | `@font-face` (`DugUp Digits`, base64), all CSS (`:root`-tokens øverst) |
-| `js/data/prompts.js` (~410 KB) | **`PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er). Lastes **før** `app.js`. `tools/check.mjs --freeze-season` skriver hit. |
+| `js/data/prompts.js` (~410 KB) | **`PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er). Lastes **før** `app.js`. `tools/check.mjs --freeze-until` og `--add-prompt` skriver hit. |
 | `js/app.js` | **Appen** i én IIFE, delt i seksjoner: |
 | | `CONFIG` (ROUND_SIZE, TIME_LIMIT, EPOCH, TIERS) |
 | | `SMALL UTILS` (store, hashStr, mulberry32, shuffle, esc, datoer) |
@@ -42,19 +42,20 @@ tier|Display name|Wikipedia title (tom = display)|alias1;alias2
 
 ## Daglig rotasjon — `ROTATION` (Spec 02, ADR-003)
 - `ROTATION` er en liste med **sesonger**, hver en frossen liste med prompt-id-er. Sesongene spilles etter hverandre, 7 id-er per dig: Dig #n = posisjon `(n-1)*7 … (n-1)*7+6` i den sammenslåtte listen.
-- En dig avhenger bare av id-ene **foran** seg. Å legge til id-er på **slutten av siste sesong** flytter derfor aldri en publisert dig.
-- Sesong 1 (seed `dugup-order-v1`) er dagens opprinnelige rekkefølge (Dig #1–#20 + starten av #21). Sesong 2 (`dugup-order-v2`) er frosset 2026-11-22 og varer til ca. Dig #40.
+- En dig avhenger bare av id-ene **foran** seg. Å sette inn id-er etter en posisjon flytter derfor aldri en dig foran den.
+- **Låste digs** (Spec 04): alle digs i `tools/rotation-snapshot.json` og alle digs til og med i dag + 14 dager. De endres aldri. Snapshoten er append-only og utvides av `--write-snapshot` og `--add-prompt`.
+- Sesong 1 (seed `dugup-order-v1`) er dagens opprinnelige rekkefølge (Dig #1–#20 + starten av #21). Sesong 2–20 (`dugup-order-v2` … `v20`) er frosset 2026-11-22 og dekker til Dig #408 (ca. 3. jan 2028). En sesong varer ~20 dager.
 - Når frosne sesonger er brukt opp, genererer appen neste sesong med seed `dugup-order-v<n>` over alle ikke-practice-prompts. Ingen prompt fra de to siste digsene i forrige sesong kommer i de to første i neste. En generert sesong er **ikke** stabil (endres når prompts legges til), så den skal fryses i god tid.
 - Ukjente id-er og practice-id-er hoppes over i nettleseren (ingen krasj); `npm test` feiler tydelig på dem.
 
 ### Slik legger du til et nytt prompt
-1. Legg prompt-objektet til i `PROMPT_DATA` (hvor som helst — rekkefølgen der påvirker ikke lenger rotasjonen).
-2. Legg id-en til **på slutten av siste sesong** i `ROTATION`. Aldri inn i midten, aldri i en tidligere sesong.
-3. Kjør `npm test`. Snapshot-testen (Dig #1–#30) skal være grønn.
-4. Det nye promptet dukker opp når siste sesong er spilt ferdig. Vil du ha det tidligere, må det settes inn i en framtidig posisjon. Det endrer upubliserte digs, så snapshot-testen må oppdateres bevisst.
+1. Legg prompt-objektet til i `PROMPT_DATA` (hvor som helst — rekkefølgen der påvirker ikke rotasjonen).
+2. Kjør `node tools/check.mjs --add-prompt <id>`. Den setter id-en inn i **hver frosne sesong som starter etter de låste digsene**, på en fast (seedet) plass utenom de 14 første og siste plassene i sesongen. Snapshoten utvides til i dag + 14 først, og ingenting skrives hvis en låst dig ville endret seg. Rediger aldri `ROTATION` for hånd.
+3. Kjør `npm test` og sjekk diffen.
+4. Det nye promptet dukker opp i neste sesong som ikke har startet, altså innen ca. 2–5 uker.
 
-### Slik fryser du neste sesong
-`npm test` feiler når frosne sesonger dekker færre enn 14 dager fram i tid. Kjør da `node tools/check.mjs --freeze-season`, sjekk diffen og kjør `npm test` igjen. Etter fryseing legges nye prompts i den nye siste sesongen.
+### Slik fryser du lenger fram
+`npm test` feiler når ingen frosset sesong starter etter de låste digsene (første gang ca. desember 2027). Kjør da `node tools/check.mjs --freeze-until <dato ca. et år fram>`, sjekk diffen og kjør `npm test` igjen. `--freeze-season` fryser bare én sesong.
 
 ## System Boundaries
 - **Data** (`PROMPT_DATA`) inneholder ingen logikk.
@@ -72,7 +73,7 @@ tier|Display name|Wikipedia title (tom = display)|alias1;alias2
 | `dugup:muted` | Bool |
 
 ## Invarianter (skal ALDRI brytes)
-1. **Daglig rotasjon er deterministisk og stabil.** Digs leses fra de frosne sesongene i `ROTATION`, og `EPOCH` = 22. nov 2026 er Dig #1. Eksisterende id-er i `ROTATION` flyttes, fjernes eller omdøpes aldri; nye id-er legges kun til på slutten av siste sesong (se «Slik legger du til et nytt prompt»). Et prompt som står i `ROTATION` kan ikke slettes fra `PROMPT_DATA`.
+1. **Daglig rotasjon er deterministisk og stabil.** Digs leses fra de frosne sesongene i `ROTATION`, og `EPOCH` = 22. nov 2026 er Dig #1. Låste digs (snapshoten og til og med i dag + 14 dager) endres aldri. Id-er i `ROTATION` fjernes eller omdøpes aldri. Nye id-er settes kun inn etter de låste digsene, med `--add-prompt` (se «Slik legger du til et nytt prompt»). Et prompt som står i `ROTATION` kan ikke slettes fra `PROMPT_DATA`.
 2. **`EPOCH`, `ROUND_SIZE` og seed-mønsteret `dugup-order-v<n>` endres aldri** etter lansering.
 3. **Prompt-`id` og svar-`display` er stabile nøkler.** Museum bruker `id|display` — omdøping sletter i praksis spillernes funn. Bruk aliaser for nye stavemåter.
 4. **`PRACTICE_IDS`-prompts skal aldri være i daglig rotasjon**, og practice teller aldri mot museum/outfits/streak.
