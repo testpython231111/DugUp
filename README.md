@@ -48,7 +48,7 @@ Each answer is ranked by how often its Wikipedia article was read over 60 days, 
 - **Plain static files** with no framework, no build step and no dependencies: `index.html` (markup), `css/style.css`, `js/data/prompts.js` (all prompts and answers, plus the daily rotation), `js/data/rarity.js` and `js/data/summaries.js` (generated from Wikipedia once a month) and `js/app.js` (the game). Opening `index.html` straight from disk works too. Graphics are drawn on `<canvas>`, sound uses the Web Audio API, and the font is [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans).
 - **Hosting:** GitHub → [Vercel](https://vercel.com). Every push to `main` deploys automatically.
 - **Wikipedia data:** page views and article intros from the [Wikipedia API](https://www.mediawiki.org/wiki/API:Main_page), fetched monthly by `tools/rarity.mjs` and `tools/summaries.mjs`. The game itself never calls Wikipedia.
-- **Tools** (`tools/`, Node.js 20+, no dependencies): `check.mjs` (the checks and rotation commands), `rarity.mjs`, `summaries.mjs`, and `load-game.mjs`, which loads the page in Node for the other three.
+- **Tools** (`tools/`, Node.js 20+, no dependencies): `check.mjs` (the checks and rotation commands), `rarity.mjs`, `summaries.mjs`, `match-bench.mjs` (measures answer matching), and `load-game.mjs`, which loads the page in Node for the others.
 - **Analytics:** [Vercel Web Analytics](https://vercel.com/docs/analytics). It is privacy-friendly and uses no cookies.
 
 ### Updating the site
@@ -77,6 +77,8 @@ npm test            # or: node tools/check.mjs
 GitHub runs the same checks on every push and pull request, and once a day (`.github/workflows/test.yml`), because Vercel deploys `main` without running them. The daily run catches date-based deadlines, such as freezing the rotation, even when nobody pushes. GitHub emails you when a run fails.
 
 The checks load `index.html` and its scripts without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, the daily rotation, and the generated rarity and summary files (and that the game never calls `fetch`). Daily digs that are already published (or due within 14 days) are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter digs that players have already seen. The snapshot only ever grows: `node tools/check.mjs --write-snapshot` adds the digs up to 14 days ahead and refuses to rewrite an existing one.
+
+Before changing how answers are matched (`normalize`, `matchAnswer` in `js/app.js`), run `npm run bench` before and after. It measures two things with real names from Wikipedia, stored in `tools/match-bench-data.json`. First, how many names that are *not* answers still get credited as one. Second, how many typos and Wikipedia redirects of the answers are accepted. `--app <file>` measures another copy of `app.js`, `--show` lists every wrong match, and `--fetch` refreshes the data (about a minute).
 
 To add a prompt, put it in `PROMPT_DATA` in `js/data/prompts.js` and run `node tools/check.mjs --add-prompt <id>`. That puts it into every frozen season of the rotation that hasn't started yet, so it shows up within a few weeks. The rotation is frozen until early January 2028. When the checks say so, freeze further with `node tools/check.mjs --freeze-until <YYYY-MM-DD>`.
 

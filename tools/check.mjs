@@ -278,6 +278,23 @@ test('matching: known answers, aliases and typos', () => {
   expectMatch('greekleaders', 'demosthenes pylos', 'Demosthenes, son of Alcisthenes');
 });
 
+// Spec 09: typos and name variants that must keep working
+test('matching: typos and longer names still match', () => {
+  expectMatch('greekgods', 'Zues', 'Zeus');                          // swapped letters
+  expectMatch('greekgods', 'Posiedon', 'Poseidon');
+  expectMatch('composers', 'Betoven', 'Ludwig van Beethoven');      // the answer's length sets the typos allowed
+  expectMatch('composers', 'Mozzart', 'Wolfgang Amadeus Mozart');
+  expectMatch('composers', 'R. Strauss', 'Richard Strauss');         // initials pick the right Strauss
+  expectMatch('mesogods', 'Ereshkigall', 'Ereshkigal');
+  expectMatch('naval', 'Battle og Midway', 'Battle of Midway');      // misspelt little word
+  expectMatch('naval', 'Batle of Trafalgar', 'Battle of Trafalgar');
+  expectMatch('naval', 'Battl of Diu (1509)', 'Battle of Diu (1509)');
+  expectMatch('wars', 'Third Punic War', 'Punic Wars');              // one war of a named series
+  expectMatch('wars', 'Bucket War', 'War of the Bucket');            // words in another order
+  expectMatch('rome', 'Marcus Ulpius Trajan', 'Trajan');             // full name ending in the answer
+  expectMatch('engmon', 'Richard I of England', 'Richard I');
+});
+
 test('matching: wrong answers are rejected', () => {
   expectMatch('engmon', 'Napoleon', null);
   expectMatch('engmon', 'Henry IX', null);    // digits must match exactly
@@ -286,6 +303,25 @@ test('matching: wrong answers are rejected', () => {
   const p = G.PROMPTS.find(x => x.id === 'rome');
   assert.equal(G.matchAnswer(p, '   ').type, 'amb');
   assert.equal(G.matchAnswer(p, 'the').type, 'amb'); // only stop words
+});
+
+// Spec 09: real names that are not on the list must not be "corrected" into another answer
+test('matching: a different real name is not credited as an answer', () => {
+  expectMatch('mesogods', 'Kubaba', null);                           // not Zababa (other first letter)
+  expectMatch('mesogods', 'Anzu', null);                             // not Apsu/Abzu (short name, other letter)
+  expectMatch('mesogods', 'Abu', null);                              // three letters must be exact
+  expectMatch('mesogods', 'Ishtar Gate', null);
+  expectMatch('greekgods', 'Dike', null);                            // not Nike
+  expectMatch('greekgods', 'Semele', null);                          // not Selene
+  expectMatch('greekgods', 'Apollo 13', null);
+  expectMatch('wars', 'French Revolutionary Wars', null);            // not the American Revolutionary War
+  expectMatch('wars', 'Mexican War of Independence', null);
+  expectMatch('wars', 'Cisplatine War', null);                       // not Platine War (whole words only)
+  expectMatch('wars', 'Muscovite Civil War', null);                  // not the American Civil War
+  expectMatch('wars', 'Thirteen Years War', null);                   // not the Thirty Years' War
+  expectMatch('naval', 'Second Battle of the Philippine Sea', null);
+  expectMatch('rome', 'Arch of Constantine', null);
+  expectMatch('rome', 'Publius Aelius Hadrianus Augustus', null);   // Hadrian's full name, not Augustus
 });
 
 /* ---------- rotation (invariant 1) ---------- */

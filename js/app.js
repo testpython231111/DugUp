@@ -380,39 +380,52 @@ function normalize(str){
   s = s.normalize('NFD').replace(/[̀-ͯ]/g,'');
   s = s.replace(/[’'`ʻʼ‘]/g,'');
   s = s.replace(/[^a-z0-9]+/g,' ').trim();
-  const toks = [];
+  // words: the remaining words; ofs[i]: "of"/"at"/"in"/"on"/"and" stood right before words[i] ("Arch of Constantine");
+  // numAt[j]: how many words came before nums[j] (0 = a leading ordinal, as in "Second Battle of …")
+  const words = [], nums = [], ofs = [], numAt = [];
+  let gap = false;
   for (let t of s.split(' ')){
     if (!t) continue;
     if (NUMW[t]) t = NUMW[t];
     const m = t.match(/^(\d+)(st|nd|rd|th)$/);
     if (m) t = m[1];
     else if (/^[ivx]+$/.test(t) && ROMAN_RE.test(t)) t = String(romanToInt(t));
-    if (STOP.has(t)) continue;
-    toks.push(t);
+    if (STOP.has(t)){ if (PREP.has(t)) gap = true; continue; }
+    if (/^\d+$/.test(t)){ nums.push(t); numAt.push(words.length); }
+    else { words.push(t); ofs.push(gap); gap = false; }
   }
-  const letters = toks.filter(t => !/^\d+$/.test(t)).join('');
-  const digits = toks.filter(t => /^\d+$/.test(t)).join(',');
-  return {letters, digits, key: letters + '#' + digits};
+  const letters = words.join('');
+  const digits = nums.join(',');
+  // bag: the same words in any order ("Bucket War" = "War of the Bucket")
+  return {letters, digits, key: letters + '#' + digits, words, ofs, nums, numAt, bag: words.slice().sort().join(' ') + '#' + digits};
 }
+const PREP = new Set(['of', 'at', 'in', 'on', 'and']);
+// Edit distance where swapping two neighbouring letters ("Zues") counts as one typo, not two.
 function lev(a, b, max){
   if (a === b) return 0;
   const la = a.length, lb = b.length;
   if (Math.abs(la - lb) > max) return max + 1;
-  let prev = new Array(lb+1), cur = new Array(lb+1);
+  let pp = new Array(lb+1).fill(0), prev = new Array(lb+1), cur = new Array(lb+1);
   for (let j=0;j<=lb;j++) prev[j] = j;
   for (let i=1;i<=la;i++){
     cur[0] = i; let best = cur[0];
     for (let j=1;j<=lb;j++){
       const cost = a.charCodeAt(i-1) === b.charCodeAt(j-1) ? 0 : 1;
       cur[j] = Math.min(prev[j] + 1, cur[j-1] + 1, prev[j-1] + cost);
+      if (i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]) cur[j] = Math.min(cur[j], pp[j-2] + 1);
       if (cur[j] < best) best = cur[j];
     }
     if (best > max) return max + 1;
-    const t = prev; prev = cur; cur = t;
+    const t = pp; pp = prev; prev = cur; cur = t;
   }
   return prev[lb];
 }
-function allowed(n){ return n <= 3 ? 0 : n <= 5 ? 1 : n <= 11 ? 2 : 3; }
+// Typos allowed by length. Short names get one: many short names differ by two letters (Kubaba/Zababa, Phoebus/Phobos).
+function allowed(n){ return n <= 3 ? 0 : n <= 7 ? 1 : n <= 11 ? 2 : 3; }
+// A typo rarely changes the first sound, so a fuzzy match must start alike. Letters that spell the same
+// sound at the start of a name count as equal (Kronos/Cronus, Xerxes/Zerxes, Aeschylus/Eschylus).
+const HEAD = {c:'k', q:'k', z:'s', x:'s', y:'i', j:'i', w:'v', u:'v', e:'a', o:'a', f:'p'};
+function head(s){ return HEAD[s[0]] || s[0]; }
 
 function buildPrompts(){
   return PROMPT_DATA.map(p => {
@@ -422,7 +435,12 @@ function buildPrompts(){
       const parts = line.split('|');
       const disp = parts[1].trim(); let wk = (parts[2] && parts[2].trim()) || disp;
       if (wk === '*') wk = p.wf ? p.wf.replace('{}', disp) : disp;
-      const a = {tier: +parts[0], display: disp, wiki: wk, keys: []};
+      // group: a named series ("Punic Wars"), so "Third Punic War" may match it despite the extra number
+      // dw, dn: the display's words and numbers ("Battle of Lissa (1866)", "Gordian III");
+      // solo: a one-word name ("Hadrian", "Theodosius I"), not "Battle of the Sound"
+      const dn = normalize(disp);
+      const a = {tier: +parts[0], display: disp, wiki: wk, keys: [], group: /\b(wars|battles)\b/i.test(disp), dw: dn.words,
+        dn: dn.nums, solo: dn.words.length === 1 && !/\b(of|the|at|in|on)\b/i.test(disp)};
       const seen = new Set();
       [a.display].concat(parts[3] ? parts[3].split(';') : []).forEach(sv => {
         const n = normalize(sv); if (!n.letters && !n.digits) return;
@@ -434,7 +452,10 @@ function buildPrompts(){
     Object.keys(p.nope || {}).forEach(k => k.split('|').forEach(sv => { const n = normalize(sv); if (n.letters || n.digits) nopeList.push({n, msg: p.nope[k]}); }));
     const ambMap = {};
     Object.keys(p.amb || {}).forEach(k => k.split('|').forEach(sv => { const n = normalize(sv); ambMap[n.key] = p.amb[k]; }));
-    return {id:p.id, cat:p.cat, q:p.q, hint:p.hint || '', answers, nopeList, ambMap};
+    // names: one-word keys → their answers ("nero" → Nero), to spot a second answer inside one input
+    const names = new Map();
+    answers.forEach(a => a.keys.forEach(k => { if (k.words.length === 1){ if (!names.has(k.words[0])) names.set(k.words[0], new Set()); names.get(k.words[0]).add(a); } }));
+    return {id:p.id, cat:p.cat, q:p.q, hint:p.hint || '', answers, nopeList, ambMap, names};
   });
 }
 
@@ -446,18 +467,16 @@ function matchAnswer(p, input){
   for (const a of p.answers) for (const k of a.keys) if (k.key === n.key) return {type:'ok', answer:a};
   // 2. exact nope
   for (const e of p.nopeList) if (e.n.key === n.key) return {type:'nope', msg:e.msg};
-  // 3. fuzzy valid (digits must match exactly)
-  let best = null, bestD = 99, bestLen = 0;
-  if (n.letters){
-    for (const a of p.answers) for (const k of a.keys){
-      if (k.digits !== n.digits || !k.letters) continue;
-      const max = allowed(Math.min(k.letters.length, n.letters.length));
-      if (!max) continue;
-      const d = lev(n.letters, k.letters, max);
-      if (d <= max && (d < bestD || (d === bestD && k.letters.length > bestLen))){ best = a; bestD = d; bestLen = k.letters.length; }
-    }
+  // 2b. a name the game knows from another prompt: the same thing (same article) counts, anything else is not
+  //     "corrected" into this prompt's answers below (Gorgias is not Gordian III, Apollo 14 is not Apollo)
+  const known = KNOWN.get(n.key);
+  if (known){ const a = p.answers.find(x => known.has(x.wiki)); if (a) return {type:'ok', answer:a}; }
+  // 3. fuzzy valid; then once more without misspelt little words ("Battle og Midway", "Batle of the Nile")
+  if (n.letters && !known){
+    const lo = loosen(n), lk = lo && KNOWN.get(lo.key);
+    const best = fuzzyFind(p, n) || (lo && (lk ? p.answers.find(x => lk.has(x.wiki)) : fuzzyFind(p, lo)));
+    if (best) return {type:'ok', answer:best, fuzzy:true};
   }
-  if (best) return {type:'ok', answer:best, fuzzy:true};
   // 4. fuzzy nope
   if (n.letters){
     for (const e of p.nopeList){
@@ -466,17 +485,102 @@ function matchAnswer(p, input){
       if (max && lev(n.letters, e.n.letters, max) <= max) return {type:'nope', msg:e.msg};
     }
   }
-  // 5. contained alias ("hadrian the roman one")
-  if (n.letters.length >= 6){
+  // 5. a known name inside a longer answer, as whole words only:
+  //    - the name first, extra words after ("hadrian the roman one", "Richard I of England")
+  //    - a one-word name last, first names or initials before ("Charles Robert Darwin", "N. Tesla"),
+  //      but not "X of Y" ("Arch of Constantine", "Fall of Paris")
+  //    - initials for the first names ("R. Strauss" is Richard, not Johann)
+  //    Words in front of a longer name make it something else ("Muscovite Civil War", "Mexican War of
+  //    Independence"), so they don't count. A leading ordinal does too ("Second Battle of the Philippine Sea",
+  //    "First Barons' War"), except for a named series ("Third Punic War"), and so does another year than the
+  //    answer's ("Battle of Lissa (1811)"). Other numbers after a word are fine ("Frederick II the Great").
+  if (n.letters.length >= 6 && !known){
+    const W = n.words;
+    let best = null, bestLen = 0;
+    let s0 = 0; while (s0 < W.length - 1 && nearStop(W[s0])) s0++;          // "Batle of Midway"
+    let s1 = s0; while (s1 < W.length - 1 && W[s1].length === 1) s1++;      // "P. Scipio Africanus"
+    const same = (w, x) => w === x || w + 's' === x || w === x + 's';       // "Anglo-Ashanti War" ~ "… Wars"
     for (const a of p.answers) for (const k of a.keys){
-      if (k.letters.length >= 5 && n.letters.indexOf(k.letters) !== -1 && (!k.digits || n.digits.split(',').indexOf(k.digits) !== -1) && k.letters.length > bestLen){ best = a; bestLen = k.letters.length; }
+      const kw = k.words;
+      if (k.letters.length < 5 || k.letters.length <= bestLen || !kw.length) continue;
+      const kd = k.digits ? k.digits.split(',') : [];
+      if (kd.some(d => n.nums.indexOf(d) === -1)) continue;
+      if (n.nums.some((d, j) => kd.indexOf(d) === -1 && (n.numAt[j] === 0 && d.length < 3 && !a.group || a.dn.length && a.dn.indexOf(d) === -1))) continue;
+      // a one-word name followed by a different kind of event: "American Indian Wars" is not the American Revolution
+      if (kw.length === 1 && W.some(w => w !== kw[0] && EVENT.has(w))) continue;
+      const first = kw.length <= W.length - s1 && kw.every((w, i) => same(w, W[s1 + i]));
+      // a name at the end only when it IS the answer's surname ("Charles Robert Darwin") or whole one-word name
+      // ("Marcus Ulpius Trajan", "Roman emperor Hadrian"); not "Albemarle Sound", "Code of Ur-Nammu", and not
+      // after another answer's name ("Ra-Horus", "Hermes and Apollo", "Publius Aelius Hadrianus Augustus")
+      const sur = (a.dw.length > 1 ? a.dw[a.dw.length - 1] === kw[0] && !n.ofs[W.length - 1] : a.solo && !n.ofs.some(Boolean)) &&
+        !W.slice(s0, -1).some(w => otherName(p, w, a));
+      const last = sur && kw.length === 1 && W.length - s0 > 1 && W[W.length - 1] === kw[0];
+      const inits = kw.length === W.length - s0 && kw.length > 1 && kw.every((w, i) => i === kw.length - 1 ? w === W[s0 + i] : (W[s0 + i] === w || W[s0 + i] === w[0]));
+      if (first || last || inits){ best = a; bestLen = k.letters.length; }
     }
     if (best) return {type:'ok', answer:best, fuzzy:true};
   }
   return {type:'none'};
 }
+// Closest answer within the allowed typos. Digits must match exactly, and the name must start with the same sound;
+// only a long name (8+ letters) may have its one typo in the first letter ("Battle of rafalgar").
+function fuzzyFind(p, n){
+  let best = null, bestD = 99, bestLen = 0;
+  for (const a of p.answers) for (const k of a.keys){
+    if (k.key === n.key || (k.words.length > 1 && k.bag === n.bag)) return a;   // exact (loosened input), or words reordered
+    if (k.digits !== n.digits || !k.letters) continue;
+    // the answer's length decides ("Betoven" for Beethoven); three letters or fewer must be exact ("Abu" is not Apsu)
+    const len = n.letters.length <= 3 ? 0 : k.letters.length;
+    const max = head(k.letters) === head(n.letters) ? allowed(len) : len >= 8 ? 1 : 0;
+    if (!max) continue;
+    // several words: a typo may bend each word but not swap one for another ("Thirteen Years' War" ≠ "Thirty …")
+    if (k.words.length > 1 && k.words.length === n.words.length &&
+        k.words.some((w, i) => { const x = n.words[i], m = Math.min(w.length, x.length) >= 7 ? 2 : 1; return w.length < 3 ? w !== x : lev(w, x, m) > m; })) continue;
+    const d = lev(n.letters, k.letters, max);
+    if (d === 1 && len <= 7 && !typoLike(n.letters, k.letters, len)) continue;
+    if (d <= max && (d < bestD || (d === bestD && k.letters.length > bestLen))){ best = a; bestD = d; bestLen = k.letters.length; }
+  }
+  return best;
+}
+// One changed letter in a short name is a typo only if it hit a neighbouring key, swapped a vowel ("Zeis") or a
+// letter for one that sounds the same ("Okeanus", "Titvs"); in four letters not a neighbouring key. Otherwise it is usually
+// another name: Anzu/Abzu, Logi/Loki, Horme/Horae. Swapped, dropped and doubled letters always pass.
+const KEYROWS = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], VOWEL = /[aeiouy]/;
+const SOUND = new Set(['ck', 'kc', 'kq', 'qk', 'cq', 'qc', 'sz', 'zs', 'iy', 'yi', 'uv', 'vu', 'vw', 'wv', 'uw', 'wu']);
+function keyNear(x, y){
+  const r1 = KEYROWS.findIndex(r => r.includes(x)), r2 = KEYROWS.findIndex(r => r.includes(y));
+  if (r1 < 0 || r2 < 0 || Math.abs(r1 - r2) > 1) return false;
+  const c1 = KEYROWS[r1].indexOf(x), c2 = KEYROWS[r2].indexOf(y);
+  return r1 === r2 ? Math.abs(c1 - c2) === 1 : r2 > r1 ? (c2 === c1 || c2 === c1 - 1) : (c1 === c2 || c1 === c2 - 1);
+}
+function typoLike(a, b, len){
+  if (a.length !== b.length) return true;
+  let i = 0; while (a[i] === b[i]) i++;
+  if (a[i + 1] !== b[i + 1]) return true;   // two neighbouring letters swapped
+  const x = a[i], y = b[i];
+  return VOWEL.test(x) && VOWEL.test(y) || SOUND.has(x + y) || len > 4 && keyNear(x, y);
+}
+// w is (or starts with, as Latin "Hadrianus") the one-word name of another answer than a
+function otherName(p, w, a){
+  for (let L = w.length; L >= Math.min(5, w.length); L--){ const s = p.names.get(w.slice(0, L)); if (s && !s.has(a)) return true; }
+  return false;
+}
+const EVENT = new Set(['war', 'wars', 'rebellion', 'revolt', 'uprising', 'rising', 'conquest', 'invasion', 'mutiny', 'massacre', 'treaty', 'campaign']);
+// a misspelt stop word: a long one ("batle", "seige", "emporer") or of/the/and ("og", "te", "tje", "amd")
+const LONGSTOP = [...STOP].filter(w => w.length >= 5), SHORTSTOP = ['of', 'the', 'and'];
+function nearStop(w){ return w === 'o' || w === 'f' || (w.length >= 4 ? LONGSTOP : w.length >= 2 ? SHORTSTOP : []).some(s => lev(w, s, 1) <= 1); }
+// the input without misspelt stop words, or null when there are none to drop
+function loosen(n){
+  const words = n.words.filter(w => !nearStop(w));
+  if (!words.length || words.length === n.words.length) return null;
+  const letters = words.join('');
+  return {letters, digits: n.digits, key: letters + '#' + n.digits, words, bag: words.slice().sort().join(' ') + '#' + n.digits};
+}
 
 const PROMPTS = buildPrompts();
+// Every name the game knows, across all prompts → the articles it can mean.
+const KNOWN = new Map();
+for (const p of PROMPTS) for (const a of p.answers) for (const k of a.keys){ if (!KNOWN.has(k.key)) KNOWN.set(k.key, new Set()); KNOWN.get(k.key).add(a.wiki); }
 function tierOf(a){ return a.liveTier || a.tier; }
 
 function pickRound(seed){
