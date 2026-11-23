@@ -9031,35 +9031,45 @@ nope:{
 
 {id:'mesogods', cat:'Myths & Legends', q:'Name a god or goddess of ancient Mesopotamia', hint:'Sumerian, Akkadian, Babylonian and Assyrian',
 list:`
-1|Marduk
+1|Marduk||bel-marduk;merodach
 1|Ishtar||inanna
-2|Enlil
-2|Enki||ea
+1|Anunnaki||annuna;annanuki
+2|Enlil||ellil
+2|Enki||ea;nudimmud
 2|Tiamat
 2|Anu||an
-3|Shamash||utu
-3|Sin|Sin (mythology)|nanna;suen
+2|Lamassu||shedu;lammasu;winged assyrian bulls
+2|Anat
+2|Apkallu
+3|Shamash||utu;šamaš
+3|Sin|Sin (mythology)|nanna;suen;enzu
 3|Nergal
 3|Ereshkigal
-3|Apsu||abzu
+3|Apsu||abzu;engur
 3|Ashur|Ashur (god)|assur
-3|Nabu
+3|Nabu||nebo
 3|Dumuzid||tammuz;dumuzi
 3|Ninhursag||ninhursaga
 3|Pazuzu
-3|Lamashtu
-3|Adad||ishkur;hadad
+3|Lamashtu||labartu
+3|Adad||ishkur;hadad;ramman;rapiu
+3|Anzû||imdugud
+3|Bel|Bel (mythology)|bêlu
+3|Hanbi
+3|Igigi
+3|Nanaya
+3|Išḫara
 4|Ninurta
 4|Kingu
-4|Ninlil
+4|Ninlil||sud
 4|Nammu
-4|Nisaba
+4|Nisaba||nanibgal
 4|Gula|Gula (goddess)
 4|Lahmu and Lahamu|Lahmu|lahmu;lahamu
 4|Anshar
 4|Kishar
 4|Geshtinanna
-4|Ningishzida
+4|Ningishzida||ningisida
 4|Nanshe
 4|Ningal
 4|Ninkasi
@@ -9070,34 +9080,93 @@ list:`
 4|Namtar
 4|Belet-Seri
 4|Nusku
-4|Gibil
+4|Gibil||girru
 4|Girra
+4|Aya|Aya (goddess)|ayu-ikalti;sherida;sudaĝ
+4|Ninshubur
+4|Alalu
+4|Damgalnuna||damkina
+4|Lugal-irra and Meslamta-ea||lugal-irra
+4|Siduri
 5|Nintinugga
 5|Ningirsu
-5|Bau|Bau (goddess)
+5|Bau|Bau (goddess)|baba
 5|Kusu
 5|Lugalbanda
 5|Shara|Shara (god)
 5|Zababa
 5|Amurru|Amurru (god)
-5|Sarpanit
+5|Sarpanit||zarpanitum
 5|Tashmetum
 5|Ninsun
 5|Uttu
-5|Ninsar
+5|Ninsar||ninnisig
 5|Ninkurra
 5|Lulal
 5|Latarak
 5|Mamitu
 5|Erra|Erra (god)
+5|Antu|Antu (goddess)
+5|Mamu|Mamu (deity)|mumudu
+5|The Four Winds|The Four Winds (Mesopotamian)
+5|Šulak
+5|Pabilsaĝ
+5|Gugalanna
+5|Nirah
+5|Annunitum
+5|Aruru|Aruru (goddess)
+5|Mummu
+5|Enmesharra
+5|Asalluhi||asaruludu
+5|Ninkilim
+5|Mami|Mami (goddess)|nintu;nintud
+5|Geshtu-E
+5|Isimud||izzummi
+5|Ninti||nintiḫal
+5|Ninisina
+5|Sebitti
+5|Kajamanu
+5|Ištaran
+5|Belili
+5|Uraš
+5|Enkimdu
+5|Manzat|Manzat (goddess)
+5|Kilili
+5|Ninsianna
+5|Abu|Abu (god)
+5|Damu
+5|Ninkarrak
+5|Sisig|Sisig (mythology)|zaqīqu
+5|Succoth-benoth
 6|Enbilulu
 6|Emesh
 6|Enten
 6|Ninazu
-6|Ninmah
+6|Ninmah||ninkharsag
 6|Ki|Ki (goddess)
 6|Ishum
-6|Shullat and Hanish|Shullat|shullat;hanish
+6|Shullat and Hanish|Shullat|shullat;hanish;hani
+6|Lisin
+6|Zagar|Zagar (god)|zaqar
+6|Haya|Haya (god)
+6|Kittum||niĝgina
+6|Ningirima
+6|Duttur||sirtur
+6|Manungal||nungal
+6|Šulpae
+6|Mullissu||mylitta
+6|Lagamal||lagamaru
+6|Kakka||gaga
+6|Ancestors of Enlil||enki and ninki
+6|Urash|Urash (god)
+6|Papsukkal
+6|Ninimma
+6|Šumugan||sumuqan
+6|Wer|Wer (god)|iluwer
+6|Laṣ
+6|Ningirida
+6|Kitītum
+6|Ninurima
 `,
 nope:{
  'gilgamesh':'A legendary king &mdash; two-thirds divine, but not counted as a god here.',
@@ -11444,125 +11513,287 @@ nope:{
 PROMPT_DATA.push(
 {id:'wars', cat:'Wars & Battles', q:'Name a war fought before 1900', hint:'Wars that began before 1900, anywhere',
 list:`
-1|Hundred Years' War||hundred years war
-1|American Civil War||civil war;us civil war
+1|Hundred Years' War||hundred years war;100 year war;100 years war
+1|American Civil War||civil war;us civil war;united states civil war;usa civil war
 1|Napoleonic Wars||napoleonic
-1|American Revolutionary War||american revolution;war independence;revolutionary war
-2|Peloponnesian War||peloponnesian war
-2|Thirty Years' War||thirty years war
-2|Seven Years' War||seven years war
-2|Punic Wars||punic war;punic
+1|American Revolutionary War||american revolution;war independence;revolutionary war;war of american independence;united states war of independence;american war for independence
+1|Peasants' Revolt||english peasants' revolt of 1381;english peasant revolt;wat tyler's rebellion
+1|Boxer Rebellion||boxer uprising;boxer war;boxer rising
+2|Peloponnesian War||peloponnesian war;second peloponnesian war;archidamian war
+2|Thirty Years' War||thirty years war;30 years war;30 year war
+2|Seven Years' War||seven years war;7 years war;7 year war
+2|Punic Wars||punic war;punic;carthaginian wars
 2|Wars of the Roses||roses
 2|Crimean War||crimean
 2|Opium Wars||opium war;first opium war
-2|War of 1812||1812
+2|War of 1812||1812;american war of 1812;anglo-american war of 1812;second american revolution;invasion of canada (1812)
 2|English Civil War||english civil war
 2|Greco-Persian Wars||persian wars
-2|Gallic Wars||gallic war
-2|Franco-Prussian War||franco prussian
-3|Mexican–American War||mexican american war
-3|Boer War|Second Boer War|second boer war;anglo boer war
+2|Gallic Wars||gallic war;conquest of gaul;caesar's conquest of gaul;roman conquest of gaul;roman invasion of gaul
+2|Franco-Prussian War||franco prussian;franco-german war of 1870;franco-german war;war of 1870
+2|First Crusade||princes' crusade
+2|Philippine–American War||philippine insurrection;filipino-american war;filipino insurrection;philippine war
+2|Peninsular War||spanish war of independence;spanish independence war;napoleonic invasion of spain;war of spanish independence
+2|Third Crusade
+2|American Indian Wars||indian wars;plains wars;plains indian wars;native american wars
+2|War of the First Coalition
+2|French Revolutionary Wars||wars of the french revolution
+2|Haitian Revolution
+3|Mexican–American War||mexican american war;u.s.-mexican war;war with mexico
+3|Boer War|Second Boer War|second boer war;anglo boer war;second anglo-boer war;south african war
 3|Spanish–American War||spanish american war
-3|First Sino-Japanese War||sino japanese war
+3|First Sino-Japanese War||sino japanese war;sino-japanese war (1894-1895)
 3|Anglo-Zulu War||zulu war
-3|Great Northern War||great northern war
+3|Great Northern War||great northern war;great nordic war;third northern war
 3|War of the Spanish Succession||spanish succession
 3|War of the Austrian Succession||austrian succession
-3|Eighty Years' War||eighty years war;dutch revolt
-3|Wars of the Three Kingdoms||three kingdoms wars
+3|Eighty Years' War||eighty years war;dutch revolt;dutch war of independence;revolt of the netherlands;hispano-dutch war;80 years war
+3|Wars of the Three Kingdoms||three kingdoms wars;british civil wars;british civil war
 3|Hussite Wars||hussite
 3|Reconquista
 3|Samnite Wars||samnite
-3|Jewish–Roman wars||jewish roman wars;first jewish roman war
-3|Macedonian Wars||macedonian war
+3|Jewish–Roman wars||jewish roman wars;first jewish roman war;roman-jewish war
+3|Macedonian Wars||macedonian war;roman-macedonian wars
 3|Wars of the Diadochi||diadochi
-3|Norman Conquest||norman conquest
+3|Norman Conquest||norman conquest;norman invasion of 1066;conquest of england;norman invasion;norman invasion of england
 3|Mongol invasions||mongol conquests
-3|Imjin War||japanese invasions korea
+3|Imjin War||japanese invasions korea;japanese invasion of joseon;chŏngyu war
 3|Boshin War||boshin
-3|Satsuma Rebellion||satsuma
-3|Taiping Rebellion||taiping
-3|Paraguayan War||war triple alliance;triple alliance
+3|Satsuma Rebellion||satsuma;seinan war
+3|Taiping Rebellion||taiping;taiping civil war
+3|Paraguayan War||war triple alliance;triple alliance;war of paraguay
 3|War of the Pacific||war pacific
-3|Austro-Prussian War||seven weeks war
-3|Russo-Turkish War (1877–1878)|Russo-Turkish War (1877–1878)|russo turkish war
-3|Greek War of Independence||greek independence
-3|Indian Rebellion of 1857||indian mutiny;sepoy mutiny;1857
+3|Austro-Prussian War||seven weeks war;war of 1866;unification war;german war
+3|Russo-Turkish War (1877–1878)|Russo-Turkish War (1877–1878)|russo turkish war;eleventh russo-turkish war;russo-turkish war of 1877-78;russo-ottoman war (1877-1878);russo-turkish war of 1877-8
+3|Greek War of Independence||greek independence;greek revolution of 1821;greek revolt
+3|Indian Rebellion of 1857||indian mutiny;sepoy mutiny;1857;sepoy rebellion;indian rebellion;mutiny of 1857;revolt of 1857;first war of indian independence;indian war of independence;indian war of 1857
 3|French and Indian War||french indian war
-3|Anglo-Dutch Wars||anglo dutch war
-3|Italian Wars||italian wars
-3|French Wars of Religion||wars religion
-3|Jacobite risings||jacobite
-3|Second Schleswig War||schleswig war;dano prussian war
+3|Anglo-Dutch Wars||anglo dutch war;dutch wars
+3|Italian Wars||italian wars;habsburg–valois wars;french wars in italy
+3|French Wars of Religion||wars religion;huguenot wars;franco-spanish war (1595–98);franco-spanish war (1595–1598);french religious wars
+3|Jacobite risings||jacobite;jacobite rebellion;jacobite uprising;jacobite wars
+3|Second Schleswig War||schleswig war;dano prussian war;danish-prussian war;second schleswig-holstein war;german-danish war;prusso-danish war
 3|First Schleswig War||three years war denmark
-4|Pastry War||pastry
-4|Anglo-Zanzibar War||zanzibar war;shortest war
+3|Fourth Crusade
+3|Mexican War of Independence
+3|First Barbary War||tripolitan war
+3|War of the Sixth Coalition||german war of liberation
+3|War of the Third Coalition||calabrian insurrection
+3|Albigensian Crusade||albigensian war
+3|June Rebellion
+3|Great Turkish War||habsburg-ottoman war (1683–1699);austro-turkish war (1683–1699);war of the holy league (1683–1699);vienna war (1683-1699)
+3|War in the Vendée||revolt in the vendée;vendée revolt;vendée uprising;vendee peasant rising
+3|Whiskey Rebellion
+3|War of the Fourth Coalition
+3|German Peasants' War||german peasants' revolt
+3|Second Crusade
+3|Mahdist War||mahdist revolution;mahdist revolt
+3|Wars of Alexander the Great||alexander's invasion of persia;alexander's conquest of persia;alexander's conquest of egypt
+3|Third Servile War||gladiator war
+3|Utah War||utah mormon war
+3|Second Punic War||hannibalic war;hannibal's invasion of italy
+4|Pastry War||pastry;first franco-mexican war
+4|Anglo-Zanzibar War||zanzibar war;shortest war;british-zanzibar war
 4|War of Jenkins' Ear||jenkins ear
 4|Pig War|Pig War (1859)|pig war
-4|War of the Bucket||bucket
+4|War of the Bucket||bucket;war of the oaken bucket
 4|Kalmar War||kalmar
-4|Northern Seven Years' War||northern seven years war
-4|Scanian War||scanian
-4|Anglo-Afghan Wars|First Anglo-Afghan War|anglo afghan war
+4|Northern Seven Years' War||northern seven years war;nordic seven years' war;scandinavian seven years' war
+4|Scanian War||scanian;swedish-brandenburg war;gyldenløve war
+4|Anglo-Afghan Wars|First Anglo-Afghan War|anglo afghan war;first afghan war
 4|Anglo-Sikh Wars|First Anglo-Sikh War|anglo sikh war
 4|Anglo-Maratha Wars||anglo maratha
-4|Anglo-Burmese Wars|First Anglo-Burmese War|anglo burmese war
-4|Anglo-Ashanti wars||ashanti war
-4|Xhosa Wars||xhosa wars;cape frontier wars
-4|New Zealand Wars||maori wars
+4|Anglo-Burmese Wars|First Anglo-Burmese War|anglo burmese war;first burmese war
+4|Anglo-Ashanti wars||ashanti war;anglo-asante wars;anglo-asante war
+4|Xhosa Wars||xhosa wars;cape frontier wars;war of the axe;sixth frontier war;kaffir wars;kaffir war
+4|New Zealand Wars||maori wars;new zealand land wars
 4|Black Hawk War||black hawk
-4|Seminole Wars||seminole
-4|Great Sioux War of 1876||great sioux war;sioux war
-4|Texas Revolution||texas revolution
+4|Seminole Wars||seminole;florida seminole wars;seminole indian war
+4|Great Sioux War of 1876||great sioux war;sioux war;black hills war;lakota war;great sioux war of 1876-77;great sioux war of 1876–1877
+4|Texas Revolution||texas revolution;texas war for independance;texas war of independence;texian revolution;texan war of independence
 4|King Philip's War||king philips war
 4|Pequot War||pequot
 4|Queen Anne's War||queen annes war
-4|Nine Years' War||nine years war;war grand alliance
+4|Nine Years' War||nine years war;war grand alliance;war of the league of augsburg;war of the palatinate succession;war of the palatine succession;war of the english succession
 4|Franco-Dutch War||franco dutch war
 4|The Anarchy||anarchy
-4|War of the Sicilian Vespers||sicilian vespers
+4|War of the Sicilian Vespers||sicilian vespers;war of the vespers;war of the vesper
 4|Second Barons' War||barons war
-4|Irish Confederate Wars||confederate wars
-4|Cromwellian conquest of Ireland||cromwellian conquest
-4|Russo-Persian Wars||russo persian war
-4|Russo-Swedish War (1808–1809)|Finnish War|finnish war
-4|Hundred Days||hundred days
-4|Byzantine–Sasanian wars||byzantine sasanian
-4|Arab–Byzantine wars||arab byzantine
+4|Irish Confederate Wars||confederate wars;eleven years war
+4|Cromwellian conquest of Ireland||cromwellian conquest;cromwellian invasion of ireland
+4|Russo-Persian Wars||russo persian war;russo-iranian wars
+4|Russo-Swedish War (1808–1809)|Finnish War|finnish war;war of finland
+4|Hundred Days||hundred days;war of the seventh coalition
+4|Byzantine–Sasanian wars||byzantine sasanian;roman–iranian wars;byzantine-sassanid wars;roman–sasanian wars;roman-persian wars
+4|Arab–Byzantine wars||arab byzantine;roman-arab wars
 4|Wars of Scottish Independence||scottish independence
 4|Platine War||platine
-4|Ragamuffin War||ragamuffin;farrapos
+4|Ragamuffin War||ragamuffin;farrapos;farroupilha revolution;war of the ragamuffins;war of tatters
 4|Reform War||reform war
-4|Franco-Mexican War|Second French intervention in Mexico|french intervention mexico
-4|Sino-French War||sino french
-4|Second Opium War||arrow war
+4|Franco-Mexican War|Second French intervention in Mexico|french intervention mexico;second franco-mexican war
+4|Sino-French War||sino french;franco-chinese war
+4|Second Opium War||arrow war;second anglo-chinese war;third china war;second china war
+4|War of the Second Coalition
+4|Shays's Rebellion
+4|Irish Rebellion of 1798||1798 rebellion;1798 rising;united irishmen rebellion;united irishmen rebellion of 1798
+4|First Boer War||first anglo-boer war;transvaal war
+4|Maccabean Revolt
+4|Lincoln County War
+4|Beaver Wars||iroquois wars;french and iroquois wars;huron-iroquois war
+4|Nat Turner's Rebellion||turner's rebellion;southampton insurrection;nat turner's slave rebellion
+4|Genpei War||jishō-juei war
+4|War of the Fifth Coalition
+4|Toledo War
+4|First Barons' War
+4|Yellow Turban Rebellion||yellow scarves rebellion
+4|January Uprising||1863 uprising;polish uprising of 1863;1863 polish revolution
+4|Gothic War (535–554)||gothic war (535–552);gothic wars (6th century);gothic war (6th century)
+4|First English Civil War
+4|Pontiac's War||pontiacs rebellion
+4|War of Actium||final war of the roman republic;roman conquest of egypt;last war of the roman republic;conquest of ptolemaic egypt
+4|Granada War||conquest of granada
+4|Dakota War of 1862||us-dakota war of 1862;dakota war;sioux uprising
+4|Social War (91–87 BC)||social war;social war (90–88 bc);marsic war;social war (91-88 bc)
+4|First Italo-Ethiopian War||first italo-abyssinian war
+4|Zanj Rebellion||zanj revolt
+4|Anglo-Spanish War (1585–1604)||anglo–spanish war (1585)
+4|November Uprising||november insurrection;uprising of 1831;polish uprising of 1831
+4|Kalinga War
+4|Sixth Crusade
+4|Fifth Crusade
+4|1838 Mormon War||missouri mormon war
+4|Shimabara Rebellion||shimabara uprising
+4|Williamite War in Ireland||williamite war;war of the two kings;williamite wars
+4|Marcomannic Wars
+4|Greco-Turkish War (1897)
+4|Cuban War of Independence||war of '95
+4|Ōnin War
+4|Second English Civil War
+4|Black War
+4|King William's War||second indian war
+4|Seventh Crusade
+4|Khmelnytsky Uprising||chmielnicki uprising;khmelnytsky rebellion
+4|Pueblo Revolt||pueblo rebellion
+4|Red Cloud's War
+4|Northwest Indian War
+4|Caucasian War||caucasus war
+4|Dominican War of Independence
+4|Johnson County War
+4|Pyrrhic War
+4|Franco-Spanish War (1635–1659)||franco-spanish war (1635);franco-spanish war (1635-59)
+4|Apache Wars
+4|Portuguese Restoration War||acclamation war
+4|Peasants' War (1798)
+4|Eighth Crusade
+4|Kościuszko Uprising||uprising of 1794;kosciuszko insurrection
+4|First War of Scottish Independence
+4|Second Italian War of Independence||austro-sardinian war;franco-austrian war
+4|First Punic War
+4|Third Punic War
+4|Byzantine–Sasanian War of 602–628||byzantine-sassanid war of 602–628;byzantine–sassanid war of 602–28
+4|Second Anglo-Afghan War||second afghan war;roberts's war
+4|Second Anglo-Dutch War||second dutch war
+4|Third Anglo-Dutch War
+4|Third Anglo-Maratha War||pindari war;pindaree war;third mahratta war;third maratha war
+4|Second Seminole War
+4|First Italian War of Independence
+4|Philippine Revolution
 5|Livonian War||livonian
 5|Dacke War||dacke
-5|Count's Feud||counts feud
-5|Torstenson War||torstenson
+5|Count's Feud||counts feud;count's war
+5|Torstenson War||torstenson;hannibal war
 5|War of the Polish Succession||polish succession
 5|War of the Bavarian Succession||potato war;bavarian succession
 5|War of the Quadruple Alliance||quadruple alliance
 5|War of Devolution||devolution
-5|Russo-Swedish War (1788–1790)|Russo-Swedish War (1788–1790)|gustav 3 russian war
+5|Russo-Swedish War (1788–1790)|Russo-Swedish War (1788–1790)|gustav 3 russian war;gustav iii's russian war;russo-swedish war (1788–90)
 5|Theatre War|Theatre War|cowberry war
 5|Gunboat War||gunboat war
-5|Swedish–Norwegian War (1814)|Swedish–Norwegian War (1814)|swedish norwegian war
+5|Swedish–Norwegian War (1814)|Swedish–Norwegian War (1814)|swedish norwegian war;norwegian war of independence
 5|Hat's Russian War||hats russian war
-5|Herzegovina uprising (1875–1877)||herzegovina uprising
+5|Herzegovina uprising (1875–1877)||herzegovina uprising;herzegovina uprising (1875–77);herzegovina uprising (1875–78);herzegovina uprising (1875-1878)
 5|War of Chioggia||chioggia war
 5|Ottoman–Habsburg wars||ottoman habsburg
-6|War of the League of Cambrai||league cambrai
+5|Cimbrian War
+5|Long Turkish War||long war;long war (1591–1606);austro-turkish war (1593–1606)
+5|Second Barbary War
+5|Cologne War
+5|Anglo-Egyptian War||british-egyptian war;second anglo-egyptian war;british conquest of egypt (1882)
+5|Crusade of 1101
+5|Monmouth Rebellion
+5|North-West Rebellion
+5|First Carlist War
+5|Crusade of Varna
+5|Sonderbund War
+5|Dutch–Portuguese War||luso-dutch war
+5|Russo-Turkish War (1768–1774)||sixth russo-turkish war;russo-turkish war of 1768–74
+5|Stono Rebellion||stono river slave rebellion site
+5|Musket Wars
+5|Austro-Turkish War (1788–1791)||austro-turkish war (1787–91);austro-turkish war (1788–91);austro-turkish war (1787-1791)
+5|Ionian Revolt
+5|Third Mithridatic War
+5|Creek War||red stick war;creek indian war
+5|Anglo-Nepalese War||the gurkha war;gorkha war;nepal war;anglo-nepali war
+5|Conquest of the Desert
+5|Pugachev's Rebellion||pugachev uprising
+5|Ridda Wars||wars of apostasy
+5|Dungan Revolt (1862–1877)||dungan revolt (1862–77);hui minorities' war;muslim rebellion
+5|Ten Years' War
+5|Thousand Days' War
+5|Saxon Wars
+5|Anglo-French War (1778–1783)||anglo-french war (1778–83);anglo-french war 1778
+5|Brazilian War of Independence||war of independence of brazil
+5|Argentine War of Independence||argentinian war of independence
+5|Cretan War (1645–1669)||cretan war (1645–69);war of candia;candian war;ottoman conquest of crete
+5|First Mithridatic War
+5|Bishops' Wars
+5|Mithridatic Wars
+5|Cisplatine War||argentine–brazilian war;argentina-brazil war
+5|Egyptian–Ottoman War (1839–1841)||egyptian–ottoman war (1839–41);second turko-egyptian war;second egyptian-ottoman war
+5|Ottoman–Mamluk War (1516–1517)||ottoman–mamluk war (1516–17);ottoman conquest of egypt
+5|Iberian War
+5|Conquest of Wales by Edward I||conquest of wales;edwardian conquest of wales;welsh uprising (1282)
+5|Serbo-Bulgarian War
+5|Ottoman–Safavid War (1623–1639)||ottoman–safavid war (1623–39)
+5|Second Anglo-Maratha War||second maratha war
+5|Third Italian War of Independence
+5|Fourth Anglo-Dutch War
+5|First Anglo-Maratha War
+5|Second Anglo-Sikh War||second sikh war
+5|Italian War of 1494–1495||first italian war;italian war of 1494-1498;italian war of 1494-98;charles viii's italian war
+5|First Anglo-Dutch War||first dutch war
+5|Russo-Persian War (1804–1813)||russo-persian war (1804–13)
+5|Second War of Scottish Independence
+5|Serbian Revolution
+6|War of the League of Cambrai||league cambrai;anglo-french war (1512–14);war of the holy league (1511–1514)
 6|War of the Eight Saints||eight saints
-6|Toggenburg War||toggenburg
+6|Toggenburg War||toggenburg;second war of villmergen
 6|Old Zürich War||old zurich war
 6|Swabian War||swabian war
-6|Mughal–Safavid war (1649–1653)||mughal safavid war
+6|Mughal–Safavid war (1649–1653)||mughal safavid war;mughal–safavid war (1649–53)
+6|Russo-Persian War (1826–1828)||russo-persian war (1826–28)
+6|Third Anglo-Burmese War||third burmese war
+6|Third Macedonian War
+6|Italian War of 1551–1559||italian war of 1551–59;italian war of 1551
+6|Italian War of 1521–1526||italian war of 1521–26;italian war of 1521
+6|First Macedonian War
+6|Italian War of 1542–1546||italian war of 1542–46
+6|Second Macedonian War
+6|Russo-Persian War (1722–1723)||russo-persian war (1722–23)
+6|Byzantine–Sasanian War of 572–591||byzantine–sassanid war of 572–591;roman–persian war of 572–591
+6|Ingrian War
+6|Second Mithridatic War
+6|Roman–Sasanian War of 421–422
+6|First Bishops' War
+6|Karonga War
 `,
 nope:{
  'world war 1|world war 2|first world war|second world war|vietnam war|korean war|cold war':'Twentieth century &mdash; this dig stops at 1900.',
  'star wars|war worlds':'Fiction!',
  'trojan war':'A legendary war &mdash; Homer\'s, not history\'s.'
+},
+amb:{
+ 'mexican war':'Which one? The Mexican&ndash;American War or the Mexican War of Independence?'
 }},
 
 {id:'commanders', cat:'Wars & Battles', q:'Name a famous military commander from before 1900', hint:'Generals, admirals and warlords',

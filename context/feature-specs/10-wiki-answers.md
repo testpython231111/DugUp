@@ -25,10 +25,27 @@ Svarlistene er lukkede og håndlagde. Mange svar spillere finner på Wikipedia m
 - Endres: `.gitignore` (`tools/suggestions/`), `js/data/prompts.js` (etter godkjenning), `js/data/rarity.js` og `summaries.js` (generert), README og `02-architecture.md`.
 - Endres ikke: `js/app.js`, Scene, Sound, UI, `ROTATION`.
 
+- **Lagt til underveis:**
+  - Krig-prompts sjekker artikkelens egen tittel, ikke bare lenketeksten: «Wars of Cyrus the Great» leder til Cyrus the Great og droppes.
+  - Aliaser må inneholde et krigsord.
+  - Høyst 120 aktive nye svar per fil.
+  - To bolker eier tar stilling til samlet: enkeltkriger i en serie og revolusjoner uten «war».
+  - `--apply` advarer når et utelatt navn (en utkommentert kandidat) nå godtas som et *annet* svar, for eksempel «Ingrian War» som Iberian War.
+
 ## 4. Verification Checklist
-- [ ] Forslagsfiler for `mesogods` og `wars`, gjennomgått og godkjent av eier.
-- [ ] `--apply` nekter ugyldige filer (dobbelt display, alias som kolliderer) og skriver ingenting da.
-- [ ] Etter innlegging: `npm test` grønn, `npm run bench` uten nye falske treff i andre prompts, og eiers eksempler (Anzu, Humbaba om godkjent, «Mexican War», «100 Years War») godtas.
-- [ ] `rarity.mjs` og `summaries.mjs` kjørt, og diffen er sjekket.
-- [ ] Full runde i headless nettleser uten konsollfeil.
-- [ ] `06-progress-tracker.md` oppdatert.
+- [x] Forslagsfiler for `mesogods` og `wars`, gjennomgått og godkjent av eier («ser bra ut»), med mine anbefalte endringer:
+  - Apkallu, Siduri, Išḫara og fire revolusjoner som var væpnet krig er med.
+  - Tre feilaktige aliaser er fjernet.
+  - Enkeltkriger i serier er egne svar.
+  - «Mexican War» er tvetydig.
+  - Humbaba er ikke med: han er et monster og står i demon-bolken.
+- [x] `--apply` nekter ugyldige filer (dobbelt display, alias som kolliderer) og skriver ingenting da.
+- [x] Etter innlegging er `npm test` grønn (29) og eiers eksempler godtas: Anzu, «Mexican War» (spør hvilken), «100 Years War» og «30 years war».
+  - `npm run bench` mot Spec 09: falske treff gikk fra 108 til 78 og kryss-treff fra 68 til 71. De tre nye kryss-treffene er samme artikkel via andre prompts, for eksempel «Granada» → Granada War.
+  - 8 navn som ble godtatt som et annet nytt svar, er lagt inn som egne svar. Tre aliaser er justert.
+- [x] `rarity.mjs` og `summaries.mjs` er kjørt, og diffen er sjekket.
+  - Nye svar: mesogods 69 (tier 1–6: 2/7/10/19/19/12) og wars 159 (7/17/37/42/40/16).
+  - Eksisterende svar i de to promptene flytter seg mot lavere tier, fordi rangeringen er relativ. Adad og Shamash gikk for eksempel fra 2 til 1.
+  - I andre prompts endret 120 av 10 753 tier, som er vanlig drift.
+- [x] Full runde i headless Edge uten konsollfeil. Nye svar får riktig tier og sammendrag (Ninurima, Kitītum, Cisplatine War), og «Mexican War» spør hvilken.
+- [x] `06-progress-tracker.md` oppdatert.
