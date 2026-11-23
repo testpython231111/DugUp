@@ -1,0 +1,791 @@
+{
+  "_about": "Aliases from Wikipedia redirects that were turned down in review, per prompt id. tools/suggest-answers.mjs never suggests them again. Add to it when you delete an alias line from a suggestion file.",
+  "acw": [
+    "marye's heights"
+  ],
+  "africa": [
+    "mosotho",
+    "basuto",
+    "basutos",
+    "sotho peoples",
+    "changamire dombo",
+    "changamire"
+  ],
+  "amrev": [
+    "battle of the capes"
+  ],
+  "ancientwomen": [
+    "hydrangeas",
+    "schizophragma",
+    "portius"
+  ],
+  "animals": [
+    "dimitri malashenkov",
+    "tasmanian tiger",
+    "tasmanian wolf"
+  ],
+  "architects": [
+    "gherardo perini",
+    "raumplan"
+  ],
+  "arthur": [
+    "may babies",
+    "parmenie",
+    "yniol"
+  ],
+  "asiabattles": [
+    "ziyad ibn salih",
+    "rana poonja"
+  ],
+  "assassinations": [
+    "lenono music",
+    "brendan cox",
+    "more in common",
+    "al-sahba bint rabi'a",
+    "gaius caesar"
+  ],
+  "aviation": [
+    "pierre romain",
+    "bergens aero"
+  ],
+  "aztecgods": [
+    "maya deities",
+    "maya gods",
+    "mayan gods",
+    "god a",
+    "ixpiyacoc",
+    "chalchihuitlicue",
+    "chimalmat",
+    "camulatz"
+  ],
+  "bridges": [
+    "clark eldridge"
+  ],
+  "britindep": [
+    "egy",
+    "al bu romaih",
+    "kittitian"
+  ],
+  "byzantine": [
+    "fabius"
+  ],
+  "canals": [
+    "homer bridge"
+  ],
+  "capitals": [
+    "poppelsdorf",
+    "el manshiyya",
+    "mansheya",
+    "asafra",
+    "nathiagali beach",
+    "mugal road",
+    "cerro muriano",
+    "faz quem quer",
+    "amirkhiz",
+    "ljubotinj",
+    "susians",
+    "iconian",
+    "susa iii"
+  ],
+  "castles": [
+    "marienbrücke"
+  ],
+  "china": [
+    "tzu"
+  ],
+  "chinaemp": [
+    "the imperial concubine chun",
+    "jian'an"
+  ],
+  "civs": [
+    "nok iron smelting",
+    "woads",
+    "ayapec",
+    "daco",
+    "catiaroi",
+    "the two rivers",
+    "babylonia and assyria",
+    "sumero-akkadian",
+    "sogd"
+  ],
+  "classwriters": [
+    "oedipus cycle",
+    "rerum rusticarum",
+    "lives of the eminent philosophers"
+  ],
+  "coldwar": [
+    "legality of the vietnam war",
+    "euro-atlantic integration",
+    "kellock–taschereau commission"
+  ],
+  "commanders": [
+    "strike the tent!",
+    "black buffalo woman",
+    "elizabeth steward",
+    "juan albano pereira márquez",
+    "fabius"
+  ],
+  "disasters": [
+    "allen hagaman",
+    "robert bragg",
+    "victor grubbs",
+    "luthgardo niedo"
+  ],
+  "documents": [
+    "line of demarcation",
+    "mekhir",
+    "tanakh at qumran"
+  ],
+  "egyptgods": [
+    "feather of truth",
+    "huh",
+    "wedjat",
+    "udjat",
+    "stt",
+    "kauket",
+    "hauhet",
+    "beset",
+    "petsuchos",
+    "petesuchos",
+    "sakhet"
+  ],
+  "empires": [
+    "imperials",
+    "mughlai",
+    "india's golden age",
+    "verwantschapslanden",
+    "restorationist party",
+    "moderate party",
+    "hun",
+    "saljuqid syria",
+    "changamire dombo",
+    "changamire",
+    "the empire"
+  ],
+  "engmon": [
+    "liz 2"
+  ],
+  "epics": [
+    "illiad and odyssey",
+    "uta-napisthim",
+    "hrefnesholt",
+    "vanara sena",
+    "mount purgatory",
+    "ghaaran",
+    "eddic poetry",
+    "eddic poem",
+    "eddic poems",
+    "hrut herjolfsson",
+    "hákonar saga góða",
+    "thorbjorn thorsteinsson",
+    "chrysaor",
+    "redcrosse knight",
+    "72 earthly warriors",
+    "belacane",
+    "utnapishtin"
+  ],
+  "expeditions": [
+    "pierre cruzatte",
+    "joão lopes carvalho"
+  ],
+  "explorers": [
+    "isabel sodré",
+    "pierre cruzatte",
+    "seegloo",
+    "careta",
+    "the home of the blizzard",
+    "anna maria mannerheim",
+    "peregrinação"
+  ],
+  "finds": [
+    "mekhir",
+    "tanakh at qumran",
+    "great tumuli",
+    "gnostic gospels",
+    "sumerian tablets",
+    "cnossians"
+  ],
+  "firstlady": [
+    "joshua johnson",
+    "dash"
+  ],
+  "france": [
+    "ingomer"
+  ],
+  "frenchrev": [
+    "guillaume dubarry"
+  ],
+  "greekgods": [
+    "polias",
+    "aegophagus",
+    "bacchic",
+    "greek god of wine",
+    "greek goddess of the earth",
+    "caucasian eagle",
+    "birth of artemis and apollo",
+    "eleuthia"
+  ],
+  "greekleaders": [
+    "chest of cypselus",
+    "arieus"
+  ],
+  "greekmonu": [
+    "temple of athena",
+    "isle of delphos",
+    "eleusina",
+    "eleusinian",
+    "elefsis",
+    "branchidae",
+    "ano englianos",
+    "altis",
+    "cnossus",
+    "cnossians"
+  ],
+  "greekphil": [
+    "homo mensura"
+  ],
+  "hansa": [
+    "norra bantorget",
+    "capital of sweden",
+    "silicon allee",
+    "cityberlin",
+    "rheinhausen",
+    "büderich",
+    "stood",
+    "reideburg"
+  ],
+  "heroes": [
+    "hrefnesholt",
+    "ríastrad",
+    "les enfances ogier"
+  ],
+  "hoaxes": [
+    "loch ness monster",
+    "nessy",
+    "nessiteras rhombopteryx",
+    "cereology",
+    "malvina",
+    "margaret fox",
+    "112 ocean avenue",
+    "george lutz",
+    "kathy lutz",
+    "richard heene",
+    "diana vaughan",
+    "edward tudor",
+    "cutler/twining memo",
+    "the protocols"
+  ],
+  "houses": [
+    "india's golden age",
+    "kingdom of korea",
+    "kingdom of vietnam",
+    "kingdom of burma",
+    "saxon kings",
+    "tzu",
+    "maripgan"
+  ],
+  "impress": [
+    "noa noa"
+  ],
+  "india": [
+    "nandivardhana",
+    "prolaya vema reddi",
+    "triparvata",
+    "mughlai",
+    "india's golden age"
+  ],
+  "indiapeople": [
+    "kunika lal",
+    "sadachara smruti",
+    "madhavacharya"
+  ],
+  "inv1": [
+    "lifting charge",
+    "timepiece",
+    "timekeeping device",
+    "plowing",
+    "bespectacled",
+    "temperature gauge",
+    "ginning",
+    "willowing",
+    "gin mill",
+    "invention of the printing press",
+    "canopy",
+    "tailrace",
+    "headrace",
+    "handloom weaver",
+    "horologe",
+    "english lock",
+    "sheave",
+    "parasols",
+    "sodium tallowate",
+    "sling psychrometer"
+  ],
+  "inv2": [
+    "passenger vehicle",
+    "passenger vehicles",
+    "autos",
+    "choo-choo train",
+    "turntables",
+    "typebar",
+    "thomas saint",
+    "needle guard",
+    "x-ray radiation",
+    "soft x-rays",
+    "hard x-ray",
+    "flickers",
+    "lift shaft",
+    "unpasteurized",
+    "extren",
+    "treo",
+    "colfarit",
+    "meat locker",
+    "gearmotor",
+    "power unit",
+    "ac waveform",
+    "ac mains",
+    "ac voltage",
+    "gondola",
+    "passenger car",
+    "saxy",
+    "cartridge pen",
+    "armored corvette",
+    "germicidal",
+    "twin tub",
+    "garden tractor",
+    "faxing",
+    "passive speakers",
+    "primary winding",
+    "secondary winding",
+    "frame",
+    "arc tube",
+    "fundoscopy",
+    "funduscopy",
+    "rawmix",
+    "bombardon",
+    "brai"
+  ],
+  "islamrulers": [
+    "al-sahba bint rabi'a",
+    "askiya"
+  ],
+  "japan": [
+    "modernization of japan"
+  ],
+  "korea": [
+    "kingdom of korea",
+    "maripgan"
+  ],
+  "latam": [
+    "juan albano pereira márquez"
+  ],
+  "libraries": [
+    "sumerian tablets",
+    "university of al karaouine"
+  ],
+  "lost": [
+    "zairian",
+    "zairians",
+    "independence day"
+  ],
+  "maths": [
+    "katharina gsell",
+    "flyology"
+  ],
+  "medthinkers": [
+    "sadachara smruti"
+  ],
+  "medwomen": [
+    "liber manualis"
+  ],
+  "mesogods": [
+    "e-zida",
+    "nam-shub",
+    "shukaletuda",
+    "dingirma",
+    "uanna",
+    "utuabzu"
+  ],
+  "mesopotamia": [
+    "kassite",
+    "kassite babylonia"
+  ],
+  "moon": [
+    "janet shearon",
+    "marion gaddys moon"
+  ],
+  "mughal": [
+    "kulsum zamani begum",
+    "mirza jahan shah"
+  ],
+  "naval": [
+    "southern force",
+    "battle of the capes"
+  ],
+  "norsegods": [
+    "germanic mercury",
+    "lyngvi",
+    "fositesland",
+    "mona",
+    "alfrigg",
+    "mökkurkálfi",
+    "hlóra",
+    "hildisvini",
+    "frija"
+  ],
+  "norway": [
+    "gloria ex amore patriae",
+    "eric"
+  ],
+  "novels": [
+    "teresa panza",
+    "henry clerval",
+    "sonya marmeladova",
+    "st. john rivers",
+    "blanche ingram",
+    "thrushcross grange",
+    "joe gargery",
+    "andrea cavalcanti",
+    "konstantin levin",
+    "konstantin dmitrievitch levin",
+    "st. petersburg, missouri",
+    "pew",
+    "pedro de mendez",
+    "kolya krassotkin",
+    "ned land",
+    "good wives",
+    "jane fairfax",
+    "fanny dashwood",
+    "pearl prynne",
+    "martha cratchit",
+    "jia zheng",
+    "jia yuanchun",
+    "jia lian",
+    "qin keqing",
+    "isabella thorpe",
+    "james morland",
+    "inspector bucket",
+    "gabriel oak",
+    "erotolepsy",
+    "yevgeny bazarov",
+    "eugene bazarov",
+    "tatiana larina",
+    "marquise de merteuil",
+    "vicomte de valmont",
+    "clara sesemann",
+    "pechorin",
+    "laurent leclaire",
+    "uncle toby",
+    "sheik ilderim",
+    "kukuanaland",
+    "dotheboys hall",
+    "john thornton",
+    "72 earthly warriors",
+    "bonadventure pencroff",
+    "harbert brown",
+    "gedéon spilett",
+    "impey barbicane",
+    "michel ardan",
+    "georges duroy",
+    "ik ben makelaar in koffie",
+    "arthur donnithorne"
+  ],
+  "olympics": [
+    "1896 olympics",
+    "1896 olympic games",
+    "first olympic games",
+    "1948 summer olympic games",
+    "austerity olympics",
+    "1984 summer olympic games",
+    "1964 summer olympic games",
+    "1936 summer olympic games",
+    "1980 summer olympic games",
+    "1992 summer olympic games",
+    "1996 summer olympic games",
+    "1960 summer olympic games",
+    "1988 summer olympic games",
+    "1968 summer olympic games",
+    "1972 summer olympic games",
+    "1976 summer olympic games",
+    "1994 winter olympic games",
+    "1912 olympic games",
+    "1912 olympics",
+    "1952 summer olympic games",
+    "1956 summer olympic games",
+    "1984 winter olympic games",
+    "1988 olympic winter games",
+    "1988 winter olympic games",
+    "xv olympic winter games",
+    "1998 winter olympic games",
+    "1980 winter olympic games",
+    "1920 olympic games",
+    "1920 olympics",
+    "1904 olympics",
+    "1904 olympic games",
+    "1936 winter olympic games",
+    "1960 winter olympic games",
+    "1992 olympic winter games",
+    "xvi olympic winter games",
+    "1992 winter olympic games"
+  ],
+  "outlaws": [
+    "stringybark creek police murders",
+    "doolin-dalton gang",
+    "bill power",
+    "villistas",
+    "jesús salas barraza",
+    "quilt arnold"
+  ],
+  "paintings": [
+    "evdokia urusova"
+  ],
+  "palaces": [
+    "chinese imperial court",
+    "st stephen's hall",
+    "sala del maggior consiglio",
+    "cnossians",
+    "marienbrücke"
+  ],
+  "pandemics": [
+    "frau troffea"
+  ],
+  "persia": [
+    "madig"
+  ],
+  "playwrights": [
+    "oedipus cycle",
+    "plays pleasant",
+    "the wind among the reeds",
+    "la verdad sospechosa"
+  ],
+  "poets": [
+    "sara fricker",
+    "sarah fricker",
+    "almansor",
+    "the filocolo",
+    "the jumblies"
+  ],
+  "polar": [
+    "seegloo",
+    "the home of the blizzard",
+    "anna maria mannerheim"
+  ],
+  "polis": [
+    "lacedaemonians",
+    "lacedaemonian",
+    "thebans",
+    "rhodians",
+    "rhodian",
+    "samians",
+    "samian",
+    "chians",
+    "corfiot",
+    "thasians",
+    "thasian",
+    "phoceans",
+    "megaregion",
+    "supercity"
+  ],
+  "provinces": [
+    "transalpine",
+    "cresima"
+  ],
+  "queens": [
+    "liz 2"
+  ],
+  "reformation": [
+    "marjorie bowes",
+    "joan of valois (1556)"
+  ],
+  "renaissance": [
+    "gherardo perini"
+  ],
+  "revs": [
+    "dwarf wheat",
+    "choi in-kyu",
+    "war of the three kingdoms",
+    "founding of the united states",
+    "age of revolution"
+  ],
+  "romanbuild": [
+    "cinema nuovo olimpia",
+    "heliopolis",
+    "heliopolis of phoenicia",
+    "heliopolis syriaca"
+  ],
+  "romangods": [
+    "ultor",
+    "greek god of wine",
+    "blindfolded goddess",
+    "virilis",
+    "mitraism",
+    "fontinalia"
+  ],
+  "rome": [
+    "aemilia clara",
+    "fabia orestilla",
+    "bilimer",
+    "gaius caesar"
+  ],
+  "romebattles": [
+    "defeat of boudica",
+    "iceni revolt",
+    "boudican revolt"
+  ],
+  "ruins": [
+    "cnossians",
+    "susians",
+    "gerasenes",
+    "juan crisóstomo nieto",
+    "heliopolis",
+    "susa iii"
+  ],
+  "samurai": [
+    "nomi no ōkata",
+    "mitsuke motouji"
+  ],
+  "scientists": [
+    "vienna psychoanalytic association",
+    "de nova stella",
+    "katharina gsell",
+    "lam."
+  ],
+  "scripts": [
+    "semitic scripts",
+    "hindi script",
+    "hindi alphabet",
+    "shirorekha",
+    "middle bronze age alphabets",
+    "semitic symbol",
+    "kuban alphabet",
+    "proto-bulgar signs",
+    "talas alphabet",
+    "ashurian aramaic",
+    "hang",
+    "egyp",
+    "geor"
+  ],
+  "sculptures": [
+    "charles champoiseau",
+    "venus pudica"
+  ],
+  "seasia": [
+    "siamese shan states",
+    "kingdom of burma",
+    "kingdom of vietnam",
+    "pakuan"
+  ],
+  "shipsx": [
+    "thor heyerdal",
+    "berrio",
+    "waʻa kaulua"
+  ],
+  "space": [
+    "mircorp",
+    "lunar module snoopy",
+    "command module charlie brown",
+    "orbital workshop"
+  ],
+  "speeches": [
+    "albert, duke of york",
+    "impeachment process of richard nixon",
+    "impeachment process against nixon",
+    "impeachment of richard nixon",
+    "tafari makonnen"
+  ],
+  "suffrage": [
+    "anmer"
+  ],
+  "traderoutes": [
+    "elm grove, missouri",
+    "indo-atlantic"
+  ],
+  "treasures": [
+    "sword of state",
+    "jacob waltz",
+    "moctezuma xocoyotzin",
+    "motecuhzoma xocoyotzin",
+    "pech-le-cardou",
+    "kalhu",
+    "calah",
+    "atawallpa"
+  ],
+  "treaties": [
+    "albert lluberas",
+    "italian war of 1521–26",
+    "italian war of 1521",
+    "annexation of the sudetenland",
+    "opening of korea",
+    "line of demarcation"
+  ],
+  "trials": [
+    "lydia dustin",
+    "sarah dustin",
+    "john goodwin",
+    "sebastian melmoth",
+    "bobby franks",
+    "archduchess maria antonia of austria",
+    "fører",
+    "jan huss",
+    "chamber of the pyx"
+  ],
+  "troy": [
+    "oxynios"
+  ],
+  "ukpm": [
+    "ugly rumours"
+  ],
+  "universities": [
+    "collège du plessis",
+    "festa das latas",
+    "latada",
+    "anderson college of medicine",
+    "shah dheri"
+  ],
+  "uspres": [
+    "donaldo j. trumpo"
+  ],
+  "vikings": [
+    "account of the viking othere"
+  ],
+  "walls": [
+    "kustaanmiekka"
+  ],
+  "wars": [
+    "holy league"
+  ],
+  "womensci": [
+    "flyology"
+  ],
+  "wonders": [
+    "diana of ephesus"
+  ],
+  "worship": [
+    "chapel of edward the confessor",
+    "ibrahim al-madani",
+    "duomo"
+  ],
+  "wrecks": [
+    "ariaen jacobsz",
+    "luthgardo niedo",
+    "frank w. \"billy\" tyne jr."
+  ],
+  "ww1": [
+    "battle day"
+  ],
+  "ww2": [
+    "badayev warehouses",
+    "southern force",
+    "invaded the soviet union",
+    "fall of paris",
+    "germans invaded norway",
+    "hill 400",
+    "burgberg",
+    "lötzen decision",
+    "greek invasion of albania (1941)",
+    "operation span"
+  ],
+  "ww2cmd": [
+    "beast of bataan"
+  ]
+}

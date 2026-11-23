@@ -1,11 +1,15 @@
-// Dug Up — suggests new answers and aliases from Wikipedia, for the owner to review (Feature Spec 10).
+// Dug Up — suggests new answers and aliases from Wikipedia, for the owner to review (Feature Specs 10 and 11).
 //
 //   node tools/suggest-answers.mjs <id> [<id> ...]   fetch and write tools/suggestions/<id>.txt (~1–3 min per prompt)
+//     --all                                          every prompt
+//     --aliases-only                                 only new aliases for the answers there are (works without SOURCES)
 //     --min <views>                                  views over 60 days a new answer needs to be suggested as active
-//   node tools/suggest-answers.mjs --apply <id>      add the active lines of the reviewed file to js/data/prompts.js
+//   node tools/suggest-answers.mjs --apply <id> [...] | --apply --all
+//                                                    add the active lines of the reviewed files to js/data/prompts.js
 //
 // Nothing goes into the game without review: the suggestion file lists candidates in PROMPT_DATA format, and only
-// --apply writes, after checking that every new name and alias leads to its own answer. Built-in modules only.
+// --apply writes, after checking that every new name and alias leads to its own answer. Aliases turned down in a
+// review go into tools/alias-rejects.json, so they are not suggested again. Built-in modules only.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -86,16 +90,17 @@ async function pageInfo(titles){
   for (let i = 0; i < titles.length; i += 50){
     const batch = titles.slice(i, i + 50), norm = {}, red = {}, pages = {};
     await query({ action: 'query', titles: batch.join('|'), redirects: '1', prop: 'description|pageviews|redirects|pageprops',
-                  ppprop: 'disambiguation', pvipdays: String(DAYS), rdnamespace: '0', rdlimit: 'max' }, j => {
+                  ppprop: 'disambiguation', pvipdays: String(DAYS), rdnamespace: '0', rdlimit: 'max', rdprop: 'title|fragment' }, j => {
       const q = j.query || {};
       (q.normalized || []).forEach(x => { norm[x.from] = x.to; });
       (q.redirects || []).forEach(x => { red[x.from] = x.to; });
       (q.pages || []).forEach(pg => {
-        const e = pages[pg.title] || (pages[pg.title] = { missing: !!pg.missing, desc: '', views: null, redirects: [], disamb: false });
+        const e = pages[pg.title] || (pages[pg.title] = { missing: !!pg.missing, desc: '', views: null, redirects: [], sections: 0, disamb: false });
         if (pg.description) e.desc = pg.description;
         if (pg.pageviews && e.views === null) e.views = sumViews(pg.pageviews);
         if (pg.pageprops && 'disambiguation' in pg.pageprops) e.disamb = true;
-        (pg.redirects || []).forEach(r => e.redirects.push(r.title));
+        // a redirect to a section of the article names a part of it ("Treaty of Villafranca" → the war's #Peace)
+        (pg.redirects || []).forEach(r => { if (r.fragment) e.sections++; else e.redirects.push(r.title); });
       });
     });
     batch.forEach(t => { let c = norm[t] || t; c = red[c] || c; const pg = pages[c]; if (pg && !pg.missing) out[t] = { canon: c, ...pg, views: pg.views || 0 }; });
@@ -104,15 +109,22 @@ async function pageInfo(titles){
   process.stdout.write('\n');
   return out;
 }
-// Page views of the redirect pages themselves (how often people use that name)
-async function redirectViews(titles){
-  const out = {};
+// Page views of the redirect pages themselves (how often people use that name), and how Wikipedia tags them
+// ("Redirects from alternative names", "Redirects from subtopics", ...)
+async function redirectInfo(titles){
+  const views = {}, tags = {};
   for (let i = 0; i < titles.length; i += 50){
-    await query({ action: 'query', titles: titles.slice(i, i + 50).join('|'), prop: 'pageviews', pvipdays: String(DAYS) }, j => {
-      ((j.query && j.query.pages) || []).forEach(pg => { if (pg.pageviews && out[pg.title] == null) out[pg.title] = sumViews(pg.pageviews); });
+    await query({ action: 'query', titles: titles.slice(i, i + 50).join('|'), prop: 'pageviews|categories', pvipdays: String(DAYS),
+                  clshow: 'hidden', cllimit: 'max' }, j => {
+      ((j.query && j.query.pages) || []).forEach(pg => {
+        if (pg.pageviews && views[pg.title] == null) views[pg.title] = sumViews(pg.pageviews);
+        (pg.categories || []).forEach(c => { if (c.title.startsWith('Category:Redirects ')) (tags[pg.title] = tags[pg.title] || []).push(c.title.slice(19)); });
+      });
     });
+    if (titles.length > 200) process.stdout.write(`\r  ${Math.min(i + 50, titles.length)}/${titles.length} redirects`);
   }
-  return out;
+  if (titles.length > 200) process.stdout.write('\n');
+  return { views, tags };
 }
 
 /* ---------- PROMPT_DATA text ---------- */
@@ -172,28 +184,68 @@ const firstYear = s => { const m = (s || '').match(/\b(\d{3,4})\b/); return m ? 
 const fmt = n => n.toLocaleString('en-US').replace(/,/g, ' ');
 const aliasText = t => clean(t).toLowerCase();
 const usableName = t => !/[:]|^List of|^Lists of|^Timeline of|^History of/i.test(t) && t.length <= 45 && t.split(/\s+/).length <= 6;
+// characters that would break the answer list (a template literal of |-separated lines) or the alias list (;)
+const UNSAFE = /[`\\$|;]/;
 // looks like something else than an answer: a person, place, text or group page ("King of Ur", "Kassite deities")
 const NOT_ANSWER = { desc: /\b(king|ruler|city|temple|texts?|word|name|sign|list|planet|artifact|office|tree|cuneiform|laws)\b/i,
                      title: /\b(deities|gods|mythology|religions?|myths?)$|^(Cult|Temple|Family|Folk) /i };
-// a redirect that names a text, place or idea about the answer, not the answer ("Epic of Erra", "Ashurism")
-const NOT_ALIAS = /\b(epic|myths?|cult|temple|worship|religion|statue|hymn|song|list|family|descent|legend|poem|deities|gods|battles?|siege|treaty|convention|act|tax|army|ultimatum|genocide|massacre|expedition|election|raid|peace|declaration|proclamation|events|causes|aftermath|origins|timeline|theatre|theater|phase)\b|ism\b/i;
+// What kind of thing a name is, from its words. A redirect may only be of kinds its answer has, or kinds that are
+// common among the prompt's answers: "Battle of Melouna" is not a war, "Ishtar Gate" not a god, "Assassination of
+// Lincoln" not a person, but "Segovia Castle" is fine for a castle prompt. Words not listed here say nothing.
+const KINDS = {
+  conflict: 'war wars rebellion rebellions revolt revolts uprising uprisings rising risings revolution revolutions insurrection conflict conflicts crusade crusades invasion invasions conquest conquests campaign campaigns mutiny feud intervention occupation insurgency',
+  battle: 'battle battles siege sieges raid raids skirmish engagement landing landings offensive operation campaign campaigns',
+  treaty: 'treaty treaties peace convention agreement accord accords pact act declaration proclamation charter edict capitulation armistice truce compromise protocol concordat ultimatum',
+  force: 'army armies navy fleet regiment legion corps brigade militia league alliance coalition',
+  castle: 'castle castles palace palaces fortress fortresses fort forts citadel chateau schloss burg festung alcazar kremlin',
+  church: 'temple temples cathedral church mosque abbey monastery basilica shrine chapel minster synagogue',
+  bridge: 'bridge bridges brucke canal canals aqueduct',
+  wall: 'wall walls gate gates rampart',
+  tomb: 'tomb tombs mausoleum pyramid pyramids necropolis',
+  institution: 'library university college academy school museum observatory',
+  monument: 'statue colossus monument column arch obelisk',
+  venue: 'amphitheatre amphitheater stadium circus forum tower',
+  polity: 'empire empires kingdom kingdoms dynasty dynasties sultanate caliphate khanate republic confederation confederacy duchy principality',
+  place: 'city cities town village province region county island river mountain street square district heights hill hills ridge plateau pass valley bay cape lake forest harbour harbor',
+  work: 'book books novel poem poems epic saga hymn song songs opera symphony manuscript codex gospel chronicle treatise essay speech address painting portrait sculpture',
+  group: 'family families clan tribe tribes people peoples descendants house',
+  event: 'massacre genocide election trial execution murder disappearance controversy affair incident crisis scandal disaster sinking fire flood earthquake pandemic epidemic plague tax expedition',
+  meta: 'list lists timeline history causes aftermath origins legacy events death assassination funeral burial reign cult worship religion mythology myth myths legend legends deities gods theatre theater phase'
+};
+const KIND_OF = new Map();
+for (const [kind, words] of Object.entries(KINDS)) words.split(' ').forEach(w => KIND_OF.set(w, [...(KIND_OF.get(w) || []), kind]));
+const kindsOf = text => {
+  const out = new Set();
+  text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/[^a-z]+/).forEach(w => {
+    (KIND_OF.get(w) || []).forEach(k => out.add(k));
+    if (w.length > 5 && w.endsWith('ism')) out.add('ism');                 // "Ashurism", "Calvinism"
+  });
+  return out;
+};
+// Wikipedia's own tags for a redirect that names something else than the answer
+const BAD_TAG = /^(to (sections|embedded anchors|anchors|related topics|list entries|related words)|from (subtopics|members|relatives|related words|ambiguous terms|incorrect names|works|songs|books|quotations|phrases|events|fictional characters|team members|slogans|eponyms|non-neutral names|people|demonyms|spouses|creative works|opening lines|iso 15924 codes|taxonomic author abbreviations)|from .*domain names)/i;
+// Aliases the owner turned down, per prompt, so they don't come back on the next run (kept in git)
+const REJECTS_FILE = path.join(ROOT, 'tools', 'alias-rejects.json');
+const REJECTS = fs.existsSync(REJECTS_FILE) ? JSON.parse(fs.readFileSync(REJECTS_FILE, 'utf8')) : {};
 
-async function suggest(id, minArg){
+async function suggest(id, minArg, aliasesOnly){
   const src0 = fs.readFileSync(DATA_FILE, 'utf8');
   const G0 = loadWith(src0);
-  const p = G0.PROMPTS.find(x => x.id === id), S = SOURCES[id];
+  const p = G0.PROMPTS.find(x => x.id === id), S = SOURCES[id] || {};
   if (!p) throw new Error(`unknown prompt ${id}`);
-  if (!S) throw new Error(`no Wikipedia sources for ${id} yet: add them to SOURCES in tools/suggest-answers.mjs`);
+  if (!SOURCES[id] && !aliasesOnly) throw new Error(`no Wikipedia sources for ${id} yet: add them to SOURCES in tools/suggest-answers.mjs, or use --aliases-only`);
   console.log(`${id}: «${p.q}», ${p.answers.length} answers`);
 
   // candidates, with where they came from
   const from = {};
   const add = (titles, label, section) => titles.forEach(t => { if (!from[t]) from[t] = { label, section }; });
-  for (const c of S.cats || []) add(await categoryPages(c), c.replace('Category:', 'kategori: '), 'main');
-  for (const l of S.lists || []) add(await listLinks(l), 'liste: ' + l, 'main');
-  for (const c of (S.extra && S.extra.cats) || []) add(await categoryPages(c), c.replace('Category:', 'kategori: '), 'extra');
+  if (!aliasesOnly){
+    for (const c of S.cats || []) add(await categoryPages(c), c.replace('Category:', 'kategori: '), 'main');
+    for (const l of S.lists || []) add(await listLinks(l), 'liste: ' + l, 'main');
+    for (const c of (S.extra && S.extra.cats) || []) add(await categoryPages(c), c.replace('Category:', 'kategori: '), 'extra');
+  }
   const cands = Object.keys(from).filter(t => usableName(t) && (!S.title || S.title.test(t)));
-  console.log(`  ${cands.length} candidate titles`);
+  if (!aliasesOnly) console.log(`  ${cands.length} candidate titles`);
 
   const answerTitles = [...new Set(p.answers.map(a => a.wiki))];
   const info = await pageInfo([...new Set([...answerTitles, ...cands])]);
@@ -249,10 +301,35 @@ async function suggest(id, minArg){
   const G1 = loadWith(src1), p1 = G1.PROMPTS.find(x => x.id === id);
   const aliasCands = [];                                       // [display, redirect title]
   const aliasTitle = S.title ? new RegExp(S.title.source, 'i') : null;
+  // kinds of thing that are normal in this prompt (castles for a castle prompt): in at least 10 % of its answers
+  const kindCount = new Map();
+  p.answers.forEach(a => kindsOf(a.display).forEach(k => kindCount.set(k, (kindCount.get(k) || 0) + 1)));
+  const common = new Set([...kindCount].filter(([, n]) => n >= Math.max(2, p.answers.length * 0.1)).map(([k]) => k));
+  const skipped = { sections: 0, kind: 0, tag: 0, views: 0, rejected: 0 };
+  const rejected = new Set((REJECTS[id] || []).map(s => G1.normalize(s).key));
+  // the words of a name without plural s, as a bag: "Valois-Habsburg War" = "Habsburg–Valois Wars"
+  const bag = n => n.words.map(w => w.replace(/s$/, '')).sort().join(' ') + '#' + n.digits;
+  const bagOwner = new Map();
+  p1.answers.forEach(a => a.keys.forEach(k => bagOwner.set(bag(k), bagOwner.has(bag(k)) && bagOwner.get(bag(k)) !== a.display ? null : a.display)));
+  const plainWords = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/[^a-z]+/).filter(Boolean);
   const consider = (display, wikiCanon, redirects) => redirects.forEach(r => {
-    if (!usableName(r) || NOT_ALIAS.test(r) || (aliasTitle && !aliasTitle.test(r))) return;
+    if (!usableName(r) || (aliasTitle && !aliasTitle.test(r)) || UNSAFE.test(r)) return;
+    if (clean(r).split(/\s+/).length > 5) return;                       // a sentence or a description, not a name
+    if (/[a-z]\d|\b\d+(?!st|nd|rd|th)[a-z]/i.test(r)) return;           // "0bama", but "44th" and "1857 rebellion" are fine
+    const own = kindsOf(display + ' ' + wikiCanon);
+    if ([...kindsOf(r)].some(k => !own.has(k) && !common.has(k))){ skipped.kind++; return; }   // another kind of thing
+    // words the game leaves out when it compares names ("revolution", "battle", "king"): if the answer doesn't
+    // have the word itself, the alias turns into something shorter ("American Revolution War" → "american war")
+    const dw = new Set(plainWords(display + ' ' + wikiCanon));
+    if (plainWords(r).some(w => !['the', 'of', 'a', 'an', 'and', 'at', 'in', 'on'].includes(w) && !dw.has(w) && (() => { const m = G1.normalize(w); return !m.letters && !m.digits; })())) return;
     const n = G1.normalize(aliasText(r));
     if (n.letters.length < 3) return;
+    // one word that only says what kind of thing it is ("The Empire", "Battle of the Capes" → "capes"): the game would
+    // also take it as the start of any other name ("Cape Bon", "Empire of Japan")
+    if (n.words.length === 1 && [n.words[0], n.words[0].replace(/s$/, '')].some(w => KIND_OF.has(w))){ skipped.kind++; return; }
+    if (rejected.has(n.key)){ skipped.rejected++; return; }
+    const bo = bagOwner.get(bag(n));
+    if (bo !== undefined && bo !== display) return;                     // the same words as another answer's name
     const others = elsewhere.get(n.key);
     if (others && !others.has(wikiCanon)) return;              // another prompt's name for something else
     const m = G1.matchAnswer(p1, aliasText(r));
@@ -261,15 +338,21 @@ async function suggest(id, minArg){
     if (m.type === 'nope' || m.type === 'amb') return;
     aliasCands.push([display, r]);
   });
-  p.answers.forEach(a => { const e = info[a.wiki]; if (e) consider(a.display, e.canon, e.redirects); });
+  // an answer that is a part of its article ("Trial of Marie Antoinette" → Marie Antoinette, "Palace of Knossos" →
+  // Knossos) or one of many in it ("Buluc Chabtan" → Maya deities) gets no aliases: the article's other names are
+  // names of something else than the answer. Seen from the kinds of the two names: they must be the same.
+  const partOf = (display, canon) => { const d = kindsOf(display), c = kindsOf(canon); return d.size !== c.size || [...d].some(k => !c.has(k)); };
+  p.answers.forEach(a => { const e = info[a.wiki]; if (e && !partOf(a.display, e.canon)){ skipped.sections += e.sections; consider(a.display, e.canon, e.redirects); } });
   active.forEach(r => consider(r.display, r.title, r.redirects));
   console.log(`  ${aliasCands.length} redirects not accepted yet, fetching their views`);
-  const rv = await redirectViews([...new Set(aliasCands.map(x => x[1]))]);
+  const ri = await redirectInfo([...new Set(aliasCands.map(x => x[1]))]);
   const aliasMap = new Map();                                 // display → [{alias, views}]
   for (const [d, r] of aliasCands){
-    const v = rv[r] || 0; if (v < MIN_ALIAS_VIEWS) continue;
+    const v = ri.views[r] || 0; if (v < MIN_ALIAS_VIEWS){ skipped.views++; continue; }
+    const tags = ri.tags[r] || [];
+    if (tags.some(t => BAD_TAG.test(t))){ skipped.tag++; continue; }   // Wikipedia says it's a part of, or related to, the answer
     const list = aliasMap.get(d) || []; const al = aliasText(r);
-    if (!list.some(x => G1.normalize(x.alias).key === G1.normalize(al).key)) list.push({ alias: al, views: v, from: r });
+    if (!list.some(x => G1.normalize(x.alias).key === G1.normalize(al).key)) list.push({ alias: al, views: v, from: r, tag: (tags.find(t => /^from /.test(t)) || '').replace(/^from /, '') });
     aliasMap.set(d, list);
   }
   for (const [d, list] of aliasMap) aliasMap.set(d, list.sort((a, b) => b.views - a.views).slice(0, MAX_ALIASES));
@@ -282,7 +365,8 @@ async function suggest(id, minArg){
   const L = [];
   L.push(`# Dug Up — forslag til «${p.q}» (${id})`);
   L.push(`# Generert ${new Date().toISOString().slice(0, 10)} av tools/suggest-answers.mjs fra Wikipedia. Visninger = sidevisninger siste ${DAYS} dager.`);
-  L.push(`# Spillet har ${p.answers.length} svar i dag. Aktive forslag har minst ${fmt(min)} visninger (de 10 % minst leste svarene i dag ligger under), høyst ${MAX_ACTIVE} av dem.`);
+  if (aliasesOnly) L.push(`# Spillet har ${p.answers.length} svar i dag. Denne fila har bare nye aliaser for dem, ikke nye svar.`);
+  else L.push(`# Spillet har ${p.answers.length} svar i dag. Aktive forslag har minst ${fmt(min)} visninger (de 10 % minst leste svarene i dag ligger under), høyst ${MAX_ACTIVE} av dem.`);
   L.push('#');
   L.push('# Slik godkjenner du:');
   L.push('#   - Linjer UTEN # foran blir lagt inn. Slett dem du ikke vil ha.');
@@ -298,71 +382,87 @@ async function suggest(id, minArg){
     return `${r.off ? '#' : ''}${data}    # ${info}`;
   };
   const main = rows.filter(r => r.section === 'main');
-  L.push(`# ===== NYE SVAR (${main.filter(r => !r.off).length} aktive) =====   tier|Navn|Wikipedia-tittel (tom = samme som navn)|aliaser`);
-  main.filter(r => !r.off).forEach(r => L.push(line(r)));
-  (S.groups || []).forEach((g, i) => {
-    const gr = rows.filter(r => r.section === 'g' + i);
+  if (!aliasesOnly){
+    L.push(`# ===== NYE SVAR (${main.filter(r => !r.off).length} aktive) =====   tier|Navn|Wikipedia-tittel (tom = samme som navn)|aliaser`);
+    main.filter(r => !r.off).forEach(r => L.push(line(r)));
+    (S.groups || []).forEach((g, i) => {
+      const gr = rows.filter(r => r.section === 'g' + i);
+      L.push('');
+      L.push(`# ===== ${g.label} (${gr.length}) =====`);
+      gr.forEach(r => L.push(line(r)));
+    });
     L.push('');
-    L.push(`# ===== ${g.label} (${gr.length}) =====`);
-    gr.forEach(r => L.push(line(r)));
-  });
-  L.push('');
-  L.push(`# ===== FLERE KANDIDATER, kommentert ut (${main.filter(r => r.off).length}): færre visninger, eller med en OBS =====`);
-  main.filter(r => r.off).forEach(r => L.push(line(r)));
-  if (S.extra){
+    L.push(`# ===== FLERE KANDIDATER, kommentert ut (${main.filter(r => r.off).length}): færre visninger, eller med en OBS =====`);
+    main.filter(r => r.off).forEach(r => L.push(line(r)));
+    if (S.extra){
+      L.push('');
+      L.push(`# ===== ${S.extra.label} (${rows.filter(r => r.section === 'extra').length}) =====`);
+      rows.filter(r => r.section === 'extra').forEach(r => L.push(line(r)));
+    }
     L.push('');
-    L.push(`# ===== ${S.extra.label} (${rows.filter(r => r.section === 'extra').length}) =====`);
-    rows.filter(r => r.section === 'extra').forEach(r => L.push(line(r)));
   }
-  L.push('');
   const existingAliases = p.answers.filter(a => aliasMap.has(a.display));
-  L.push(`# ===== NYE ALIASER for svar som finnes (${existingAliases.reduce((n, a) => n + aliasMap.get(a.display).length, 0)}) =====   +|Navn på svaret|alias;alias`);
+  const aliasCount = existingAliases.reduce((n, a) => n + aliasMap.get(a.display).length, 0);
+  L.push(`# ===== NYE ALIASER for svar som finnes (${aliasCount}) =====   +|Navn på svaret|alias;alias`);
   L.push('#   Fra Wikipedia-redirects som spillet ikke godtar i dag. Tallet er hvor ofte selve navnet ble brukt.');
   existingAliases.forEach(a => {
     const list = aliasMap.get(a.display);
-    L.push(`+|${a.display}|${list.map(x => x.alias).join(';')}    # ${list.map(x => `${x.alias}: ${fmt(x.views)}`).join(', ')}`);
+    L.push(`+|${a.display}|${list.map(x => x.alias).join(';')}    # ${list.map(x => `${x.alias}: ${fmt(x.views)}${x.tag ? ' (' + x.tag + ')' : ''}`).join(', ')}`);
   });
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const file = path.join(OUT_DIR, id + '.txt');
   fs.writeFileSync(file, L.join('\r\n') + '\r\n');
-  console.log(`  dropped: ${dropped.already} already answers, ${dropped.disamb} disambiguation pages` + (S.desc ? `, ${dropped.desc} list links that are not deities` : '') +
-    (S.title ? `, ${dropped.title} articles whose own title doesn't fit` : '') + (S.before ? `, ${dropped.before} from ${S.before} or later` : ''));
-  console.log(`  ${main.filter(r => !r.off).length} active new answers, ${main.filter(r => r.off).length} commented out` +
-    (S.groups || []).map((g, i) => `, group ${i + 1}: ${rows.filter(r => r.section === 'g' + i).length}`).join('') +
-    (S.extra ? `, ${rows.filter(r => r.section === 'extra').length} in the extra section` : '') + `, ${existingAliases.length} existing answers with new aliases`);
+  if (!aliasesOnly){
+    console.log(`  dropped: ${dropped.already} already answers, ${dropped.disamb} disambiguation pages` + (S.desc ? `, ${dropped.desc} list links that are not deities` : '') +
+      (S.title ? `, ${dropped.title} articles whose own title doesn't fit` : '') + (S.before ? `, ${dropped.before} from ${S.before} or later` : ''));
+    console.log(`  ${main.filter(r => !r.off).length} active new answers, ${main.filter(r => r.off).length} commented out` +
+      (S.groups || []).map((g, i) => `, group ${i + 1}: ${rows.filter(r => r.section === 'g' + i).length}`).join('') +
+      (S.extra ? `, ${rows.filter(r => r.section === 'extra').length} in the extra section` : ''));
+  }
+  console.log(`  aliases: ${aliasCount} for ${existingAliases.length} answers; skipped ${skipped.sections} redirects to a section, ${skipped.kind} of another kind, ` +
+    `${skipped.tag} tagged as a part or relative, ${skipped.views} under ${MIN_ALIAS_VIEWS} views, ${skipped.rejected} turned down before` + (common.size ? ` (normal here: ${[...common].join(', ')})` : ''));
   console.log(`  wrote ${path.relative(ROOT, file)}`);
+  return { id, aliases: aliasCount, answers: existingAliases.length };
 }
 
 /* ---------- apply ---------- */
-function apply(id){
+// Adds one prompt's reviewed file to the prompts.js text srcIn. Returns the new text, or the errors (and writes nothing).
+function apply(id, srcIn){
   const file = path.join(OUT_DIR, id + '.txt');
-  if (!fs.existsSync(file)) throw new Error(`no ${path.relative(ROOT, file)}: run node tools/suggest-answers.mjs ${id} first`);
+  if (!fs.existsSync(file)) return { errors: [`no ${path.relative(ROOT, file)}: run node tools/suggest-answers.mjs ${id} first`] };
   const newLines = [], aliasAdds = [], errors = [];
+  const G0 = loadWith(srcIn);
+  const rejected = new Set((REJECTS[id] || []).map(s => G0.normalize(s).key));   // turned down after the file was made
+  let dropped = 0;
   fs.readFileSync(file, 'utf8').split(/\r?\n/).forEach((raw, i) => {
     const l = raw.replace(/\s+#.*$/, '').trim();
     if (!l || l.startsWith('#')) return;
     const parts = l.split('|').map(s => s.trim());
     if (parts[0] === '+'){
-      if (parts.length !== 3 || !parts[1] || !parts[2]) errors.push(`line ${i + 1}: expected +|Answer|alias;alias`);
-      else aliasAdds.push([parts[1], parts[2].split(';').map(s => s.trim()).filter(Boolean)]);
+      if (parts.length !== 3 || !parts[1] || !parts[2]){ errors.push(`line ${i + 1}: expected +|Answer|alias;alias`); return; }
+      const als = parts[2].split(';').map(s => s.trim()).filter(Boolean), keep = als.filter(a => !rejected.has(G0.normalize(a).key));
+      keep.filter(a => UNSAFE.test(a)).forEach(a => errors.push(`line ${i + 1}: "${a}" has a character the answer list can't hold (\` \\ $ |)`));
+      dropped += als.length - keep.length;
+      if (keep.length) aliasAdds.push([parts[1], keep]);
     } else if (/^[1-6]$/.test(parts[0]) && parts.length >= 2 && parts.length <= 4 && parts[1]){
-      newLines.push(parts.join('|').replace(/\|+$/, ''));
+      if (/[`\\$]/.test(l)) errors.push(`line ${i + 1}: "${l}" has a character the answer list can't hold (\` \\ $)`);
+      else newLines.push(parts.join('|').replace(/\|+$/, ''));
     } else errors.push(`line ${i + 1}: expected tier|Name|Wikipedia title|aliases with tier 1–6: "${l}"`);
   });
-  if (!errors.length && !newLines.length && !aliasAdds.length) errors.push('nothing to add: every line is commented out');
+  if (!errors.length && !newLines.length && !aliasAdds.length) return { src: srcIn, errors: [], report: `${id}: nothing to add` };
   let src = null;
   if (!errors.length){
-    try { src = insertIntoList(fs.readFileSync(DATA_FILE, 'utf8'), id, newLines, aliasAdds); }
+    try { src = insertIntoList(srcIn, id, newLines, aliasAdds); }
     catch (e){ errors.push(e.message); }
   }
   if (!errors.length){
     const G = loadWith(src);
     errors.push(...validate(G, id, newLines.map(l => l.split('|')[1]), aliasAdds.flatMap(([d, als]) => als.map(a => [d, a]))));
   }
-  if (errors.length){ console.error(`Nothing was written. Fix ${path.relative(ROOT, file)}:\n  ` + errors.join('\n  ')); process.exit(1); }
+  if (errors.length) return { errors: errors.map(e => `${path.relative(ROOT, file)}: ${e}`) };
   // real names left out (commented-out candidates) that the new answers would now credit as something they are not
   // ("Ingrian War" as Iberian War): not an error, but usually a sign that the name belongs in the list too
-  const G0 = loadWith(fs.readFileSync(DATA_FILE, 'utf8')), G1 = loadWith(src);
+  const G1 = loadWith(src);
   const p0 = G0.PROMPTS.find(x => x.id === id), p1 = G1.PROMPTS.find(x => x.id === id);
   const said = m => m.type === 'ok' ? m.answer.display : m.type;
   const warnings = [];
@@ -371,17 +471,32 @@ function apply(id){
     const name = c[1].trim(), before = said(G0.matchAnswer(p0, name)), after = said(G1.matchAnswer(p1, name));
     if (after !== before && G1.matchAnswer(p1, name).type === 'ok') warnings.push(`"${name}" → ${after}`);
   });
-  fs.writeFileSync(DATA_FILE, src);
-  console.log(`${id}: added ${newLines.length} answers and ${aliasAdds.reduce((n, a) => n + a[1].length, 0)} aliases to ${aliasAdds.length} answers in ${DATA_SRC}.`);
-  if (warnings.length) console.log(`Check: ${warnings.length} names you left out are now credited as another answer. Add them too (remove #), or accept it:\n  ` + warnings.join('\n  '));
-  console.log('Next: npm test, npm run bench, then node tools/rarity.mjs and node tools/summaries.mjs.');
+  let report = `${id}: ${newLines.length} answers and ${aliasAdds.reduce((n, a) => n + a[1].length, 0)} aliases for ${aliasAdds.length} answers` +
+    (dropped ? ` (left out ${dropped} in ${path.relative(ROOT, REJECTS_FILE)})` : '');
+  if (warnings.length) report += `\n  Check: ${warnings.length} names you left out are now credited as another answer. Add them too (remove #), or accept it:\n    ` + warnings.join('\n    ');
+  return { src, errors: [], report };
 }
 
 const args = process.argv.slice(2);
-const ai = args.indexOf('--apply'), mi = args.indexOf('--min');
-if (ai >= 0){ apply(args[ai + 1]); }
-else {
-  const ids = args.filter((a, i) => !a.startsWith('--') && (mi < 0 || i !== mi + 1));
-  if (!ids.length){ console.error('usage: node tools/suggest-answers.mjs <id> [...] [--min <views>] | --apply <id>'); process.exit(1); }
-  for (const id of ids) await suggest(id, mi >= 0 ? +args[mi + 1] : null);
+const mi = args.indexOf('--min');
+const named = args.filter((a, i) => !a.startsWith('--') && (mi < 0 || i !== mi + 1));
+const ids = args.includes('--all') ? loadWith(fs.readFileSync(DATA_FILE, 'utf8')).PROMPTS.map(p => p.id) : named;
+if (!ids.length){ console.error('usage: node tools/suggest-answers.mjs <id> [...] | --all  [--aliases-only] [--min <views>]\n       node tools/suggest-answers.mjs --apply <id> [...] | --apply --all'); process.exit(1); }
+if (args.includes('--apply')){
+  // all files are checked first; prompts.js is written once, and only if every one of them is fine
+  // (with --all: every prompt that has a suggestion file)
+  let src = fs.readFileSync(DATA_FILE, 'utf8'); const errors = [], reports = [];
+  for (const id of ids){
+    if (!named.length && !fs.existsSync(path.join(OUT_DIR, id + '.txt'))) continue;
+    const r = apply(id, src);
+    if (r.errors.length) errors.push(...r.errors); else { src = r.src; reports.push(r.report); }
+  }
+  if (errors.length){ console.error('Nothing was written. Fix:\n  ' + errors.join('\n  ')); process.exit(1); }
+  fs.writeFileSync(DATA_FILE, src);
+  console.log(`Added to ${DATA_SRC}:\n` + reports.join('\n'));
+  console.log('Next: npm test, npm run bench, then node tools/rarity.mjs and node tools/summaries.mjs.');
+} else {
+  const done = [];
+  for (const id of ids) done.push(await suggest(id, mi >= 0 ? +args[mi + 1] : null, args.includes('--aliases-only')));
+  if (done.length > 1) console.log(`\n${done.reduce((n, d) => n + d.aliases, 0)} aliases for ${done.reduce((n, d) => n + d.answers, 0)} answers in ${done.length} prompts.`);
 }
