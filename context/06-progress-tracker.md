@@ -68,7 +68,8 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
   - **Kjent pris:**
     - Skrivefeil i første bokstav på korte navn godtas ikke lenger («Xeus»).
     - En del lange offisielle navn og omskrivinger fra Wikipedia-redirects godtas ikke lenger.
-  - **Ikke verifisert:** ekte nettleser hos eier og Vercel preview.
+  - **Verifisert:** GitHub Action er grønn på branchen, og Vercel preview er bygget uten feil.
+  - **Ikke verifisert:** eiers test i ekte nettleser.
   - **Data:** `tools/match-bench-data.json` (584 KB) er sjekket inn, slik at målingen kan gjentas med de samme tallene. Den publiseres også på dugup.eu/tools/, men inneholder bare offentlige Wikipedia-titler.
 - **2026-11-23 (Spec 08):** Workflowen ble pushet på branch og kjørte grønt på GitHub før merge (run 45148516925). Testene bruker lokal dato, og Actions kjører i UTC, så fristvarselet kan komme én dag forskjøvet rundt midnatt. GitHub slår av planlagte kjøringer i offentlige repoer etter 60 dager uten aktivitet; de månedlige commitene med rarity/summaries holder den i live. Actionen blokkerer ikke Vercel-deploy: en rød test stopper ikke en push til `main`, den varsler bare.
 - **2026-11-23 (Spec 07):** En bredere pikselpuss ble først prøvd (dithret lys, nye arm- og spadeanimasjoner, hit-stop, nye scroll/shard-sprites, nye farger i de dype lagene). Eier sammenlignet før og etter og likte originalen best, så branchen ble slettet uten commit. Bare to ekte feil ble rettet: overlapp på etikettene og sola bak HUD-en. Verifisert i headless Edge i alle døgnfaser og på 0/80/240/420/640 m. Pynten i jorda flytter seg litt fordi noen plasser hoppes over; ellers er utseendet uendret. Ikke verifisert: ekte nettleser hos eier og Vercel preview.

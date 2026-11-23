@@ -47,6 +47,6 @@
 ## 5. Verification Checklist
 - [x] Falske treff går klart ned i målingen; treffsikkerheten for skrivefeil og redirects faller lite. Skrivefeil opp, redirects −7,6 prosentpoeng, se over.
 - [x] Regresjonstester: Kubaba, Anzu, French Revolutionary Wars, Mexican War of Independence og Cisplatine War avvises, sammen med ti andre. Eksisterende typo-tester består, og 13 nye typo- og variant-tester er lagt til.
-- [ ] `npm test` grønn lokalt (28/28) og i GitHub Action.
+- [x] `npm test` grønn lokalt (28/28) og i GitHub Action på branchen (run 45154838864). Vercel preview bygget uten feil.
 - [x] Full runde (practice + daily, med feil svar og skrivefeil) i headless Edge uten konsollfeil.
 - [x] `06-progress-tracker.md` oppdatert.
