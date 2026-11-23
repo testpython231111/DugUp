@@ -3,7 +3,7 @@
 _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arbeidsøkt._
 
 ## Nåværende fase
-**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–08 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), og GitHub kjører testene ved hver push og daglig (Spec 08). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
+**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–09 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), og matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
 - _(ingen)_
@@ -13,6 +13,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
   - **Feil rettet:** Navn som ikke står på lista, rettes ikke lenger til et annet svar («Kubaba» → Zababa, «Anzu» → Apsu, «French Revolutionary Wars» og «Mexican War of Independence» → American Revolutionary War, «Cisplatine War» → Platine War).
   - **Måling:** Nytt verktøy `npm run bench` måler mot ekte Wikipedia-navn. Falske treff gikk fra 240 til 108 og kryss-treff fra 1 285 til 68. Skrivefeil godtas i 98,2 % av tilfellene (før 96,3 %), redirects i 61,7 % (før 69,3 %).
   - **Tester:** 28 grønne. Full runde verifisert i headless Edge.
+  - **Merget** til `main` 2026-11-23 etter eiers beslutning.
 - [x] 2026-11-23: **Spec 08 — GitHub Action kjører `npm test`.** `.github/workflows/test.yml` kjører testene ved hver push og pull request, daglig kl. 05:00 UTC og manuelt. Første kjøring på GitHub var grønn (26/26, Node 26.13.1). Status-merke i README. Merget til `main`.
 - [x] 2026-11-23: **Spec 07 — Etiketter og sol fri for overlapp.** Merget til `main` og verifisert live (publisert `app.js` er identisk med `main`). Tannhjul, flasker, steiner og røtter legges ikke lenger oppå era-etikettene eller 100M-merkene, og sola om dagen er flyttet bort fra dybdemåleren. 26 tester grønne.
 - [x] 2026-11-22: Spec 04–06 sjekket live på dugup.eu av eier: «det ser bra ut».
