@@ -3,13 +3,13 @@
 _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arbeidsøkt._
 
 ## Nåværende fase
-**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–10 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Spec 11 (Wikipedia-skrivemåter for alle prompts) er ferdig på branch og venter på merge. Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
+**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–11 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Alle 150 prompts har fått skrivemåter fra Wikipedia (Spec 11). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
 - (ingen)
 
 ## Completed
-- [x] 2026-11-23: **Spec 11 — Skrivemåter fra Wikipedia for alle prompts** (punkt 1 i planen under). Eier sa «ja kjør på». Ferdig på branch `feature/11-wiki-aliases`, og **venter på eiers beslutning om merge til `main`**.
+- [x] 2026-11-23: **Spec 11 — Skrivemåter fra Wikipedia for alle prompts** (punkt 1 i planen under). Eier sa «ja kjør på». Merget til `main` 2026-11-23 etter eiers beslutning («push merge og kjør ut»). GitHub Action var grønn på branchen (run 45199011504) og på `main` (run 45199024425). Publisert `prompts.js`, `app.js` og `index.html` på dugup.eu er identiske med `main`.
   - **Data:** 5 127 nye aliaser for 3 114 svar i 148 prompts. Ingen nye svar og ingen display endret. Eksempler: «Marc Aurel», «Axumites», «Tiwaz», «Sakyamuni», «Marshal Ney», «Hiuen Tsang» og «Fax machine».
   - **Verktøy:** `--all --aliases-only` og `--apply --all`. Det har nye regler mot feil skrivemåter (se specen). `tools/alias-rejects.json` har 564 avviste aliaser i 112 prompts.
   - **Måling:**
