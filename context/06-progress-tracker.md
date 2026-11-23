@@ -6,7 +6,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–06 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet. Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- _(ingen)_
+- [ ] 2026-11-23: **Spec 08 — GitHub Action kjører `npm test`.** Branch `feature/08-ci-tests`.
 
 ## Completed
 - [x] 2026-11-23: **Spec 07 — Etiketter og sol fri for overlapp.** Branch `fix/07-labels-sun` (ikke commitet ennå). Tannhjul, flasker, steiner og røtter legges ikke lenger oppå era-etikettene eller 100M-merkene, og sola om dagen er flyttet bort fra dybdemåleren. 26 tester grønne.

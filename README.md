@@ -2,6 +2,8 @@
 
 **Play at [dugup.eu](https://dugup.eu)**
 
+[![Tests](https://github.com/testpython231111/DugUp/actions/workflows/test.yml/badge.svg)](https://github.com/testpython231111/DugUp/actions/workflows/test.yml)
+
 Dug Up is a daily history trivia game in cosy pixel art. You get seven prompts and thirty seconds for each one. Every prompt has many right answers, and the obvious ones are just dirt: **the rarer your correct answer, the deeper you dig.**
 
 > *Name a Roman emperor.* &nbsp;Augustus? Topsoil. &nbsp;Pertinax? Now you're digging.
@@ -71,6 +73,8 @@ Run the automated checks before every change. They need [Node.js](https://nodejs
 ```sh
 npm test            # or: node tools/check.mjs
 ```
+
+GitHub runs the same checks on every push and pull request, and once a day (`.github/workflows/test.yml`), because Vercel deploys `main` without running them. The daily run catches date-based deadlines, such as freezing the rotation, even when nobody pushes. GitHub emails you when a run fails.
 
 The checks load `index.html` and its scripts without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, the daily rotation, and the generated rarity and summary files (and that the game never calls `fetch`). Daily digs that are already published (or due within 14 days) are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter digs that players have already seen. The snapshot only ever grows: `node tools/check.mjs --write-snapshot` adds the digs up to 14 days ahead and refuses to rewrite an existing one.
 

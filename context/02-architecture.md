@@ -25,6 +25,7 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 | `tools/load-game.mjs` | Laster `index.html` og script-filene i `node:vm` med en DOM-stub. Brukes av de tre andre verktøyene. |
 | `tools/rarity.mjs`, `tools/summaries.mjs` | Månedlige generatorer for `rarity.js` og `summaries.js` (se «Månedlig oppdatering»). |
 | `tools/rotation-snapshot.json` | Append-only logg over låste digs (Spec 04). |
+| `.github/workflows/test.yml` | GitHub Action som kjører `npm test` ved hver push og pull request og daglig kl. 05:00 UTC (Spec 08). Den blokkerer ikke Vercel-deploy, men varsler på e-post når noe er rødt. |
 | `js/app.js` | **Appen** i én IIFE, delt i seksjoner: |
 | | `CONFIG` (ROUND_SIZE, TIME_LIMIT, EPOCH, TIERS) |
 | | `SMALL UTILS` (store, hashStr, mulberry32, shuffle, esc, datoer) |
