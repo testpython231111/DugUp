@@ -6,7 +6,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–09 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), og matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- _(ingen)_
+- [ ] 2026-11-23: **Spec 10 — Flere svar fra Wikipedia (pilot: `mesogods`, `wars`).** Branch `feature/10-wiki-answers`.
 
 ## Completed
 - [x] 2026-11-23: **Spec 09 — Strammere matching.**

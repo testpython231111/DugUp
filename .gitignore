@@ -10,3 +10,6 @@ Thumbs.db
 
 # Node (for lokale verktøy/tester)
 node_modules/
+
+# Forslagsfiler fra tools/suggest-answers.mjs: arbeidsfiler som eier går gjennom, ikke data (Spec 10)
+tools/suggestions/
