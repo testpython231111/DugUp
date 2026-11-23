@@ -3,12 +3,20 @@
 _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arbeidsøkt._
 
 ## Nåværende fase
-**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–09 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), og matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
+**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–10 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- _(ingen)_
+_Ingenting._
 
 ## Completed
+- [x] 2026-11-23: **Spec 10 — Flere svar fra Wikipedia (pilot: `mesogods`, `wars`).** Merget til `main` 2026-11-23 etter eiers beslutning («ja kjør på»). GitHub Action var grønn på branchen (run 45180599229), og Vercel preview ble bygget uten feil.
+  - **Verktøy:** `tools/suggest-answers.mjs` foreslår svar og aliaser fra Wikipedia. `--apply` legger inn de godkjente linjene og advarer om utelatte navn som ville blitt godtatt som et annet svar.
+  - **Data:**
+    - mesogods: 67 → 136 svar.
+    - wars: 114 → 273 svar.
+    - 161 nye aliaser, for eksempel «100 years war», «usa civil war» og «sepoy rebellion».
+    - «Mexican War» er tvetydig.
+  - **Måling:** bench har 78 falske treff (før 108). Tester: 29 grønne. Full runde i headless Edge.
 - [x] 2026-11-23: **Spec 09 — Strammere matching.**
   - **Feil rettet:** Navn som ikke står på lista, rettes ikke lenger til et annet svar («Kubaba» → Zababa, «Anzu» → Apsu, «French Revolutionary Wars» og «Mexican War of Independence» → American Revolutionary War, «Cisplatine War» → Platine War).
   - **Måling:** Nytt verktøy `npm run bench` måler mot ekte Wikipedia-navn. Falske treff gikk fra 240 til 108 og kryss-treff fra 1 285 til 68. Skrivefeil godtas i 98,2 % av tilfellene (før 96,3 %), redirects i 61,7 % (før 69,3 %).
@@ -28,7 +36,13 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - [x] 2026-11-22: Kontekstsystem satt opp (`CLAUDE.md`, `context/01–06`, `.gitignore`, feature-spec-mal).
 
 ## Neste (i prioritert rekkefølge)
-- **Spec 10 (forslag) — Flere svar fra Wikipedia.** Flaskehalsen er at svarlistene er lukkede og håndlagde. Vanlige svar mangler, for eksempel Anzu, Humbaba og Mummu for mesopotamiske guder og mange kriger. Mange vanlige navneformer mangler også: «Mexican War», «100 Years War», «WW1», «30 years war», «USA civil war». Et verktøy kan foreslå svar og aliaser fra Wikipedia-kategorier, lister og redirects (samme data som `match-bench.mjs` bruker). Eieren godkjenner før noe legges i `PROMPT_DATA`. Mål med `npm run bench` etterpå. Trenger eiers grønt lys.
+- **Spec 11 (forslag) — Flere svar for resten av promptene, i bolker.** Bygger på verktøyet fra Spec 10. Trenger eiers grønt lys.
+  1. **Aliaser for alle 150 prompts.** Wikipedia-redirects for svarene som finnes. Det trenger ingen nye kilder, gir minst risiko og treffer hver dag.
+  2. **Fulle lister for herskere og embeter**, for eksempel paver (81 av 266), faraoer, japanske og kinesiske keisere, konger og statsministre. Kilden er Wikipedias «List of …», så alle på lista er objektivt riktige.
+  3. **Åpne kategorier** i bolker på cirka 10, på samme måte som piloten: guder, slag, byer, borger, oppfinnelser og lignende.
+  4. **«Famous …»-prompts** (berømte taler, malerier, svindler og dyr) tas sist eller ikke i det hele tatt, fordi «berømt» ikke har en kategori.
+
+  Hver bolk kjøres gjennom `npm test`, `npm run bench` og `--apply`-advarselen før den committes. Kjent pris: når en prompt får mange mindre kjente svar, gir de kjente svarene mindre dybde.
 
 ### Faste oppgaver
 - **Månedlig:** `node tools/rarity.mjs`, **deretter** `node tools/summaries.mjs`, `npm test`, commit. Neste gang ca. 22. des 2026.
@@ -56,6 +70,18 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - Etter Spec 03 er det ikke lenger nok å laste opp bare `index.html` via GitHub-webgrensesnittet (se README «Updating the site»).
 
 ## Sesjonsnotater
+- **2026-11-23 (Spec 10):**
+  - **Godkjenning:** Eier svarte «ser bra ut» på forslagsfilene. Mine anbefalte endringer ble lagt inn, og alt er beskrevet i specen.
+  - **Funnet etter innlegging:**
+    - `normalize` dropper ordene «revolution» og «crusade» fra nøkler. Aliaset «american revolution war» ble derfor «american war» og tok «American War of 1812». Fjernet.
+    - Nye korte navn tok ekte navn som ikke var svar: «Ingrian War» → Iberian War, «Karonga War» → Kalinga War, «Ningirida» → Ningirima. Lagt inn som egne svar.
+    - Sjekken er nå en advarsel i `--apply`.
+  - **Ikke rettet, vurdert som akseptabelt:**
+    - «Nintu/Nintur» gir Mami. Begge er navn på modergudinnen.
+    - «First/Third Indian War» gir American Indian Wars, som serien.
+    - «Granada» og «Battle of Varna» gir krigen, fordi andre prompts har dem som alias for samme artikkel.
+  - **Verifisert:** GitHub Action er grønn på branchen, og Vercel preview er bygget uten feil.
+  - **Ikke verifisert:** eiers test i ekte nettleser.
 - **2026-11-23 (Spec 09):**
   - **Bakgrunn:** Eier meldte at mange mesopotamiske guder og kriger fra Wikipedia ikke godtas. Diagnosen var todelt.
     - Det viktigste er at svarlistene er lukkede, uten tilbakemeldingssløyfe. Det er Spec 10.

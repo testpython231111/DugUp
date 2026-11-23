@@ -289,7 +289,7 @@ test('matching: typos and longer names still match', () => {
   expectMatch('naval', 'Battle og Midway', 'Battle of Midway');      // misspelt little word
   expectMatch('naval', 'Batle of Trafalgar', 'Battle of Trafalgar');
   expectMatch('naval', 'Battl of Diu (1509)', 'Battle of Diu (1509)');
-  expectMatch('wars', 'Third Punic War', 'Punic Wars');              // one war of a named series
+  expectMatch('wars', 'Eighth Xhosa War', 'Xhosa Wars');             // one war of a named series
   expectMatch('wars', 'Bucket War', 'War of the Bucket');            // words in another order
   expectMatch('rome', 'Marcus Ulpius Trajan', 'Trajan');             // full name ending in the answer
   expectMatch('engmon', 'Richard I of England', 'Richard I');
@@ -308,20 +308,32 @@ test('matching: wrong answers are rejected', () => {
 // Spec 09: real names that are not on the list must not be "corrected" into another answer
 test('matching: a different real name is not credited as an answer', () => {
   expectMatch('mesogods', 'Kubaba', null);                           // not Zababa (other first letter)
-  expectMatch('mesogods', 'Anzu', null);                             // not Apsu/Abzu (short name, other letter)
-  expectMatch('mesogods', 'Abu', null);                              // three letters must be exact
+  expectMatch('greekgods', 'Horme', null);                           // not Horae (short name, other letter)
+  expectMatch('mesogods', 'Kus', null);                              // three letters must be exact (not Kusu)
   expectMatch('mesogods', 'Ishtar Gate', null);
   expectMatch('greekgods', 'Dike', null);                            // not Nike
   expectMatch('greekgods', 'Semele', null);                          // not Selene
   expectMatch('greekgods', 'Apollo 13', null);
-  expectMatch('wars', 'French Revolutionary Wars', null);            // not the American Revolutionary War
-  expectMatch('wars', 'Mexican War of Independence', null);
-  expectMatch('wars', 'Cisplatine War', null);                       // not Platine War (whole words only)
+  expectMatch('norsegods', 'Lyngvi', null);                          // not Freyr via "Yngvi" (whole words only)
   expectMatch('wars', 'Muscovite Civil War', null);                  // not the American Civil War
   expectMatch('wars', 'Thirteen Years War', null);                   // not the Thirty Years' War
   expectMatch('naval', 'Second Battle of the Philippine Sea', null);
   expectMatch('rome', 'Arch of Constantine', null);
   expectMatch('rome', 'Publius Aelius Hadrianus Augustus', null);   // Hadrian's full name, not Augustus
+});
+
+// Spec 10: answers and aliases added from Wikipedia (the examples that started it)
+test('matching: answers and aliases from Wikipedia are accepted', () => {
+  expectMatch('mesogods', 'Anzu', 'Anzû');
+  expectMatch('mesogods', 'Mummu', 'Mummu');
+  expectMatch('wars', 'French Revolutionary Wars', 'French Revolutionary Wars');
+  expectMatch('wars', 'Mexican War of Independence', 'Mexican War of Independence');
+  expectMatch('wars', 'Cisplatine War', 'Cisplatine War');
+  expectMatch('wars', 'Third Punic War', 'Third Punic War');
+  expectMatch('wars', '100 years war', "Hundred Years' War");
+  expectMatch('wars', 'usa civil war', 'American Civil War');
+  const p = G.PROMPTS.find(x => x.id === 'wars');
+  assert.equal(G.matchAnswer(p, 'Mexican War').type, 'amb');         // two Mexican wars: the game asks which
 });
 
 /* ---------- rotation (invariant 1) ---------- */
