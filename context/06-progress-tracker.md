@@ -3,12 +3,17 @@
 _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arbeidsøkt._
 
 ## Nåværende fase
-**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–08 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), og GitHub kjører testene ved hver push og daglig (Spec 08). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
+**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–09 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), og matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
 - _(ingen)_
 
 ## Completed
+- [x] 2026-11-23: **Spec 09 — Strammere matching.**
+  - **Feil rettet:** Navn som ikke står på lista, rettes ikke lenger til et annet svar («Kubaba» → Zababa, «Anzu» → Apsu, «French Revolutionary Wars» og «Mexican War of Independence» → American Revolutionary War, «Cisplatine War» → Platine War).
+  - **Måling:** Nytt verktøy `npm run bench` måler mot ekte Wikipedia-navn. Falske treff gikk fra 240 til 108 og kryss-treff fra 1 285 til 68. Skrivefeil godtas i 98,2 % av tilfellene (før 96,3 %), redirects i 61,7 % (før 69,3 %).
+  - **Tester:** 28 grønne. Full runde verifisert i headless Edge.
+  - **Merget** til `main` 2026-11-23 etter eiers beslutning.
 - [x] 2026-11-23: **Spec 08 — GitHub Action kjører `npm test`.** `.github/workflows/test.yml` kjører testene ved hver push og pull request, daglig kl. 05:00 UTC og manuelt. Første kjøring på GitHub var grønn (26/26, Node 26.13.1). Status-merke i README. Merget til `main`.
 - [x] 2026-11-23: **Spec 07 — Etiketter og sol fri for overlapp.** Merget til `main` og verifisert live (publisert `app.js` er identisk med `main`). Tannhjul, flasker, steiner og røtter legges ikke lenger oppå era-etikettene eller 100M-merkene, og sola om dagen er flyttet bort fra dybdemåleren. 26 tester grønne.
 - [x] 2026-11-22: Spec 04–06 sjekket live på dugup.eu av eier: «det ser bra ut».
@@ -23,7 +28,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - [x] 2026-11-22: Kontekstsystem satt opp (`CLAUDE.md`, `context/01–06`, `.gitignore`, feature-spec-mal).
 
 ## Neste (i prioritert rekkefølge)
-- _(ingen åpne oppgaver. Velg gjerne en av de mulige specene under.)_
+- **Spec 10 (forslag) — Flere svar fra Wikipedia.** Flaskehalsen er at svarlistene er lukkede og håndlagde. Vanlige svar mangler, for eksempel Anzu, Humbaba og Mummu for mesopotamiske guder og mange kriger. Mange vanlige navneformer mangler også: «Mexican War», «100 Years War», «WW1», «30 years war», «USA civil war». Et verktøy kan foreslå svar og aliaser fra Wikipedia-kategorier, lister og redirects (samme data som `match-bench.mjs` bruker). Eieren godkjenner før noe legges i `PROMPT_DATA`. Mål med `npm run bench` etterpå. Trenger eiers grønt lys.
 
 ### Faste oppgaver
 - **Månedlig:** `node tools/rarity.mjs`, **deretter** `node tools/summaries.mjs`, `npm test`, commit. Neste gang ca. 22. des 2026.
@@ -51,6 +56,22 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - Etter Spec 03 er det ikke lenger nok å laste opp bare `index.html` via GitHub-webgrensesnittet (se README «Updating the site»).
 
 ## Sesjonsnotater
+- **2026-11-23 (Spec 09):**
+  - **Bakgrunn:** Eier meldte at mange mesopotamiske guder og kriger fra Wikipedia ikke godtas. Diagnosen var todelt.
+    - Det viktigste er at svarlistene er lukkede, uten tilbakemeldingssløyfe. Det er Spec 10.
+    - Dessuten ga matchingen *feil* svar: et navn som ikke står på lista, ble «rettet» til et annet svar. Det er verre enn å avvise, fordi spilleren tror svaret er godkjent.
+  - **Arbeidsmåte:** Måleverktøyet ble skrevet først. Hver regel ble beholdt eller forkastet etter tallene, og alle tall står i specen.
+  - **Avvist underveis:**
+    - Krav om samme forbokstav også på senere ord. Det traff typo på etternavnets første bokstav og ga 90 % typo-recall.
+    - 2 feil for 6–7 bokstaver, som ga 13 nye falske treff.
+    - Ett-ords-navn sist uten vern. Da ble «Flavius Honorius Augustus» godkjent som Augustus.
+  - **Funnet i egen gjennomgang:** En feil der «Battl of Diu (1509)» ble avvist fordi KNOWN-sjekken stoppet fallbacken. Rettet og testet.
+  - **Kjent pris:**
+    - Skrivefeil i første bokstav på korte navn godtas ikke lenger («Xeus»).
+    - En del lange offisielle navn og omskrivinger fra Wikipedia-redirects godtas ikke lenger.
+  - **Verifisert:** GitHub Action er grønn på branchen, og Vercel preview er bygget uten feil.
+  - **Ikke verifisert:** eiers test i ekte nettleser.
+  - **Data:** `tools/match-bench-data.json` (584 KB) er sjekket inn, slik at målingen kan gjentas med de samme tallene. Den publiseres også på dugup.eu/tools/, men inneholder bare offentlige Wikipedia-titler.
 - **2026-11-23 (Spec 08):** Workflowen ble pushet på branch og kjørte grønt på GitHub før merge (run 45148516925). Testene bruker lokal dato, og Actions kjører i UTC, så fristvarselet kan komme én dag forskjøvet rundt midnatt. GitHub slår av planlagte kjøringer i offentlige repoer etter 60 dager uten aktivitet; de månedlige commitene med rarity/summaries holder den i live. Actionen blokkerer ikke Vercel-deploy: en rød test stopper ikke en push til `main`, den varsler bare.
 - **2026-11-23 (Spec 07):** En bredere pikselpuss ble først prøvd (dithret lys, nye arm- og spadeanimasjoner, hit-stop, nye scroll/shard-sprites, nye farger i de dype lagene). Eier sammenlignet før og etter og likte originalen best, så branchen ble slettet uten commit. Bare to ekte feil ble rettet: overlapp på etikettene og sola bak HUD-en. Verifisert i headless Edge i alle døgnfaser og på 0/80/240/420/640 m. Pynten i jorda flytter seg litt fordi noen plasser hoppes over; ellers er utseendet uendret. Ikke verifisert: ekte nettleser hos eier og Vercel preview.
 - **2026-11-22 (dokumentasjon):** README og `context/01–06` gjennomgått og oppdatert etter Spec 04–06. Ingen kodeendringer.

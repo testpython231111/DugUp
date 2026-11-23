@@ -11,7 +11,7 @@
 | Vercel (statisk hosting + Web Analytics) | Deploy ved push til `main` | Ingen serverless functions |
 | Google Fonts (Pixelify Sans) + innebygd `DugUp Digits` (base64 woff2) | Typografi | — |
 
-## Filstruktur (etter Spec 08)
+## Filstruktur (etter Spec 09)
 Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.html` fungerer både på Vercel og åpnet direkte (`file://`). Klassiske scripts (ikke ES-moduler); de deler globalt scope, så `PROMPT_DATA`/`ROTATION`, `RARITY` og `SUMMARIES` fra data-filene er synlige for appen. Rekkefølge nederst i `index.html`: `prompts.js`, `rarity.js`, `app.js`, og til slutt `summaries.js` (`async`).
 
 | Fil | Innhold |
@@ -22,7 +22,8 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 | `js/data/rarity.js` (~290 KB, ~125 KB gzip) | **`RARITY`** — tier og 60-dagers sidevisninger per `prompt-id` + `display`. **Generert** av `tools/rarity.mjs`; rediger aldri for hånd. Lastes etter `prompts.js`, før `app.js`. |
 | `js/data/summaries.js` (~930 KB, ~320 KB gzip) | **`SUMMARIES`** — 1–2 setninger fra Wikipedia (CC BY-SA) per svar med tier ≥ 4, nøkkel `prompt-id` + `display`. **Generert** av `tools/summaries.mjs`. Lastes `async` etter `app.js`; appen leser den først ved reveal (`summaryFor`), og uten den vises ingen oppsummering (Spec 06). |
 | `tools/check.mjs` | `npm test` (data, matching, rotasjon, rarity, summaries) og rotasjonskommandoene `--add-prompt`, `--freeze-until`, `--freeze-season`, `--write-snapshot`. |
-| `tools/load-game.mjs` | Laster `index.html` og script-filene i `node:vm` med en DOM-stub. Brukes av de tre andre verktøyene. |
+| `tools/load-game.mjs` | Laster `index.html` og script-filene i `node:vm` med en DOM-stub. Brukes av de andre verktøyene. |
+| `tools/match-bench.mjs`, `tools/match-bench-data.json` | `npm run bench`: måler matchingen mot ekte navn fra Wikipedia (Spec 09), altså falske treff blant navn som ikke er svar, og treffsikkerhet for skrivefeil og redirects. Kjøres offline mot den bufrede JSON-fila; `--fetch` henter på nytt. Kjør før og etter hver endring i matchingen. |
 | `tools/rarity.mjs`, `tools/summaries.mjs` | Månedlige generatorer for `rarity.js` og `summaries.js` (se «Månedlig oppdatering»). |
 | `tools/rotation-snapshot.json` | Append-only logg over låste digs (Spec 04). |
 | `.github/workflows/test.yml` | GitHub Action som kjører `npm test` ved hver push og pull request og daglig kl. 05:00 UTC (Spec 08). Den blokkerer ikke Vercel-deploy, men varsler på e-post når noe er rødt. |
@@ -31,7 +32,7 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 | | `SMALL UTILS` (store, hashStr, mulberry32, shuffle, esc, datoer) |
 | | `PIXEL ART` (PAL, SPR, sprCanvas, frames) |
 | | `OUTFITS` (SKINS, palettbytter) |
-| | `TEXT NORMALISATION & MATCHING` (normalize, lev, buildPrompts, matchAnswer, pickRound, seasonOrder, generateSeason, dailyPrompts) |
+| | `TEXT NORMALISATION & MATCHING` (normalize, lev, buildPrompts, matchAnswer, fuzzyFind, KNOWN, pickRound, seasonOrder, generateSeason, dailyPrompts) |
 | | `RARITY` (RARITY_DATA, RARITY_MONTH, applyRarity, summaryFor, updateBadge) |
 | | `SOUND` |
 | | `SCENE` (ERAS, PHASES, canvas-animasjon) |
@@ -46,6 +47,15 @@ tier|Display name|Wikipedia title (tom = display)|alias1;alias2
 ```
 - `tier` 1 (Topsoil, vanligst) … 6 (Forgotten by History, sjeldnest). Offline-estimat; overstyres ved oppstart av `liveTier`/`views` fra `RARITY` når svaret finnes der.
 - Valgfritt: `nope` (nesten-svar som skal forklares), tvetydighetskart.
+
+## Matching — `matchAnswer` (Spec 09)
+`normalize` fjerner aksenter, stoppord («the», «of», «battle», titler) og gjør tall, ordenstall og romertall til sifre. Deretter prøves stegene i rekkefølge:
+1. **Eksakt** treff på visningsnavn eller alias, deretter eksakt `nope`.
+2. **Kjent navn fra et annet prompt** (`KNOWN`): samme Wikipedia-artikkel godtas. Er det en annen artikkel, rettes det aldri til et svar her (Gorgias blir ikke Gordian III).
+3. **Skrivefeil** (`fuzzyFind`): sifrene må være like. Antall tillatte feil styres av svarets lengde (0 for 1–3 bokstaver, 1 for 4–7, 2 for 8–11, 3 for 12+), og input på 3 bokstaver eller færre må være eksakt. Navnet må starte med samme lyd (`head`, c/k, f/ph osv. regnes likt), bortsett fra én feil i første bokstav i navn på 8+ bokstaver. Bytte av én bokstav i korte navn (≤ 7) godtas bare for nabotaster, vokaler eller lydlike bokstaver; i 4 bokstaver ikke for nabotaster. I navn med flere ord må hvert ord ligne sitt motstykke. Samme ord i en annen rekkefølge godtas. Til slutt prøves input på nytt uten feilstavede småord («Battle og Midway»).
+4. **Nesten-svar** (`nope`) med én feil.
+5. **Kjent navn i et lengre svar**, bare hele ord: navnet først med ekstra ord etter («Richard I of England»), et etternavn eller ett-ords-navn sist («Charles Robert Darwin», «Marcus Ulpius Trajan»), eller initialer («R. Strauss»). Ord foran et lengre navn, et ledende ordenstall eller et annet årstall enn svarets gjør det til noe annet («Muscovite Civil War», «Second Battle of …», «Battle of Lissa (1811)»). Unntaket er navngitte serier («Third Punic War» → Punic Wars).
+Endres matchingen, skal `npm run bench` kjøres før og etter, og tallene skal stå i sesjonsnotatet.
 
 ## Månedlig oppdatering — `RARITY` og `SUMMARIES` (Spec 05, 06)
 1. `node tools/rarity.mjs` (~6 min, ~700 forespørsler) skriver `js/data/rarity.js`. Rangering: svarene i hvert prompt sorteres etter 60-dagers sidevisninger, og kvantilene 0,12 / 0,27 / 0,47 / 0,67 / 0,85 gir tier 1–6. Har færre enn `max(3, 60 %)` av svarene visninger, får promptet ingen oppføring (offline-tier brukes).
