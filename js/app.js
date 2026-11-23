@@ -767,7 +767,7 @@ function eraAt(m){ let e = ERAS[0]; for (const x of ERAS) if (m >= x.top) e = x;
 const PHASES = {
   night:  {bands:['#0e1330','#121a3c','#172148','#1c2954','#223160','#29396a','#314272'], cloud:['#3b4675','#2d365e'], amb:'rgba(14,18,52,0.42)', moon:true, stars:1, birds:false, lights:true},
   dawn:   {bands:['#3a4c8e','#5f5b9d','#9a6a9e','#d4828f','#f3a184','#fbc58e','#ffe2ad'], cloud:['#ffd9cc','#e3aec0'], amb:'rgba(110,70,120,0.16)', sun:{x:0.3, y:-19, c:['#fff4d6','#ffcf7d','#ffb47e']}, stars:0.25, birds:true, lights:true},
-  day:    {bands:['#4fa6d8','#66b6e0','#83c7e8','#a3d7ec','#c6e6e6','#e9e9cf','#fbe2ad'], cloud:['#ffffff','#dceef5'], amb:null, sun:{x:-22, y:15, c:['#fffbe6','#fff0a8','#fde7a6']}, birds:true},
+  day:    {bands:['#4fa6d8','#66b6e0','#83c7e8','#a3d7ec','#c6e6e6','#e9e9cf','#fbe2ad'], cloud:['#ffffff','#dceef5'], amb:null, sun:{x:-42, y:14, c:['#fffbe6','#fff0a8','#fde7a6']}, birds:true},
   golden: {bands:['#5b9ccc','#77afd3','#9cc2d3','#c9d2c0','#ecd3a0','#f9c58a','#fdb675'], cloud:['#fff2e0','#f2d0b2'], amb:'rgba(255,160,80,0.07)', sun:{x:-30, y:28, c:['#fff3d0','#ffd27a','#ffbb6a']}, birds:true},
   dusk:   {bands:['#252f68','#3c3b7a','#6a4885','#a25880','#da6f71','#f29462','#fac078'], cloud:['#ee9f98','#b1728b'], amb:'rgba(60,34,90,0.26)', sun:{x:0.7, y:-17, c:['#ffe7c2','#ff9f63','#f57a5a']}, stars:0.35, birds:false, lights:true}
 };
@@ -1113,9 +1113,20 @@ const Scene = (function(){
 
     const rnd = mulberry32(20261122);
     const nearShaft = (x0, x1) => x1 > sL - 3 && x0 < sR + 3;
+    // keep the era labels (left) and depth marks (right) readable: nothing is drawn over them
+    const room = sL - 5, labels = [];
+    for (let i=0;i<ERAS.length;i++){
+      const e = ERAS[i], y = SKY + Math.floor(e.top / MPX) + (i === 0 ? 6 : 4);
+      const lab = textW(e.label) <= room ? e.label : e.short;
+      labels.push({lab, y, rect: [0, y - 2, Math.max(textW(lab), textW(e.top + 'M')) + 4, y + 14]});
+    }
+    const busy = labels.map(l => l.rect);
+    for (let m=100;m<=860;m+=100){ const y = SKY + Math.floor(m / MPX), s = m + 'M'; busy.push([W - 7 - textW(s), y - 4, W, y + 5]); }
+    const onLabel = (x0, y0, x1, y1) => busy.some(r => x1 > r[0] && x0 < r[2] && y1 > r[1] && y0 < r[3]);
     g.fillStyle = '#3e2614';
     for (let i=0;i<Math.floor(W/8);i++){
       let x = Math.floor(rnd()*W); const len = 4 + Math.floor(rnd()*12);
+      if (onLabel(x - 2, SKY + 3, x + 3, SKY + 3 + len)) continue;
       for (let k=0;k<len;k++){ g.fillRect(x, SKY + 3 + k, 1, 1); if (rnd() < 0.3) x += rnd() < 0.5 ? -1 : 1; }
     }
     for (let i=0;i<ERAS.length-1;i++){
@@ -1124,6 +1135,7 @@ const Scene = (function(){
       for (let k=0;k<n;k++){
         const x = Math.floor(rnd()*(W - 3)), y = SKY + top + Math.floor(rnd()*(bot - top));
         const w = 2 + (rnd() < 0.4 ? 1 : 0), hh = rnd() < 0.5 ? 1 : 2;
+        if (onLabel(x, y, x + w, y + hh + 1)) continue;
         const base = mix(ERAS[i].c[2], '#9a9288', 0.55);
         g.fillStyle = base; g.fillRect(x, y, w, hh);
         g.fillStyle = mix(base, '#ffffff', 0.3); g.fillRect(x, y, 1, 1);
@@ -1136,17 +1148,16 @@ const Scene = (function(){
       const n = Math.max(2, Math.round(W / 38));
       for (let k=0;k<n;k++){
         const sp = sprCanvas(e.obj[Math.floor(rnd()*e.obj.length)]);
-        let x, tries = 0;
-        do { x = 3 + Math.floor(rnd()*(W - sp.width - 6)); tries++; } while (nearShaft(x, x + sp.width) && tries < 14);
-        if (nearShaft(x, x + sp.width)) continue;
-        g.drawImage(sp, x, SKY + top + Math.floor(rnd()*Math.max(1, bot - top)));
+        let x, y, tries = 0;
+        const bad = () => nearShaft(x, x + sp.width) || onLabel(x - 1, y - 1, x + sp.width + 1, y + sp.height + 1);
+        do { x = 3 + Math.floor(rnd()*(W - sp.width - 6)); y = SKY + top + Math.floor(rnd()*Math.max(1, bot - top)); tries++; } while (bad() && tries < 14);
+        if (bad()) continue;
+        g.drawImage(sp, x, y);
       }
     }
     { const sp = sprCanvas('dino'); const x = sR + 6 + sp.width < W - 2 ? sR + 6 : 2; g.drawImage(sp, x, SKY + Math.floor(650 / MPX)); }
-    const room = sL - 5;
     for (let i=0;i<ERAS.length;i++){
-      const e = ERAS[i], y = SKY + Math.floor(e.top / MPX) + (i === 0 ? 6 : 4);
-      const lab = textW(e.label) <= room ? e.label : e.short;
+      const e = ERAS[i], y = labels[i].y, lab = labels[i].lab;
       const dark = mix(e.c[1], '#000000', 0.3);
       drawText(g, lab, 2, y, mix(e.c[2], '#fff1d0', 0.5), dark);
       drawText(g, e.top + 'M', 2, y + 7, mix(e.c[2], '#fff1d0', 0.25), dark);
