@@ -11,7 +11,7 @@
 | Vercel (statisk hosting + Web Analytics) | Deploy ved push til `main` | Ingen serverless functions |
 | Google Fonts (Pixelify Sans) + innebygd `DugUp Digits` (base64 woff2) | Typografi | — |
 
-## Filstruktur (etter Spec 06)
+## Filstruktur (etter Spec 08)
 Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.html` fungerer både på Vercel og åpnet direkte (`file://`). Klassiske scripts (ikke ES-moduler); de deler globalt scope, så `PROMPT_DATA`/`ROTATION`, `RARITY` og `SUMMARIES` fra data-filene er synlige for appen. Rekkefølge nederst i `index.html`: `prompts.js`, `rarity.js`, `app.js`, og til slutt `summaries.js` (`async`).
 
 | Fil | Innhold |

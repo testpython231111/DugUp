@@ -3,14 +3,14 @@
 _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arbeidsøkt._
 
 ## Nåværende fase
-**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–06 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet. Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
+**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–08 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), og GitHub kjører testene ved hver push og daglig (Spec 08). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
 - _(ingen)_
 
 ## Completed
 - [x] 2026-11-23: **Spec 08 — GitHub Action kjører `npm test`.** `.github/workflows/test.yml` kjører testene ved hver push og pull request, daglig kl. 05:00 UTC og manuelt. Første kjøring på GitHub var grønn (26/26, Node 26.13.1). Status-merke i README. Merget til `main`.
-- [x] 2026-11-23: **Spec 07 — Etiketter og sol fri for overlapp.** Branch `fix/07-labels-sun` (ikke commitet ennå). Tannhjul, flasker, steiner og røtter legges ikke lenger oppå era-etikettene eller 100M-merkene, og sola om dagen er flyttet bort fra dybdemåleren. 26 tester grønne.
+- [x] 2026-11-23: **Spec 07 — Etiketter og sol fri for overlapp.** Merget til `main` og verifisert live (publisert `app.js` er identisk med `main`). Tannhjul, flasker, steiner og røtter legges ikke lenger oppå era-etikettene eller 100M-merkene, og sola om dagen er flyttet bort fra dybdemåleren. 26 tester grønne.
 - [x] 2026-11-22: Spec 04–06 sjekket live på dugup.eu av eier: «det ser bra ut».
 - [x] 2026-11-22: **Spec 06 — Kort oppsummering på reveal.** `tools/summaries.mjs` skriver `js/data/summaries.js` (5 638 tekster, 926 KB / 314 KB gzip, lastes async). Reveal viser 1–2 setninger og en Wikipedia-lenke for funn med tier ≥ 4. Ingen bilder. 26 tester grønne. Merget til `main` etter eiers beslutning, uten eiers test i nettleser og uten Vercel preview først.
 - [x] 2026-11-22: **Spec 05 — Forhåndsberegnet sjeldenhet.** `tools/rarity.mjs` skriver `js/data/rarity.js` (291 KB, 125 KB gzip), og spillet kaller ikke Wikipedia lenger. Rangeringen er identisk med den gamle live-koden. 23 tester grønne. Eier har testet lokalt, inkludert Network-fanen. Vercel preview bygget uten feil. Merget til `main` 2026-11-22 etter eiers beslutning.

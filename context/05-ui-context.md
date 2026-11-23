@@ -3,6 +3,8 @@
 ## Estetisk retning
 Koselig, varm pikselkunst — «arkeologisk utgravning». Pergament, tre, gull og jord. Skarpe piksler (`image-rendering: pixelated`, klasse `.px`), ingen myke gradienter, ingen glassmorphism, ingen generisk «AI-slop»-estetikk. Humor i små doser (Historically Inaccurate Viking).
 
+**Eiers beslutning (2026-11-23):** Dagens utseende på scenen beholdes. En pikselpuss med dithret lys i trinn, nye armer, spade låst til faste vinkler, hit-stop/smear, nye scroll/shard-sprites og blåere dype lag ble prøvd og forkastet («liker det best som det er»). De myke lysgradientene i scenen (lykter, mørke, stråler) er altså bevisste unntak fra «ingen myke gradienter», som gjelder UI-et. Ikke foreslå den samme pussen på nytt uten at eier ber om det.
+
 ## Fargetokens (`:root` i `css/style.css`)
 | Token | Verdi | Bruk |
 |---|---|---|
