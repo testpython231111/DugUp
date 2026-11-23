@@ -3,12 +3,19 @@
 _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arbeidsøkt._
 
 ## Nåværende fase
-**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–10 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
+**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–10 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Spec 11 (Wikipedia-skrivemåter for alle prompts) er ferdig på branch og venter på merge. Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-_Ingenting._
+- (ingen)
 
 ## Completed
+- [x] 2026-11-23: **Spec 11 — Skrivemåter fra Wikipedia for alle prompts** (punkt 1 i planen under). Eier sa «ja kjør på». Ferdig på branch `feature/11-wiki-aliases`, og **venter på eiers beslutning om merge til `main`**.
+  - **Data:** 5 127 nye aliaser for 3 114 svar i 148 prompts. Ingen nye svar og ingen display endret. Eksempler: «Marc Aurel», «Axumites», «Tiwaz», «Sakyamuni», «Marshal Ney», «Hiuen Tsang» og «Fax machine».
+  - **Verktøy:** `--all --aliases-only` og `--apply --all`. Det har nye regler mot feil skrivemåter (se specen). `tools/alias-rejects.json` har 564 avviste aliaser i 112 prompts.
+  - **Måling:**
+    - bench: falske treff er uendret (78 / 71).
+    - Redirect-recall gikk fra 63,2 % til 68,4 %, og redirects som gir feil svar gikk fra 227 til 195.
+    - 29 tester er grønne. Full runde i headless Edge.
 - [x] 2026-11-23: **Spec 10 — Flere svar fra Wikipedia (pilot: `mesogods`, `wars`).** Merget til `main` 2026-11-23 etter eiers beslutning («ja kjør på»). GitHub Action var grønn på branchen (run 45180599229), og Vercel preview ble bygget uten feil.
   - **Verktøy:** `tools/suggest-answers.mjs` foreslår svar og aliaser fra Wikipedia. `--apply` legger inn de godkjente linjene og advarer om utelatte navn som ville blitt godtatt som et annet svar.
   - **Data:**
@@ -36,8 +43,8 @@ _Ingenting._
 - [x] 2026-11-22: Kontekstsystem satt opp (`CLAUDE.md`, `context/01–06`, `.gitignore`, feature-spec-mal).
 
 ## Neste (i prioritert rekkefølge)
-- **Spec 11 (forslag) — Flere svar for resten av promptene, i bolker.** Bygger på verktøyet fra Spec 10. Trenger eiers grønt lys.
-  1. **Aliaser for alle 150 prompts.** Wikipedia-redirects for svarene som finnes. Det trenger ingen nye kilder, gir minst risiko og treffer hver dag.
+- **Flere svar for resten av promptene, i bolker.** Bygger på verktøyet fra Spec 10. Hver bolk får sin egen spec og trenger eiers grønt lys.
+  1. ~~**Aliaser for alle 150 prompts.**~~ Ferdig i Spec 11.
   2. **Fulle lister for herskere og embeter**, for eksempel paver (81 av 266), faraoer, japanske og kinesiske keisere, konger og statsministre. Kilden er Wikipedias «List of …», så alle på lista er objektivt riktige.
   3. **Åpne kategorier** i bolker på cirka 10, på samme måte som piloten: guder, slag, byer, borger, oppfinnelser og lignende.
   4. **«Famous …»-prompts** (berømte taler, malerier, svindler og dyr) tas sist eller ikke i det hele tatt, fordi «berømt» ikke har en kategori.
@@ -70,6 +77,23 @@ _Ingenting._
 - Etter Spec 03 er det ikke lenger nok å laste opp bare `index.html` via GitHub-webgrensesnittet (se README «Updating the site»).
 
 ## Sesjonsnotater
+- **2026-11-23 (Spec 11):**
+  - **Gjennomgang:** Verktøyet foreslo 5 870 aliaser. Jeg leste alle 1 952 som ikke deler et ord med svaret. Det som gikk igjen av feil:
+    - slektninger og ektefeller («Black Buffalo Woman» → Crazy Horse)
+    - personer i bøker («Jane Fairfax» → Emma)
+    - deler av ting («passenger car» → Ferris wheel)
+    - folkenavn («Lacedaemonians» → Sparta)
+    - steder og bydeler («Silicon Allee» → Berlin)
+    - artikler som dekker flere svar («Maya gods» → Buluc Chabtan)
+
+    Feilene ble enten generelle regler i verktøyet eller havnet i `tools/alias-rejects.json`.
+  - **Funnet av bench etter innlegging:**
+    - «Battle of the Capes» ble til «capes» og tok alle «Battle of Cape …» som Battle of the Chesapeake (naval fra 33 til 60 falske treff). Rettet med regelen mot ett generisk ord.
+    - «eleuthia», «sakhet» og «frija» ga nye feiltreff. De er avvist.
+  - **Funnet ved innlegging:**
+    - En redirect med backtick («\`ashtart») brøt `prompts.js`. `--apply` stopper nå slike tegn før noe skrives.
+  - **Kjent pris:** «Augustuus» (skrivefeil for Augustus) går nå til Romulus Augustulus.
+  - **Tips:** Forslagskjøringen for alle prompts tar ca. 1,5 time, fordi personer har hundrevis av redirects. Kjør den i bakgrunnen.
 - **2026-11-23 (Spec 10):**
   - **Godkjenning:** Eier svarte «ser bra ut» på forslagsfilene. Mine anbefalte endringer ble lagt inn, og alt er beskrevet i specen.
   - **Funnet etter innlegging:**
