@@ -3,13 +3,13 @@
 _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arbeidsøkt._
 
 ## Nåværende fase
-**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–09 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), og matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
+**Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–10 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
 _Ingenting._
 
 ## Completed
-- [x] 2026-11-23: **Spec 10 — Flere svar fra Wikipedia (pilot: `mesogods`, `wars`).** Branch `feature/10-wiki-answers`, ikke merget ennå.
+- [x] 2026-11-23: **Spec 10 — Flere svar fra Wikipedia (pilot: `mesogods`, `wars`).** Merget til `main` 2026-11-23 etter eiers beslutning («ja kjør på»). GitHub Action var grønn på branchen (run 45180599229), og Vercel preview ble bygget uten feil.
   - **Verktøy:** `tools/suggest-answers.mjs` foreslår svar og aliaser fra Wikipedia. `--apply` legger inn de godkjente linjene og advarer om utelatte navn som ville blitt godtatt som et annet svar.
   - **Data:**
     - mesogods: 67 → 136 svar.
@@ -80,7 +80,8 @@ _Ingenting._
     - «Nintu/Nintur» gir Mami. Begge er navn på modergudinnen.
     - «First/Third Indian War» gir American Indian Wars, som serien.
     - «Granada» og «Battle of Varna» gir krigen, fordi andre prompts har dem som alias for samme artikkel.
-  - **Ikke verifisert:** eiers test i ekte nettleser, GitHub Action og Vercel preview, fordi branchen ikke er pushet.
+  - **Verifisert:** GitHub Action er grønn på branchen, og Vercel preview er bygget uten feil.
+  - **Ikke verifisert:** eiers test i ekte nettleser.
 - **2026-11-23 (Spec 09):**
   - **Bakgrunn:** Eier meldte at mange mesopotamiske guder og kriger fra Wikipedia ikke godtas. Diagnosen var todelt.
     - Det viktigste er at svarlistene er lukkede, uten tilbakemeldingssløyfe. Det er Spec 10.
