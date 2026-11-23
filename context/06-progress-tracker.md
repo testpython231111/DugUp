@@ -6,9 +6,10 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–06 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet. Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- [ ] 2026-11-23: **Spec 08 — GitHub Action kjører `npm test`.** Branch `feature/08-ci-tests`.
+- _(ingen)_
 
 ## Completed
+- [x] 2026-11-23: **Spec 08 — GitHub Action kjører `npm test`.** `.github/workflows/test.yml` kjører testene ved hver push og pull request, daglig kl. 05:00 UTC og manuelt. Første kjøring på GitHub var grønn (26/26, Node 26.13.1). Status-merke i README. Merget til `main`.
 - [x] 2026-11-23: **Spec 07 — Etiketter og sol fri for overlapp.** Branch `fix/07-labels-sun` (ikke commitet ennå). Tannhjul, flasker, steiner og røtter legges ikke lenger oppå era-etikettene eller 100M-merkene, og sola om dagen er flyttet bort fra dybdemåleren. 26 tester grønne.
 - [x] 2026-11-22: Spec 04–06 sjekket live på dugup.eu av eier: «det ser bra ut».
 - [x] 2026-11-22: **Spec 06 — Kort oppsummering på reveal.** `tools/summaries.mjs` skriver `js/data/summaries.js` (5 638 tekster, 926 KB / 314 KB gzip, lastes async). Reveal viser 1–2 setninger og en Wikipedia-lenke for funn med tier ≥ 4. Ingen bilder. 26 tester grønne. Merget til `main` etter eiers beslutning, uten eiers test i nettleser og uten Vercel preview først.
@@ -29,7 +30,6 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - **Årlig:** `node tools/check.mjs --freeze-until <dato et år fram>` når testen sier fra (ca. des 2027).
 
 ### Mulige neste specs (ikke prioritert, trenger eiers valg)
-- GitHub Action som kjører `npm test` ved push og daglig, så feil og frister varsles selv om Vercel ikke kjører testene.
 - Dele `js/app.js` i moduler, eventuelt `prompts.js` per kategori.
 - Automatiske UI-tester (Scene, Sound, skjermflyt) i headless nettleser.
 
@@ -41,7 +41,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
   - **Tillegg (Spec 04, 2026-11-22):** Rotasjonen fryses ~et år fram (`--freeze-until`). Nye prompts settes inn i alle frosne sesonger som starter etter de låste digsene (snapshoten + i dag + 14 dager), på en seedet plass utenom sømmen (`--add-prompt`). Snapshoten er append-only. Begrunnelse: en sesong varer bare ~20 dager, så manuell frysing hver 3. uke var for skjørt, og nye prompts skal komme inn i spillet raskt. Pris: `ROTATION` vokser ~2 KB per sesong (~35 KB per år), og frysing må gjøres én gang i året.
 
 ## Kjente risikoer
-- Frysing er fortsatt manuelt, men bare én gang i året (neste gang ca. desember 2027). `npm test` varsler, men Vercel kjører ikke testene.
+- Frysing er fortsatt manuelt, men bare én gang i året (neste gang ca. desember 2027). `npm test` varsler, og GitHub Action kjører testene daglig og sender e-post når de feiler (Spec 08).
 - Legger man et prompt rett i `ROTATION` for hånd i stedet for med `--add-prompt`, havner det bare i én sesong. Testen «every frozen season that has not started holds every daily prompt» fanger det.
 - Sjeldenhet og oppsummeringer oppdateres manuelt hver måned. Glemmer man det, blir tallene eldre, men ingenting går i stykker. Kjøres `summaries.mjs` før `rarity.mjs`, mangler nye sjeldne svar tekst til neste kjøring.
 - `js/data/summaries.js` (~930 KB) er den største filen. Den lastes `async` og bremser ikke oppstarten, men øker datatrafikken (~315 KB komprimert per besøk uten cache). Tier-grensen kan heves til ≥ 5 hvis det blir et problem.
@@ -51,6 +51,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - Etter Spec 03 er det ikke lenger nok å laste opp bare `index.html` via GitHub-webgrensesnittet (se README «Updating the site»).
 
 ## Sesjonsnotater
+- **2026-11-23 (Spec 08):** Workflowen ble pushet på branch og kjørte grønt på GitHub før merge (run 45148516925). Testene bruker lokal dato, og Actions kjører i UTC, så fristvarselet kan komme én dag forskjøvet rundt midnatt. GitHub slår av planlagte kjøringer i offentlige repoer etter 60 dager uten aktivitet; de månedlige commitene med rarity/summaries holder den i live. Actionen blokkerer ikke Vercel-deploy: en rød test stopper ikke en push til `main`, den varsler bare.
 - **2026-11-23 (Spec 07):** En bredere pikselpuss ble først prøvd (dithret lys, nye arm- og spadeanimasjoner, hit-stop, nye scroll/shard-sprites, nye farger i de dype lagene). Eier sammenlignet før og etter og likte originalen best, så branchen ble slettet uten commit. Bare to ekte feil ble rettet: overlapp på etikettene og sola bak HUD-en. Verifisert i headless Edge i alle døgnfaser og på 0/80/240/420/640 m. Pynten i jorda flytter seg litt fordi noen plasser hoppes over; ellers er utseendet uendret. Ikke verifisert: ekte nettleser hos eier og Vercel preview.
 - **2026-11-22 (dokumentasjon):** README og `context/01–06` gjennomgått og oppdatert etter Spec 04–06. Ingen kodeendringer.
 - **2026-11-22 (Spec 06):** `tools/summaries.mjs` henter intro-tekst (`prop=extracts`, 20 titler per forespørsel) for 5 891 svar med tier ≥ 4: 288 forespørsler, 0 feil, ~4 min. 5 638 oppsummeringer er beholdt, 253 droppet (pekersider, for korte, rotete parenteser). `summaries.js` er 926 KB (314 KB gzip), under grensen på 1,5 MB, og lastes `async`. Etter første kjøring endte én tekst på «Maj.», så forkortelsesregelen ble utvidet, og tekster med ubalanserte parenteser droppes. Headless Edge: en practice-runde med et sjeldent svar viser oppsummeringen og Wikipedia-lenken. Ingen horisontal scroll målt (scrollWidth = clientWidth), men headless Edge går ikke under 492 px, så ekte mobilbredde er ikke testet. Når nettverket feiler, skriver scriptet ingenting. 26 tester grønne.

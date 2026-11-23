@@ -17,7 +17,7 @@ GitHub kjører `npm test` automatisk ved hver push, ved hver pull request og én
 - Endres ikke: `js/`, `css/`, `index.html`, `tools/`.
 
 ## 4. Verification Checklist
-- [ ] Workflowen kjører grønt på GitHub på branchen før merge.
-- [ ] `npm test` grønn lokalt.
+- [x] Workflowen kjører grønt på GitHub på branchen før merge.
+- [x] `npm test` grønn lokalt.
 - [ ] Siden på dugup.eu er uendret etter merge.
-- [ ] `06-progress-tracker.md` oppdatert.
+- [x] `06-progress-tracker.md` oppdatert.
