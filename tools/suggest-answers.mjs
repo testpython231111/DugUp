@@ -360,8 +360,20 @@ function apply(id){
     errors.push(...validate(G, id, newLines.map(l => l.split('|')[1]), aliasAdds.flatMap(([d, als]) => als.map(a => [d, a]))));
   }
   if (errors.length){ console.error(`Nothing was written. Fix ${path.relative(ROOT, file)}:\n  ` + errors.join('\n  ')); process.exit(1); }
+  // real names left out (commented-out candidates) that the new answers would now credit as something they are not
+  // ("Ingrian War" as Iberian War): not an error, but usually a sign that the name belongs in the list too
+  const G0 = loadWith(fs.readFileSync(DATA_FILE, 'utf8')), G1 = loadWith(src);
+  const p0 = G0.PROMPTS.find(x => x.id === id), p1 = G1.PROMPTS.find(x => x.id === id);
+  const said = m => m.type === 'ok' ? m.answer.display : m.type;
+  const warnings = [];
+  fs.readFileSync(file, 'utf8').split(/\r?\n/).forEach(raw => {
+    const c = /^#[1-6]\|([^|#]+)/.exec(raw); if (!c) return;
+    const name = c[1].trim(), before = said(G0.matchAnswer(p0, name)), after = said(G1.matchAnswer(p1, name));
+    if (after !== before && G1.matchAnswer(p1, name).type === 'ok') warnings.push(`"${name}" → ${after}`);
+  });
   fs.writeFileSync(DATA_FILE, src);
   console.log(`${id}: added ${newLines.length} answers and ${aliasAdds.reduce((n, a) => n + a[1].length, 0)} aliases to ${aliasAdds.length} answers in ${DATA_SRC}.`);
+  if (warnings.length) console.log(`Check: ${warnings.length} names you left out are now credited as another answer. Add them too (remove #), or accept it:\n  ` + warnings.join('\n  '));
   console.log('Next: npm test, npm run bench, then node tools/rarity.mjs and node tools/summaries.mjs.');
 }
 
