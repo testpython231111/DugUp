@@ -1728,7 +1728,7 @@ function startRound(mode, opt){
     state.prompts = dailyPrompts(num);
   } else {
     state.dayKey = null; state.dayNum = 0;
-    state.prompts = practicePrompts();
+    state.prompts = (opt && opt.prompts) || practicePrompts();   // opt.prompts: dev mode only (Spec 20)
   }
   Sound.start();
   state.mode = mode; state.idx = 0; state.rows = []; state.score = 0; state.unlocked0 = unlockedIds();
@@ -1759,6 +1759,7 @@ function nextPrompt(){
 }
 
 function tick(){
+  if (dev.noTimer) state.t0 = performance.now();
   const left = Math.max(0, TIME_LIMIT - (performance.now() - state.t0) / 1000);
   const sec = Math.ceil(left);
   $('timerFill').style.width = (left / TIME_LIMIT * 100) + '%';
@@ -2015,6 +2016,73 @@ function copyShare(){
 }
 
 /* =========================================================
+   DEV MODE (Spec 20) — only with ?dev in the address
+   ========================================================= */
+// A panel for testing: scene, outfits, any dig or prompt, the timer, stored data and matching. Its rounds are
+// practice rounds (they never count), and it only touches this browser's own storage. Players never see it.
+function devFromSearch(s){ return /[?&]dev(=1|=true)?(&|$)/.test(String(s || '')); }
+const dev = {on: false, noTimer: false};
+try{ dev.on = devFromSearch(location.search); }catch(e){}
+function devPanel(){
+  const real = PROMPTS.filter(p => !PRACTICE_IDS.includes(p.id)).slice().sort((a, b) => a.id.localeCompare(b.id));
+  const opts = real.map(p => '<option value="' + esc(p.id) + '">' + esc(p.id) + ' — ' + esc(p.q) + '</option>').join('');
+  const box = document.createElement('div');
+  box.innerHTML =
+    '<button type="button" class="dev-toggle" id="devToggle" aria-expanded="false">DEV</button>' +
+    '<div class="dev-panel hidden" id="devPanel">' +
+      '<p class="dev-info" id="devInfo"></p>' +
+      '<fieldset><legend>Scene</legend>' +
+        '<label>Time <select id="devPhase"><option value="">auto</option>' + Object.keys(PHASES).map(k => '<option>' + esc(k) + '</option>').join('') + '</select></label>' +
+        '<label>Depth <input id="devDepth" type="number" min="0" max="700" step="10" value="0"></label><button type="button" id="devDepthGo">Go</button>' +
+        '<label>Outfit <select id="devSkin">' + SKINS.map(s => '<option value="' + esc(s.id) + '">' + esc(s.name) + '</option>').join('') + '</select></label>' +
+      '</fieldset>' +
+      '<fieldset><legend>Play (practice: nothing counts)</legend>' +
+        '<label>Dig # <input id="devDig" type="number" min="1" step="1"></label><button type="button" id="devDigGo">Play</button>' +
+        '<label class="dev-wide">Prompt <select id="devPrompt">' + opts + '</select></label><button type="button" id="devPromptGo">Play it ×7</button>' +
+        '<label class="dev-wide"><input type="checkbox" id="devNoTimer"> Stop the timer</label>' +
+      '</fieldset>' +
+      '<fieldset><legend>Match (prompt above)</legend>' +
+        '<input id="devMatch" type="text" placeholder="an answer" autocomplete="off" spellcheck="false"><button type="button" id="devMatchGo">Test</button>' +
+        '<p class="dev-out" id="devMatchOut"></p>' +
+      '</fieldset>' +
+      '<fieldset><legend>Data (this browser)</legend>' +
+        '<button type="button" id="devUnlock">Unlock all outfits</button><button type="button" id="devMuseum">Fill museum</button>' +
+        '<label>Streak <input id="devStreak" type="number" min="0" step="1" value="5"></label><button type="button" id="devStreakGo">Set</button>' +
+        '<button type="button" id="devReset" class="dev-danger">Reset all progress</button>' +
+      '</fieldset>' +
+    '</div>';
+  document.body.appendChild(box);
+  const n = dayNumber();
+  $('devInfo').textContent = 'Today ' + dateKey() + ' · Dig #' + n + ' · rarity ' + RARITY_MONTH + ' · ' + PROMPTS.length + ' prompts';
+  $('devDig').value = n;
+  $('devSkin').value = currentSkin();
+  const refresh = () => { applySkin(); if (!screens.title.classList.contains('hidden')) renderTitle(); };
+  const stats = extra => { store.set('dugup:stats', Object.assign(getStats(), extra)); refresh(); };
+  $('devToggle').addEventListener('click', () => { const open = $('devPanel').classList.toggle('hidden') === false; $('devToggle').setAttribute('aria-expanded', open); });
+  $('devPhase').addEventListener('change', e => Scene.setPhase(e.target.value || null));
+  $('devDepthGo').addEventListener('click', () => Scene.setDepth(Math.max(0, +$('devDepth').value || 0), true));
+  $('devSkin').addEventListener('change', e => { const sk = skinById(e.target.value); Scene.setSkin(sk.id); $('logoIcon').src = headURL(sk); });
+  $('devDigGo').addEventListener('click', () => { const d = Math.max(1, Math.floor(+$('devDig').value || 1)); startRound('practice', {prompts: dailyPrompts(d)}); });
+  $('devPromptGo').addEventListener('click', () => { const p = PROMPTS.find(x => x.id === $('devPrompt').value); startRound('practice', {prompts: Array(ROUND_SIZE).fill(p)}); });
+  $('devNoTimer').addEventListener('change', e => { dev.noTimer = e.target.checked; });
+  const runMatch = () => {
+    const p = PROMPTS.find(x => x.id === $('devPrompt').value), r = matchAnswer(p, $('devMatch').value) || {type: 'no match'};
+    $('devMatchOut').textContent = r.type === 'ok' ? 'ok → ' + r.answer.display + ' (tier ' + tierOf(r.answer) + (r.answer.views ? ', ' + r.answer.views + ' views' : '') + ')'
+      : (r.type === 'none' ? 'none: not in our dig records' : r.type) + (r.msg ? ': ' + String(r.msg).replace(/<[^>]*>/g, '') : '');
+  };
+  $('devMatchGo').addEventListener('click', runMatch);
+  $('devMatch').addEventListener('keydown', e => { if (e.key === 'Enter') runMatch(); });
+  $('devUnlock').addEventListener('click', () => stats({digs: 999, bestStreak: 99, maxDepth: 700, perfect: 1, best: 700}));
+  $('devMuseum').addEventListener('click', () => {
+    const m = museumGet();
+    real.forEach(p => p.answers.slice(0, 2).forEach(a => { const k = p.id + '|' + a.display; if (!m[k]) m[k] = {t: tierOf(a), p: p.id, q: p.q, w: a.wiki, a: a.display, n: 1, d: dateKey()}; }));
+    store.set('dugup:museum', m); refresh();
+  });
+  $('devStreakGo').addEventListener('click', () => { const s = Math.max(0, Math.floor(+$('devStreak').value || 0)); stats({streak: s, last: dateKey(), bestStreak: Math.max(getStats().bestStreak, s)}); });
+  $('devReset').addEventListener('click', () => { if (!window.confirm('Delete all progress in this browser?')) return; store.keys().forEach(k => store.remove(k)); location.reload(); });
+}
+
+/* =========================================================
    BOOT
    ========================================================= */
 installFrames();
@@ -2029,6 +2097,7 @@ Scene.hooks.find = tier => Sound.find(tier);
 Scene.init();
 applySkin();
 updateBadge();
+if (dev.on) devPanel();
 
 // audio may only start from a user gesture
 ['pointerdown', 'keydown', 'touchend'].forEach(ev => document.addEventListener(ev, () => Sound.init(), {capture: true, passive: true}));
@@ -2074,6 +2143,6 @@ document.addEventListener('keydown', e => {
 });
 
 // test hook (harmless in production)
-window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, summaryFor, suggestURL, encodeBackup, decodeBackup, backupCode, restoreBackup, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
+window.__dugup = {devFromSearch, PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, summaryFor, suggestURL, encodeBackup, decodeBackup, backupCode, restoreBackup, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
 })();
 

@@ -50,6 +50,7 @@ Each answer is ranked by how often its Wikipedia article was read over 60 days, 
 - **Hosting:** GitHub → [Vercel](https://vercel.com). Every push to `main` deploys automatically.
 - **Wikipedia data:** page views and article intros from the [Wikipedia API](https://www.mediawiki.org/wiki/API:Main_page), fetched monthly by `tools/rarity.mjs` and `tools/summaries.mjs`. The game itself never calls Wikipedia.
 - **Tools** (`tools/`, Node.js 20+, no dependencies): `check.mjs` (the checks and rotation commands), `rarity.mjs`, `summaries.mjs`, `match-bench.mjs` (measures answer matching), `suggest-answers.mjs` (suggests answers from Wikipedia), and `load-game.mjs`, which loads the page in Node for the others.
+- **Dev mode:** add `?dev` to the address (for example `www.dugup.eu/?dev` or `index.html?dev`) for a DEV panel: time of day, depth, any outfit, play any dig or prompt as practice, stop the timer, test answer matching, and unlock, fill or reset progress. It only changes storage in that browser. Use a private window so your own streak is safe.
 - **Analytics:** [Vercel Web Analytics](https://vercel.com/docs/analytics). It is privacy-friendly and uses no cookies.
 
 ### Updating the site

@@ -242,3 +242,17 @@ body.playing .top{padding:0}
 .unlock .linkish{margin:2px 0 0;padding:0;font-size:15px}
 @keyframes unlockPop{0%{transform:scale(.9);opacity:0}100%{transform:none;opacity:1}}
 
+
+/* Dev mode (Spec 20): only built with ?dev in the address. Plain on purpose — a tool, not part of the game. */
+.dev-toggle{position:fixed;right:8px;bottom:8px;z-index:50;font:inherit;font-size:13px;padding:6px 10px;background:var(--red);color:var(--cream);border:0;box-shadow:0 0 0 var(--px) var(--wood-dark);cursor:pointer}
+.dev-panel{position:fixed;right:8px;bottom:48px;z-index:50;width:min(340px,calc(100vw - 16px));max-height:70vh;overflow:auto;padding:8px;background:var(--cream);color:var(--ink);box-shadow:0 0 0 var(--px) var(--wood-dark);font-size:13px}
+.dev-panel fieldset{border:2px solid var(--parch-3);margin:0 0 8px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.dev-panel legend{font-weight:700;padding:0 4px}
+.dev-panel input,.dev-panel select,.dev-panel button{font:inherit;font-size:13px;max-width:100%}
+.dev-panel input[type=number]{width:64px}
+.dev-panel select{max-width:200px}
+.dev-panel button{background:var(--parch-2);color:var(--ink);border:2px solid var(--wood-2);padding:2px 8px;cursor:pointer}
+.dev-panel .dev-danger{border-color:var(--red);color:var(--red)}
+.dev-panel .dev-wide{flex-basis:100%;display:flex;gap:6px;align-items:center}
+.dev-panel .dev-wide select{flex:1;min-width:0;width:0;max-width:none}
+.dev-info,.dev-out{margin:0 0 6px;color:var(--ink-soft);flex-basis:100%;word-break:break-word}
