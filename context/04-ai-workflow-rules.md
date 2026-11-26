@@ -14,4 +14,4 @@
 8. **Oppdater `06-progress-tracker.md`** før og etter arbeidet.
 9. **Feilsøking:** analyser rotårsak → presenter plan → vent på grønt lys → fiks. Ikke lapp symptomer.
 10. **Skriv kode med Edit, ikke via script-generert tekst.** Når kode med regex eller backslashes skrives gjennom en template-streng i et hjelpescript, forsvinner backslashene (`\d` blir `d`, `\b` blir et kontrolltegn). Det skjedde to ganger i Spec 05. Bruk Edit-verktøyet for kode, sjekk at linjeskift (CRLF/LF) bevares, og kjør testene rett etterpå.
-11. **Git:** jobb på en branch, ikke push direkte til `main` (den er produksjon). Commit kun når brukeren ber om det.
+11. **Git:** jobb på en branch, og commit kun når eier ber om det. `main` er produksjon, men har med vilje ingen branch protection. Eier kan be om push rett til `main` herfra, og da kjøres `npm test` først. Uten en slik beskjed skal du ikke pushe til `main`.

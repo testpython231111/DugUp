@@ -6,9 +6,10 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–11 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Alle 150 prompts har fått skrivemåter fra Wikipedia (Spec 11). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- **Spec 12 — Fulle lister for herskere (pilot: `pope`, `japanemp`, `byzantine`, `france`).** Ferdig og verifisert på branchen `feature/12-ruler-lists`, ikke committet. Venter på eiers beslutning om commit og merge.
+- **Spec 13 — Månedlig oppdatering som GitHub Action.** Workflowen er skrevet og ligger på branchen `feature/13-monthly-automation` (PR #2). Gjenstår: eier slår på Actions-innstillingen (se sesjonsnotatet), og en første manuell kjøring.
 
 ## Completed
+- [x] 2026-11-26: **Spec 12 — Fulle lister for herskere (pilot: `pope`, `japanemp`, `byzantine`, `france`).** Eier ba om commit og merge («gjør alt i 1-3 nå med en gang»). Committet i to deler (verktøy og data), og merget via PR #1 da «test» var grønn (run 45791995688). Vercel preview ble bygget uten feil. bench før merge: 78 / 73, som i sesjonsnotatet.
 - [x] 2026-11-23: **Spec 11 — Skrivemåter fra Wikipedia for alle prompts** (punkt 1 i planen under). Eier sa «ja kjør på». Merget til `main` 2026-11-23 etter eiers beslutning («push merge og kjør ut»). GitHub Action var grønn på branchen (run 45199011504) og på `main` (run 45199024425). Publisert `prompts.js`, `app.js` og `index.html` på dugup.eu er identiske med `main`.
   - **Data:** 5 127 nye aliaser for 3 114 svar i 148 prompts. Ingen nye svar og ingen display endret. Eksempler: «Marc Aurel», «Axumites», «Tiwaz», «Sakyamuni», «Marshal Ney», «Hiuen Tsang» og «Fax machine».
   - **Verktøy:** `--all --aliases-only` og `--apply --all`. Det har nye regler mot feil skrivemåter (se specen). `tools/alias-rejects.json` har 564 avviste aliaser i 112 prompts.
@@ -52,7 +53,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
   Hver bolk kjøres gjennom `npm test`, `npm run bench` og `--apply`-advarselen før den committes. Kjent pris: når en prompt får mange mindre kjente svar, gir de kjente svarene mindre dybde.
 
 ### Faste oppgaver
-- **Månedlig:** `node tools/rarity.mjs`, **deretter** `node tools/summaries.mjs`, `npm test`, commit. Neste gang ca. 22. des 2026.
+- **Månedlig:** GitHub Action `monthly-data.yml` kjører `rarity.mjs`, deretter `summaries.mjs` og `npm test` den 22. hver måned og åpner en PR (Spec 13). Eier ser over diffen og merger. Første gang 22. des 2026. Kan også kjøres manuelt: `gh workflow run monthly-data.yml`.
 - **Årlig:** `node tools/check.mjs --freeze-until <dato et år fram>` når testen sier fra (ca. des 2027).
 
 ### Mulige neste specs (ikke prioritert, trenger eiers valg)
@@ -69,7 +70,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 ## Kjente risikoer
 - Frysing er fortsatt manuelt, men bare én gang i året (neste gang ca. desember 2027). `npm test` varsler, og GitHub Action kjører testene daglig og sender e-post når de feiler (Spec 08).
 - Legger man et prompt rett i `ROTATION` for hånd i stedet for med `--add-prompt`, havner det bare i én sesong. Testen «every frozen season that has not started holds every daily prompt» fanger det.
-- Sjeldenhet og oppsummeringer oppdateres manuelt hver måned. Glemmer man det, blir tallene eldre, men ingenting går i stykker. Kjøres `summaries.mjs` før `rarity.mjs`, mangler nye sjeldne svar tekst til neste kjøring.
+- Sjeldenhet og oppsummeringer oppdateres av en GitHub Action hver måned, men PR-en må merges for hånd. Blir den liggende, blir tallene eldre, men ingenting går i stykker. Kjøres `summaries.mjs` før `rarity.mjs`, mangler nye sjeldne svar tekst til neste kjøring.
 - `js/data/summaries.js` (~930 KB) er den største filen. Den lastes `async` og bremser ikke oppstarten, men øker datatrafikken (~315 KB komprimert per besøk uten cache). Tier-grensen kan heves til ≥ 5 hvis det blir et problem.
 - Oppsummeringene er Wikipedia-tekst under CC BY-SA 4.0. Kreditering: lenke til artikkelen på reveal og en linje i README. Fjernes lenken, brytes lisensen.
 - Testene dekker data, matching, rotasjon, rarity og summaries, men ikke UI/Scene/Sound — det verifiseres fortsatt manuelt i nettleser.
@@ -77,6 +78,12 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - Etter Spec 03 er det ikke lenger nok å laste opp bare `index.html` via GitHub-webgrensesnittet (se README «Updating the site»).
 
 ## Sesjonsnotater
+- **2026-11-26 (Spec 12 merge og Spec 13):**
+  - **Spec 12:** committet og merget via PR #1 (se Completed).
+  - **Spec 13:** `.github/workflows/monthly-data.yml` er skrevet. En push gjort med `GITHUB_TOKEN` starter ikke `test.yml`, så workflowen starter den selv med `workflow_dispatch` på data-branchen. Ellers ville PR-en mangle «test»-sjekken.
+  - **Eiers beslutning:** ingen branch protection på `main`. Eier vil kunne pushe rett til `main` herfra.
+  - **Ikke gjort av meg (tillatelse avslått):** «Allow GitHub Actions to create and approve pull requests». Eier må slå den på selv. Uten den siste kan workflowen pushe branchen, men ikke åpne PR-en, og kjøringen blir rød.
+  - **Ikke verifisert:** en ekte kjøring av `monthly-data.yml` (tar ~10 min og krever innstillingen over).
 - **2026-11-23 (Spec 12):**
   - **Data:** pope 81 → 265 (alle personer; Wikipedias 267 teller pontifikater, og Benedict IX satt tre ganger). japanemp 53 → 129 (124 personer, siden Kōken/Shōtoku og Kōgyoku/Saimei er de samme, pluss 5 i nordhoffet; Kōbun lagt til for hånd). byzantine 73 → 83 (nøyaktig de 10 som manglet, inkludert 4 i Nikaia). france 59 → 76. Navn som deles av flere spør «Which …?» (pope 28, byzantine 3, france 11). «Clovis» gir fortsatt Clovis I.
   - **Utelatt:** motpaver, Jingū, medkeisere og keiserinner som ikke styrte alene, frankiske småkonger før Clovis (unntatt Chlodio) og konger over delriker.
