@@ -753,6 +753,7 @@ list:`
 2|Khufu||cheops
 2|Akhenaten||akhenaton;amenhotep 4;ikhnaton;amenophis iv;echnaton
 2|Hatshepsut||hatchepsut
+2|Userkare
 3|Nefertiti||nofretete
 3|Thutmose III||thutmose;tuthmosis 3;thutmosis 3;thothmes 3;tuthmosis;thutmosis
 3|Khafre||chephren;khafra
@@ -762,6 +763,8 @@ list:`
 3|Narmer
 3|Menes||meni
 3|Amenhotep III||amenhotep;amenophis 3
+3|Ptolemy XII Auletes||ptolemy xii of egypt
+3|Iry-Hor
 4|Sneferu||snefru;snofru
 4|Amenhotep I||amenophis 1
 4|Amenhotep II||amenophis 2
@@ -775,10 +778,10 @@ list:`
 4|Ay|Ay (pharaoh)
 4|Smenkhkare
 4|Ahmose I||ahmose;amosis;amasis i
-4|Mentuhotep II||mentuhotep
-4|Senusret III||senusret;sesostris 3;senwosret 3
-4|Amenemhat III||amenemhat;amenemhet 3
-4|Pepi II|Pepi II Neferkare|pepi
+4|Mentuhotep II
+4|Senusret III||sesostris 3;senwosret 3
+4|Amenemhat III||amenemhet 3
+4|Pepi II|Pepi II Neferkare
 4|Taharqa||taharqo;tirhakah
 4|Piye||piankhi
 4|Ptolemy I Soter||ptolemy;ptolemy 1;ptolemy soter
@@ -786,27 +789,42 @@ list:`
 4|Ptolemy XIII|Ptolemy XIII Theos Philopator|ptolemy 13
 4|Caesarion||ptolemy 15
 4|Sobekneferu||neferusobek
-4|Necho II||necho;nekau 2
-4|Psamtik I||psamtik;psammetichus 1
+4|Necho II||nekau 2
+4|Psamtik I||psammetichus 1
+4|Pepi I Meryre||pepi i;pepy i
+4|Setnakhte
+4|Ramesses IV
+4|Senusret I
+4|Scorpion II
+4|Ka|Ka (pharaoh)
 5|Unas||wenis
 5|Teti
 5|Userkaf
 5|Sahure
 5|Djedefre||radjedef
-5|Hor-Aha||aha;hor aha;athothis
-5|Scorpion I||scorpion king;scorpion
+5|Hor-Aha||aha;hor aha;athothis;horus aha
+5|Scorpion I||scorpion
 5|Nectanebo II||nectanebo;nakhthorheb
-5|Shoshenq I||shishak;sheshonk 1;shoshenq
+5|Shoshenq I||shishak;sheshonk 1
 5|Kamose
 5|Seqenenre Tao||seqenenre;seqenenre taa
+5|Apries||nitetis;wahibre;hophra
+5|Amenemhat I||ammenemes
+5|Amasis II||ahmose ii
+5|Ramesses V
+5|Huni
+5|Ptolemy V Epiphanes||ptolemy v of egypt
+5|Ptolemy VIII Physcon||ptolemy viii of egypt;ptolemy viii euergetes
+5|Ptolemy III Euergetes||ptolemy iii of egypt
+5|Djet
 6|Shepseskaf
 6|Djer
 6|Den|Den (pharaoh)
 6|Qa'a||qaa
 6|Khasekhemwy
 6|Nectanebo I
-6|Osorkon II||osorkon
-6|Psusennes I||psusennes
+6|Osorkon II
+6|Psusennes I
 6|Seti II
 6|Siptah
 6|Twosret||tausret
@@ -820,6 +838,247 @@ list:`
 6|Khyan
 6|Sobekhotep IV
 6|Siamun
+6|Sekhemkhet||djoserty
+6|Psamtik III||psammetichus iii
+6|Cleopatra VI||cleopatra vi tryphaena;cleopatra vi of egypt
+6|Berenice IV
+6|Cleopatra V||cleopatra v tryphaena;cleopatra v of egypt
+6|Merenre Nemtyemsaf I
+6|Cleopatra III||cleopatra iii of egypt
+6|Amenemope|Amenemope (pharaoh)
+6|Smendes
+6|Senusret II
+6|Hotepsekhemwy
+6|Ptolemy IV Philopator||ptolemy iv of egypt
+6|Ptolemy XIV Philopator||ptolemy xiv;ptolemy xiv of egypt
+6|Ramesses VIII
+6|Ramesses VII
+6|Seth-Peribsen||peribsen
+6|Semerkhet
+6|Anedjib||adjib
+6|Djedkare Isesi||djedkare
+6|Berenice III
+6|Amenemhat II
+6|Nynetjer
+6|Psamtik II||psammetichus ii
+6|Ptolemy X Alexander I||ptolemy x;ptolemy x alexander
+6|Nyuserre Ini||niuserre
+6|Tantamani
+6|Psusennes II
+6|Ptolemy VI Philometor||ptolemy vi of egypt
+6|Neferirkare Kakai
+6|Amyrtaeus
+6|Senakhtenre Ahmose
+6|Osorkon I
+6|Sanakht
+6|Osorkon the Elder
+6|Amenemnisu
+6|Amenemhat IV
+6|Neferefre
+6|Ptolemy XI Alexander II||ptolemy xi
+6|Khaba||hudjefa ii
+6|Teos of Egypt||tachos
+6|Shebitku||shabataka
+6|Salitis
+6|Merneferre Ay
+6|Mentuhotep III
+6|Shoshenq II||sheshonk ii
+6|Merenre Nemtyemsaf II
+6|Shepseskare
+6|Nubkheperre Intef||intef vi
+6|Bakenranef
+6|Takelot I
+6|Mentuhotep IV
+6|Osorkon IV
+6|Sobekemsaf I
+6|Sekhemre Khutawy Sobekhotep||sobekhotep i
+6|Shoshenq III
+6|Hakor||achoris
+6|Nebra|Nebra (pharaoh)|raneb
+6|Menkauhor Kaiu||menkauhor
+6|Sobekemsaf II
+6|Nepherites I||nefaarud i
+6|Sekhemre-Wepmaat Intef
+6|Necho I
+6|Netjerkare Siptah||neitiqerty siptah
+6|Khamudi
+6|Hat-Hor
+6|Shoshenq V
+6|Ptolemy VII Neos Philopator||ptolemy memphites;ptolemy vii
+6|Sekhemre-Heruhirmaat Intef
+6|Pami
+6|Shoshenq IV
+6|Neferhotep I
+6|Inaros II||inarus
+6|Menkare
+6|Wadjenes
+6|Nepherites II||nefaarud ii
+6|Sekhemib-Perenmaat||sekhemib
+6|Intef II
+6|Hsekiu
+6|Qakare Ibi
+6|Hor Awibre
+6|Bikheris
+6|Senedj
+6|Ny-Hor
+6|Nebka
+6|Nebkaure Khety
+6|Tefnakht
+6|Intef I
+6|Intef III
+6|Pami II
+6|Yaqub-Har||meruserre
+6|Khendjer||userkare khendjer
+6|Meryibre Khety
+6|Sneferka
+6|Neferirkare||neferirkare ii
+6|Sheshi
+6|Neferkare II
+6|Djedkare Shemai
+6|Rudamun
+6|Merikare
+6|Nehesy
+6|Neferkare Neby
+6|Sobekhotep III
+6|Osorkon III
+6|Imyremeshaw
+6|Nebmaatre
+6|Sakir-Har
+6|Senebkay
+6|Wahibre Ibiau
+6|Finger Snail
+6|Wegaf
+6|Nikare
+6|Neferkare Khendu
+6|Neferkamin Anu
+6|Sekhemkare Amenemhat Senebef||sonbef
+6|Takelot II
+6|Sekhemkare||amenemhat v
+6|Hudjefa I
+6|Neferkare Pepiseneb
+6|Merenhor
+6|Yakbim Sekhaenre
+6|Horwennefer||hugronaphor
+6|Merhotepre Sobekhotep||sobekhotep v
+6|Neferkamin
+6|Hotepibre
+6|Ameny Qemau
+6|Neferkahor
+6|Khabash||khababash
+6|Tefnakht II
+6|Sehetepibre
+6|Nerikare
+6|Neferkauhor
+6|Neferkare Tereru
+6|Djedkheperew
+6|Hedju-Hor||hedju
+6|Harsiese A
+6|Thamphthis||djedefptah
+6|Khaankhre Sobekhotep||sobekhotep ii
+6|Sekhemrekhutawy Khabaw
+6|Neferkaure||neferkaure ii
+6|Setut
+6|Ankhwennefer|Ankhwennefer (pharaoh)|ankhmakis
+6|Dedumose II
+6|Merhotepre Ini
+6|Weneg|Weneg (pharaoh)
+6|Merkawre Sobekhotep||sobekhotep vii
+6|Semqen
+6|Iufni
+6|Mersekhemre Ined||neferhotep ii
+6|Neferkasokar
+6|Renseneb
+6|Qahedjet
+6|Wahkare Khety
+6|Pedubast I
+6|Sewadjkare Hori
+6|Semenkare Nebnuni
+6|Sewadjkare
+6|Tutkheperre Shoshenq
+6|Nedjemibre
+6|Dedumose I||dudimose
+6|Nubnefer
+6|Ammeris
+6|Sankhenre Sewadjtu
+6|Takelot III
+6|Aperanat
+6|Neferkare I
+6|Psammetichus IV||psamtik iv
+6|Psammuthes
+6|Meryhathor
+6|Sekhemre Wahkhau Rahotep||rahotep
+6|Sebkay
+6|Sobekhotep VIII
+6|Senusret IV
+6|Ba|Ba (pharaoh)
+6|Sedjefakare Kay Amenemhat VII||sedjefakare
+6|Amenemhat VI
+6|Wepwawetemsaf
+6|Neferhotep III
+6|Ya'ammu Nubwoserre
+6|Ini|Ini (pharaoh)
+6|Neferkare VIII
+6|Sekhemre Sementawy Djehuty||djehuti
+6|Shoshenq VI
+6|Nebiryraw I
+6|Sihathor
+6|Khahotepre Sobekhotep VI||sobekhotep vi
+6|Bebiankh
+6|Seheqenre Sankhptahi
+6|Pantjeny
+6|Khui
+6|Seankhenre Mentuhotepi
+6|Peftjauawybast
+6|Iuput I
+6|Sedjes
+6|Sekheperenre
+6|Merdjefare
+6|Nimlot of Hermopolis
+6|Wadjkare
+6|Sewadjare Mentuhotep||mentuhotep v
+6|Horus Sa
+6|Semenre
+6|Anat-her
+6|Wazad
+6|Djedankhre Montemsaf
+6|Snaaib
+6|Sekhemre Shedwaset
+6|Sharek
+6|Shoshenq VII
+6|Merankhre Mentuhotep||mentuhotep vi
+6|Neferkare VII
+6|Sehebre
+6|Nebiryraw II||nebiriau ii
+6|Seneferankhre
+6|Mershepsesre Ini II
+6|Nebsenre
+6|Bebnum
+6|Merkheperre
+6|Ammu Aahotepre||aahotepre
+6|Merkare
+6|Sewadjkare III
+6|Sewahenre Senebmiu
+6|Qareh Khawoserre||qareh
+6|Maatkheperre Shoshenq
+6|Sheneh|Sheneh (pharaoh)
+6|Khuiqer
+6|Nebdjefare
+6|Nuya
+6|Djehutyemhat
+6|Iytjenu
+6|Shenshek
+6|Muthis
+6|Heribre
+6|Yakareb
+6|Khamure
+6|Neferka
+6|Penamun
+6|Seankhibtawy Seankhibra
+6|Nikare II
+6|Taurus|Taurus (ruler)
+6|Khayu
+6|Hor B
+6|Ni-Neith
 `,
 nope:{
  'moses':'A prophet, not a pharaoh.',
@@ -827,6 +1086,29 @@ nope:{
  'anubis|ra|re|osiris|horus|isis|set|seth|amun|amun ra|ptah|thoth':'That\'s a god &mdash; pharaohs only claimed to be one!',
  'nefertari':'Ramesses II\'s great royal wife &mdash; a queen, not a pharaoh.',
  'sphinx|great sphinx':'A monument, not a ruler!'
+},
+amb:{
+ 'sobekhotep':'Which Sobekhotep? Add a number.',
+ 'berenice':'Which Berenice? Add a number.',
+ 'merenre nemtyemsaf':'Which Merenre Nemtyemsaf? Add a number.',
+ 'takelot':'Which Takelot? Add a number.',
+ 'sobekemsaf':'Which Sobekemsaf? Add a number.',
+ 'nepherites':'Which Nepherites? Add a number.',
+ 'neferhotep':'Which Neferhotep? Add a number.',
+ 'intef':'Which Intef? Add a number.',
+ 'neferkare':'Which Neferkare? Add a number.',
+ 'dedumose':'Which Dedumose? Add a number.',
+ 'nebiryraw':'Which Nebiryraw? Add a number.',
+ 'mentuhotep':'Which Mentuhotep? Add a number.',
+ 'senusret':'Which Senusret? Add a number.',
+ 'amenemhat':'Which Amenemhat? Add a number.',
+ 'pepi':'Which Pepi? Add a number.',
+ 'necho':'Which Necho? Add a number.',
+ 'psamtik':'Which Psamtik? Add a number.',
+ 'scorpion':'Which Scorpion? Add a number.',
+ 'shoshenq':'Which Shoshenq? Add a number.',
+ 'osorkon':'Which Osorkon? Add a number.',
+ 'psusennes':'Which Psusennes? Add a number.'
 }},
 
 {id:'tsars', cat:'Rulers', q:'Name a Russian tsar or empress', hint:'Tsars and emperors, 1547&ndash;1917 (plus Ivan the Great)',
@@ -6895,6 +7177,7 @@ list:`
 2|Hongwu Emperor||hongwu;zhu yuanzhang
 2|Yongle Emperor||yongle;zhu di
 2|Empress Dowager Cixi||cixi;tzu hsi;empress xiaoqinxian
+2|Liu Bei
 3|Emperor Gaozu of Han||gaozu;liu bang;emperor gao of han;kao tsu of han china
 3|Emperor Xuanzong of Tang||xuanzong;tang xuanzong;minghuang;li longji;tang ming huang
 3|Yongzheng Emperor||yongzheng;yinzhen
@@ -6905,6 +7188,7 @@ list:`
 3|Emperor Yang of Sui||yang sui;yang guang;yangdi;emperor yang
 3|Guangxu Emperor||guangxu;zaitian
 3|Wanli Emperor||wanli;zhu yijun;ming shenzong
+3|Emperor Wenxuan of Northern Qi
 4|Daoguang Emperor||daoguang
 4|Xianfeng Emperor||xianfeng
 4|Tongzhi Emperor||tongzhi;zaichun
@@ -6925,6 +7209,7 @@ list:`
 4|Emperor Xiaowen of Northern Wei||xiaowen
 4|Cao Pi||emperor wen wei
 4|Emperor Wu of Jin||sima yan
+4|Sun Quan
 5|Empress Lü||lu zhi;empress lu;empress dowager lü;empress dowager lü zhi
 5|Emperor Ling of Han||ling han
 5|Emperor Xian of Han||xian han;liu xie;han xiandi
@@ -6939,6 +7224,13 @@ list:`
 5|Emperor Wu of Liang||wu liang;xiao yan
 5|Möngke Khan||mongke
 5|Temür Khan||temur;chengzong;öljeyitü khan
+5|Külüg Khan
+5|Liu Shan||liu chan
+5|Jingtai Emperor||zhu qiyu;ming daizong
+5|Jayaatu Khan Tugh Temür
+5|Emperor Hui of Han
+5|Ayurbarwada Buyantu Khan
+5|Rinchinbal Khan
 6|Emperor Ming of Han||ming han
 6|Emperor Zhang of Han||zhang han;emperor zhang
 6|Emperor Xuan of Han||xuan han;liu bingyi
@@ -6954,6 +7246,246 @@ list:`
 6|Longqing Emperor||longqing;zhu zaiji;new governance of longqing
 6|Taichang Emperor||taichang;zhu changluo
 6|Emperor Xiaozong of Song||xiaozong
+6|Gegeen Khan||shidibala;sidibala
+6|Yesün Temür|Yesün Temür (Yuan dynasty)
+6|Emperor Ai of Tang
+6|Wanyan Liang
+6|Liu Ziye
+6|Cao Rui
+6|Zhao Bing
+6|Emperor Aizong of Jin
+6|Emperor Hui of Jin||sima zhong
+6|Emperor Xiaozhao of Northern Qi
+6|Ragibagh Khan||ragibagh
+6|Emperor Taizu of Jin||wanyan aguda
+6|Emperor Suzong of Tang||li heng
+6|Emperor Daizong of Tang||emperor daizong
+6|Emperor Gong of Song||zhao xian
+6|Liu Bian
+6|Emperor Wuzong of Tang
+6|Emperor Zhao of Han||liu fuling
+6|Marquis of Haihun
+6|Emperor Yuan of Han
+6|Emperor Mo of Jin
+6|Emperor Cheng of Han
+6|Emperor Yingzong of Song
+6|Gengshi Emperor
+6|Emperor Houshao of Han
+6|Abaoji
+6|Cao Fang
+6|Emperor Zhaozong of Tang
+6|Cao Huan
+6|Emperor Ping of Han||emperor ping
+6|Emperor Wencheng of Northern Wei||tuoba jun
+6|Emperor Qianshao of Han||liu gong
+6|Sun Hao
+6|Emperor Yizong of Tang
+6|Emperor Wu of Song||emperor wu of liu song
+6|Emperor Lizong
+6|Emperor Qinzong
+6|Emperor Huan of Han||emperor huan
+6|Emperor Xuanzong of Tang (9th century)
+6|Emperor Ningzong||emperor ningzong of song
+6|Emperor Duzong
+6|Cao Mao
+6|Yang You
+6|Emperor Xizong of Tang
+6|Emperor Duanzong
+6|Emperor He of Han||emperor he of han china
+6|Emperor Shizong of Jin
+6|Ruzi Ying
+6|Emperor Wenzong of Tang
+6|Emperor Taiwu of Northern Wei
+6|Emperor Yuan of Jin||sima rui
+6|Emperor Shunzong of Tang
+6|Emperor Muzong of Tang
+6|Emperor Taizong of Liao||yelü deguang
+6|Wanyan Yongji
+6|Emperor Taizong of Jin
+6|Emperor Daowu of Northern Wei||tuoba gui
+6|Emperor Guangzong of Song
+6|Emperor An of Han
+6|Emperor Shang of Tang
+6|Emperor Jingzong of Tang
+6|Emperor Xiaowu of Song||emperor xiaowu of liu song
+6|Emperor Gong of Jin||sima dewen
+6|Sun Liang
+6|Emperor Huai of Jin
+6|Emperor Jingzong of Western Xia||li yuanhao
+6|Emperor Shang of Han||han shangdi
+6|Emperor Min of Jin
+6|Ran Min
+6|Emperor Shun of Han
+6|Emperor Wen of Song||emperor wen of liu song
+6|Shi Siming
+6|Emperor Xizong of Jin||wanyan dan
+6|Emperor Ming of Song||emperor ming of liu song
+6|Marquess of Beixiang
+6|Emperor Xianwen of Northern Wei
+6|Emperor Xuanzong of Jin
+6|Emperor Xiaowu of Jin
+6|Emperor Zhi of Han
+6|Emperor Wucheng of Northern Qi
+6|Sun Xiu
+6|Emperor Chong of Han
+6|Gao Wei
+6|Emperor Ming of Jin
+6|Hou Jing
+6|Emperor Shengzong of Liao||emperor shengzong
+6|Emperor An of Jin
+6|Emperor Fei of Northern Qi
+6|Emperor Tianzuo of Liao||emperor tianzuo
+6|Emperor Gao of Southern Qi||xiao daocheng
+6|Emperor Jingzong of Liao
+6|Emperor Wu of Chen||chen baxian
+6|Emperor Xuanwu of Northern Wei
+6|Latter Deposed Emperor of Liu Song||emperor houfei of song;emperor houfei of liu song
+6|Emperor Zhangzong of Jin||emperor zhangzong
+6|Yang Tong
+6|Emperor Shizong of Liao
+6|Emperor Xiaowu of Northern Wei
+6|Emperor Mingyuan of Northern Wei
+6|Tuoba Yu
+6|Chen Shubao||chen houzhu
+6|Emperor Shun of Song||emperor shun of liu song;liu zhun
+6|Emperor Mu of Jin
+6|Emperor Wen of Chen
+6|Emperor Jianwen of Jin
+6|Wang Shichong
+6|Emperor Cheng of Jin
+6|Liu Shao|Liu Shao (Liu Song)
+6|Emperor Muzong of Liao
+6|Emperor Daozong of Liao||daozong
+6|Emperor Fei of Jin
+6|Emperor Yuan of Liang
+6|Emperor Shao of Song||emperor shao of liu song
+6|Helian Bobo
+6|Emperor Ai of Jin
+6|Emperor Xiaoming of Northern Wei
+6|Emperor Xiangzong of Western Xia||li anquan;xiangzong
+6|Emperor Wu of Southern Qi
+6|Emperor Xiaozhuang of Northern Wei||yuan ziyou
+6|Emperor Kang of Jin
+6|Emperor Ming of Northern Zhou||yuwen yu
+6|Emperor Jianwen of Liang
+6|Gao Heng
+6|Liu Chong
+6|Emperor Xuan of Chen||chen xu
+6|Emperor Renzong of Western Xia
+6|Xiao Baojuan||marquess of donghun
+6|Emperor Yizong of Western Xia
+6|Huan Xuan||huan chu
+6|Emperor He of Southern Qi
+6|Ming Yuzhen
+6|Yuan Zhao
+6|Xiao Zhaoye
+6|Murong Jun
+6|Emperor Ming of Southern Qi||emperor ming of qi
+6|Emperor Xingzong of Liao||xingzong
+6|Emperor Huanzong of Western Xia
+6|Emperor Jing of Liang
+6|Emperor Fei of Chen
+6|Xiao Dong
+6|Emperor Xianzong of Western Xia
+6|Emperor Chongzong of Western Xia
+6|Yang Pu
+6|Emperor Huizong of Western Xia
+6|Xiao Zhaowen
+6|Liu Penzi
+6|Emperor Jiemin of Northern Wei
+6|Yuan Lang
+6|Emperor Shenzong of Western Xia
+6|Yuan Ye|Yuan Ye (emperor)
+6|Chen Li|Chen Li (emperor)
+6|Xiao Yuanming
+6|Xu Shouhui
+6|Ming Sheng
+6|Last Emperor of Western Xia||emperor mo of western xia;emperor mozhu of western xia
+6|Helian Chang
+6|Zhang Bangchang
+6|Xue Ju
+6|Helian Ding
+6|Li Yun|Li Yun (Tang dynasty)
+6|Zhuo Yanming
+6|Shi Hu
+6|Zhu Wen||zhu quanzhong
+6|Yongli Emperor||zhu youlang
+6|Hongguang Emperor||zhu yousong
+6|Chai Rong||guo rong
+6|Emperor Wu of Northern Zhou||yuwen yong
+6|Longwu Emperor||zhu yujian
+6|Guo Wei
+6|Shi Le
+6|Shaowu Emperor||zhu yuyue
+6|Shi Jingtang||gaozu of later jin
+6|Li Cunxu
+6|Yuwen Tai
+6|Emperor Xuan of Northern Zhou
+6|Liu Zhiyuan||gaozu of later han
+6|Li Siyuan||mingzong of later tang
+6|Guo Zongxun||chai zongxun
+6|Shi Chonggui
+6|Li Congke
+6|Murong Chui||murong long
+6|Zhu Youzhen
+6|Liu Yao||liu yin
+6|Zhu Yougui
+6|Emperor Jing of Northern Zhou
+6|Liu Chengyou
+6|Li Bian
+6|Emperor Xiaojing of Eastern Wei
+6|Li Jing|Li Jing (Southern Tang)
+6|Liu Yan|Liu Yan (emperor)
+6|Liu Cong|Liu Cong (Han-Zhao)|liu e
+6|Shi Shi|Shi Shi (emperor)
+6|Emperor Wen of Western Wei
+6|Murong Chong
+6|Fu Jian (317–355)||fu jiàn
+6|Yao Chang
+6|Liu Chang|Liu Chang (Southern Han)
+6|Shi Zun
+6|Fu Sheng|Fu Sheng (Former Qin)
+6|Shi Jian
+6|Li Conghou
+6|Yao Xing
+6|Lü Guang
+6|Wang Yanjun
+6|Wang Jian|Wang Jian (Former Shu)
+6|Li Shou
+6|Shi Zhi
+6|Shi Hong
+6|Li Xiong
+6|Emperor Fei of Western Wei
+6|Meng Zhixiang
+6|Murong Bao
+6|Emperor Gong of Western Wei
+6|Meng Chang
+6|Liu Can
+6|Wang Yanzheng
+6|Murong Wei
+6|Fu Pi
+6|Xiao Cha
+6|Xiao Kui
+6|Liu Jiyuan
+6|Wang Zongyan||wang yan
+6|Jin Zhun
+6|Wang Jipeng
+6|Liu Sheng|Liu Sheng (Southern Han)
+6|Murong De
+6|Murong Chao
+6|Fu Deng
+6|Liu Bin|Liu Bin (Southern Han)
+6|Xiao Cong
+6|Li Shi|Li Shi (emperor)
+6|Liu Jun|Liu Jun (Northern Han)
+6|Liu He|Liu He (Han-Zhao)
+6|Li Ban
+6|Wang Yanxi
+6|Li Qi|Li Qi (emperor)
+6|Fu Chong
+6|Yao Hong
+6|Liu Ji'en
+6|Lan Han
 `,
 nope:{
  'confucius|laozi|sun tzu':'A great thinker &mdash; never an emperor.',

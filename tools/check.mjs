@@ -357,6 +357,22 @@ test('matching: full ruler lists ask which one for a shared name', () => {
   assert.equal(kind('byzantine', 'Constantine'), 'nope');           // still "ruled before the split"
 });
 
+test('matching: rulers from Wikidata (Spec 17)', () => {
+  const kind = (id, input) => G.matchAnswer(G.PROMPTS.find(x => x.id === id), input).type;
+  for (const input of ['Shoshenq', 'Osorkon', 'Senusret', 'Mentuhotep', 'Takelot']) assert.equal(kind('pharaoh', input), 'amb', `pharaoh: "${input}" should ask which one`);
+  expectMatch('pharaoh', 'Cleopatra', 'Cleopatra');                  // kept on purpose: the answer's own name
+  expectMatch('pharaoh', 'Cleopatra III', 'Cleopatra III');
+  expectMatch('pharaoh', 'Shoshenq III', 'Shoshenq III');
+  expectMatch('pharaoh', 'Menkare', 'Menkare');                      // before: credited as Menkaure
+  expectMatch('pharaoh', 'Menkaure', 'Menkaure');
+  expectMatch('chinaemp', 'Emperor Daizong of Tang', 'Emperor Daizong of Tang');   // before: credited as Taizong of Tang
+  expectMatch('chinaemp', 'Emperor Taizong of Tang', 'Emperor Taizong of Tang');
+  expectMatch('chinaemp', 'Emperor Taizong of Liao', 'Emperor Taizong of Liao');
+  expectMatch('chinaemp', 'Emperor Cheng of Han', 'Emperor Cheng of Han');       // before: credited as Chenghua Emperor
+  expectMatch('chinaemp', 'Kangxi', 'Kangxi Emperor');
+  expectMatch('chinaemp', 'Son of Heaven', null);
+});
+
 /* ---------- rotation (invariant 1) ---------- */
 
 const SNAP = readSnapshot();

@@ -21,5 +21,5 @@ Siden henter ikke lenger noe fra Google, dugup.eu publiserer bare spillet, linje
 ## 4. Verification Checklist
 - [x] Headless Edge over `file://`: begge font-face er `loaded`, `document.fonts.check` gir true for «Ōgimachi» i vekt 700, og den eneste konsollfeilen er Vercel-analytics (som alltid feiler over `file://`).
 - [x] `npm test` grønn.
-- [ ] Etter deploy: `dugup.eu/fonts/pixelify-sans-latin.woff2` gir 200, og `dugup.eu/CLAUDE.md` og `dugup.eu/tools/check.mjs` gir 404.
+- [x] Etter deploy (sjekket 2026-11-26 på www.dugup.eu): `dugup.eu/fonts/pixelify-sans-latin.woff2` gir 200, og `dugup.eu/CLAUDE.md` og `dugup.eu/tools/check.mjs` gir 404.
 - [x] `06-progress-tracker.md` oppdatert.

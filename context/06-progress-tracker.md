@@ -6,9 +6,10 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–11 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Alle 150 prompts har fått skrivemåter fra Wikipedia (Spec 11). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- **Spec 17** (herskere fra Wikidata). Eier: «3,4,5 kjør ut».
+_Ingenting._
 
 ## Completed
+- [x] 2026-11-26: **Spec 17 — Herskere fra Wikidata.** `suggest-answers.mjs` har fått kildetypen `wikidata` (P39 med underklasser), med Wikipedia-listen som kontroll. pharaoh 73 → 332, chinaemp 70 → 320. 21 navn uten nummer spør «Which …?» (Shoshenq, Osorkon, Senusret …), og 10 alias som ble tvetydige, er fjernet. «Cleopatra» gir fortsatt Cleopatra VII. 34 tester grønne. bench: 78 falske treff (uendret), kryss-treff 73 → 74 («Hat-Hor» → Hathor i `egyptgods`, akseptabelt). rarity: 11 956 av 12 057 svar rangert. summaries.js er 1011 KB. Headless Edge: «Shoshenq» spør hvilken, og Shoshenq III og Emperor Daizong of Tang gir funn.
 - [x] 2026-11-26: **Spec 16 — Backup.** «Back up or move your progress» på camp åpner en skjerm med all fremdrift som én kode (`DUGUP1.` + base64-JSON av `dugup:`-nøklene). «Restore» erstatter fremdriften etter `confirm()` og laster siden på nytt. Koden valideres og renses (`<>"` fjernes, feil typer droppes), fordi renderne setter lagrede tall rett inn i HTML. 33 tester grønne. Headless Edge: hele rundturen virker, også med «Ō». Skjermbilder på 390 px. Ikke verifisert: ekte iPhone og Safari.
 - [x] 2026-11-26: **Spec 15 — Opprydding.** Pixelify Sans ligger nå i `fonts/` (latin og latin-ext, variabel, med OFL), og siden henter ingenting fra Google. Nye filer: `.vercelignore` (dokumentasjon og verktøy publiseres ikke) og `.gitattributes` (LF). Størrelser og kilder i dokumentasjonen er oppdatert. `preload` ble prøvd og fjernet, fordi den gir CORS-feil over `file://`. Headless Edge: fonten er lastet og ingen nye konsollfeil. 31 tester grønne.
 - [x] 2026-11-26: **Spec 14 — «Should this count?»** Ved et svar som ikke finnes, vises en lenke til en ferdig utfylt GitHub-issue med prompt og svar (`suggestURL`). Ikke ved `nope`, riktige svar eller tidsavbrudd. 31 tester grønne. Headless Edge (practice): lenken vises ved feil svar og ikke ved riktig, `<b>"&</b>` blir escapet, og den eneste konsollfeilen er Vercel-analytics over `file://`. Pushet rett til `main` etter eiers beslutning.
@@ -50,7 +51,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 ## Neste (i prioritert rekkefølge)
 - **Flere svar for resten av promptene, i bolker.** Bygger på verktøyet fra Spec 10. Hver bolk får sin egen spec og trenger eiers grønt lys.
   1. ~~**Aliaser for alle 150 prompts.**~~ Ferdig i Spec 11.
-  2. **Fulle lister for herskere og embeter** (pilot i Spec 12). Før neste bolk: bytt kilde fra Wikipedia-listesider til Wikidata (stilling + tidsrom), med Wikipedia-listen som kontroll. De håndskrevne filterreglene i Spec 12 var skjøre. Gjenstår: faraoer, kinesiske keisere, andre konger og statsministre.
+  2. **Fulle lister for herskere og embeter** (pilot i Spec 12). Før neste bolk: bytt kilde fra Wikipedia-listesider til Wikidata (stilling + tidsrom), med Wikipedia-listen som kontroll. De håndskrevne filterreglene i Spec 12 var skjøre. Faraoer og kinesiske keisere er gjort med Wikidata i Spec 17. Gjenstår: andre konger (hre, norway, scots, mesopotamia, hellenistic).
   3. **Åpne kategorier** i bolker på cirka 10, på samme måte som piloten: guder, slag, byer, borger, oppfinnelser og lignende.
   4. **«Famous …»-prompts** (berømte taler, malerier, svindler og dyr) tas sist eller ikke i det hele tatt, fordi «berømt» ikke har en kategori.
 
@@ -82,6 +83,18 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - Etter Spec 03 er det ikke lenger nok å laste opp bare `index.html` via GitHub-webgrensesnittet (se README «Updating the site»).
 
 ## Sesjonsnotater
+- **2026-11-26 (Spec 14–17):**
+  - **Spec 17, gjennomgang:** Wikidata alene var nesten rent. Lenkene fra listesidene var for det meste støy (land, dyr, Wayback Machine), så de slipper nå bare gjennom `keep`, som krever at beskrivelsen sier farao eller keiser. Jeg fjernet for hånd:
+    - pyramider, kongelister, «Nomen» og et dynasti
+    - Rhampsinit (fiktiv) og Sesostris (legendarisk)
+    - Ramesses XII (forkastet teori)
+    - «Fish» og «Stork» (omstridte tegn, og vanlige ord)
+    - Son of Heaven, Chanyu, Imperial Guards og Imperial Commissioner (titler og institusjoner)
+    - Zhuanxu og Emperor Zhi (mytiske, før 221 f.Kr.)
+  - **Funn:** Mange nye kinesiske keisere ble før godtatt som en *annen* keiser på grunn av skrivefeil-toleransen («Emperor Daizong of Tang» → Taizong, «Emperor Cheng of Han» → Chenghua). Nå er de egne svar.
+  - **Kjent pris:** kjente svar gir mindre dybde. Shoshenq III er nå Old Coin.
+  - **Spec 16:** renderne setter lagrede tall rett inn i HTML. Det var trygt så lenge bare spillet skrev dataene, men ikke med import. Derfor renser `decodeBackup`.
+  - **Spec 15:** `preload` av fonten ga CORS-feil over `file://` og ble fjernet.
 - **2026-11-26 (Spec 12 merge og Spec 13):**
   - **Spec 12:** committet og merget via PR #1 (se Completed).
   - **Spec 13:** `.github/workflows/monthly-data.yml` er skrevet. En push gjort med `GITHUB_TOKEN` starter ikke `test.yml`, så workflowen starter den selv med `workflow_dispatch` på data-branchen. Ellers ville PR-en mangle «test»-sjekken.
