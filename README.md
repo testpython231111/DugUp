@@ -64,7 +64,7 @@ Edit the file that holds what you want to change:
 | Game logic, pixel art, sound | `js/app.js` |
 | Page text and structure | `index.html` |
 
-Then push to `main` with git. If you use the GitHub website instead, open the file in its folder and use the pencil (**Edit**) button, or drag the changed file into the matching folder with **Add file → Upload files**. Uploading only `index.html` is no longer enough. Vercel publishes the new version within a minute.
+Then push the change to a branch and open a pull request. `main` is protected: a pull request can only be merged when the `test` check is green, and Vercel publishes `main` within a minute of the merge. On the GitHub website, the pencil (**Edit**) button and **Add file → Upload files** offer to create a branch and a pull request for you. Uploading only `index.html` is no longer enough.
 
 ### Running checks
 
@@ -74,7 +74,7 @@ Run the automated checks before every change. They need [Node.js](https://nodejs
 npm test            # or: node tools/check.mjs
 ```
 
-GitHub runs the same checks on every push and pull request, and once a day (`.github/workflows/test.yml`), because Vercel deploys `main` without running them. The daily run catches date-based deadlines, such as freezing the rotation, even when nobody pushes. GitHub emails you when a run fails.
+GitHub runs the same checks on every push and pull request, and once a day (`.github/workflows/test.yml`). Vercel doesn't run them, so `main` only accepts pull requests with a green `test` check. The daily run catches date-based deadlines, such as freezing the rotation, even when nobody pushes. GitHub emails you when a run fails.
 
 The checks load `index.html` and its scripts without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, the daily rotation, and the generated rarity and summary files (and that the game never calls `fetch`). Daily digs that are already published (or due within 14 days) are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter digs that players have already seen. The snapshot only ever grows: `node tools/check.mjs --write-snapshot` adds the digs up to 14 days ahead and refuses to rewrite an existing one.
 
@@ -86,7 +86,9 @@ To add a prompt, put it in `PROMPT_DATA` in `js/data/prompts.js` and run `node t
 
 ### Monthly update: rarity and summaries
 
-About once a month, first run `node tools/rarity.mjs`. It takes about six minutes, fetches page views for every answer and rewrites `js/data/rarity.js` (never edit that file by hand). Check the diff, run `npm test` and commit. If more than 5 % of the requests fail, it writes nothing. `--dry-run` fetches and reports without writing.
+A GitHub Action (`.github/workflows/monthly-data.yml`) does this on the 22nd of every month. It runs both scripts below in order, runs the checks and opens a pull request with the new files. Look over the diff and merge it. To run it now: `gh workflow run monthly-data.yml`. It needs **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** to be on.
+
+To do it by hand, first run `node tools/rarity.mjs`. It takes about six minutes, fetches page views for every answer and rewrites `js/data/rarity.js` (never edit that file by hand). Check the diff, run `npm test` and commit. If more than 5 % of the requests fail, it writes nothing. `--dry-run` fetches and reports without writing.
 
 Then run `node tools/summaries.mjs` (about four minutes, and always after `rarity.mjs`, because it picks the rare answers from the new rarity). It fetches the first sentence or two of the Wikipedia article for every rare answer (tier 4–6) and rewrites `js/data/summaries.js`, which the reveal screen shows when you dig up a rare find. Text only, never images. Same rules: check the diff, run `npm test`, commit.
 

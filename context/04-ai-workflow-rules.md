@@ -14,4 +14,4 @@
 8. **Oppdater `06-progress-tracker.md`** før og etter arbeidet.
 9. **Feilsøking:** analyser rotårsak → presenter plan → vent på grønt lys → fiks. Ikke lapp symptomer.
 10. **Skriv kode med Edit, ikke via script-generert tekst.** Når kode med regex eller backslashes skrives gjennom en template-streng i et hjelpescript, forsvinner backslashene (`\d` blir `d`, `\b` blir et kontrolltegn). Det skjedde to ganger i Spec 05. Bruk Edit-verktøyet for kode, sjekk at linjeskift (CRLF/LF) bevares, og kjør testene rett etterpå.
-11. **Git:** jobb på en branch, ikke push direkte til `main` (den er produksjon). Commit kun når brukeren ber om det.
+11. **Git:** jobb på en branch, ikke push direkte til `main` (den er produksjon, og branch protection krever grønn `test`). Commit kun når brukeren ber om det. Merge skjer via PR (`gh pr create`, `gh pr checks --watch`, `gh pr merge --merge`) etter eiers beslutning.
