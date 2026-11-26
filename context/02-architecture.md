@@ -97,10 +97,12 @@ Begge scriptene sender `User-Agent: DugUpRarity/1.0 (https://dugup.eu)`, venter 
 | Nøkkel | Innhold |
 |---|---|
 | `dugup:stats` | `{streak, last, best, digs, bestStreak, maxDepth, perfect}` |
-| `dugup:daily` | Resultater per datonøkkel (`YYYY-MM-DD`) |
+| `dugup:daily:YYYY-MM-DD` | Resultatet av digen den dagen (én nøkkel per dag) |
 | `dugup:museum` | `{ "<promptId>|<display>": {t, p, q, w, a, n, d} }` |
 | `dugup:skin` | Valgt outfit-id |
 | `dugup:muted` | Bool |
+
+Backup (Spec 16): `backupCode()` pakker alle nøklene over som `DUGUP1.` + base64-JSON, og `restoreBackup()` erstatter dem etter at `decodeBackup()` har sjekket typer og fjernet `<>"`. En ny nøkkel må legges til i `BACKUP_KEY` og valideringen, ellers blir den ikke med.
 
 ## Invarianter (skal ALDRI brytes)
 1. **Daglig rotasjon er deterministisk og stabil.** Digs leses fra de frosne sesongene i `ROTATION`, og `EPOCH` = 22. nov 2026 er Dig #1. Låste digs (snapshoten og til og med i dag + 14 dager) endres aldri. Id-er i `ROTATION` fjernes eller omdøpes aldri. Nye id-er settes kun inn etter de låste digsene, med `--add-prompt` (se «Slik legger du til et nytt prompt»). Et prompt som står i `ROTATION` kan ikke slettes fra `PROMPT_DATA`.

@@ -30,7 +30,9 @@ const TIER_BLURB = [
 const $ = id => document.getElementById(id);
 const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  remove(k){ try{ localStorage.removeItem(k); }catch(e){} },
+  keys(){ try{ const out = []; for (let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); if (k && k.indexOf('dugup:') === 0) out.push(k); } return out; }catch(e){ return []; } }
 };
 function hashStr(s){ let h = 2166136261 >>> 0; for (let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -1573,7 +1575,7 @@ const Scene = (function(){
 /* =========================================================
    GAME
    ========================================================= */
-const screens = {title: $('screen-title'), play: $('screen-play'), results: $('screen-results'), archive: $('screen-archive'), museum: $('screen-museum'), wardrobe: $('screen-wardrobe')};
+const screens = {title: $('screen-title'), play: $('screen-play'), results: $('screen-results'), archive: $('screen-archive'), museum: $('screen-museum'), wardrobe: $('screen-wardrobe'), backup: $('screen-backup')};
 function show(name){ for (const k in screens) screens[k].classList.toggle('hidden', k !== name); document.body.classList.toggle('playing', name === 'play' || name === 'results'); }
 
 const state = {mode: null, prompts: [], idx: 0, rows: [], score: 0, t0: 0, timer: null, answered: false, revealAt: 0, dayKey: null, dayNum: 0, lastSec: 99, digging: false};
@@ -1603,6 +1605,73 @@ function skinUnlocked(sk, st, mus){ return !sk.req || skinHave(sk, st, mus) >= s
 function unlockedIds(){ const st = getStats(), mus = museumCount(); return SKINS.filter(sk => skinUnlocked(sk, st, mus)).map(sk => sk.id); }
 function currentSkin(){ const id = store.get('dugup:skin', 'explorer'); return unlockedIds().includes(id) ? id : 'explorer'; }
 function applySkin(){ const id = currentSkin(); Scene.setSkin(id); $('logoIcon').src = headURL(skinById(id)); }
+
+/* ---------- backup: all progress as one text code (Spec 16) ---------- */
+// The storage format is unchanged; the code is just its keys and values. A code can come from anyone, and the
+// renderers put stored numbers into HTML unescaped, so decodeBackup checks the types and strips <>" from strings.
+const BACKUP_PREFIX = 'DUGUP1.';
+const BACKUP_KEY = /^dugup:(stats|museum|skin|muted|daily:\d{4}-\d{2}-\d{2})$/;
+const BACKUP_BAD = 'The code is damaged. Copy all of it and try again.';
+function encodeBackup(data){
+  const bytes = new TextEncoder().encode(JSON.stringify({v: 1, data}));
+  let bin = ''; for (let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+  return BACKUP_PREFIX + btoa(bin);
+}
+function decodeBackup(code){
+  const s = String(code || '').replace(/\s+/g, '');
+  if (s.indexOf(BACKUP_PREFIX) !== 0) throw new Error('That is not a Dug Up backup code.');
+  let obj;
+  try{
+    const bin = atob(s.slice(BACKUP_PREFIX.length)), bytes = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+    obj = JSON.parse(new TextDecoder().decode(bytes));
+  }catch(e){ throw new Error(BACKUP_BAD); }
+  const isObj = x => x !== null && typeof x === 'object' && !Array.isArray(x);
+  const isNum = x => typeof x === 'number' && isFinite(x);
+  const isTier = x => Number.isInteger(x) && x >= 0 && x < TIERS.length;
+  const clean = x => typeof x === 'string' ? x.replace(/[<>"]/g, '') : Array.isArray(x) ? x.map(clean)
+    : isObj(x) ? Object.keys(x).reduce((o, k) => { o[clean(k)] = clean(x[k]); return o; }, {}) : (typeof x === 'number' && !isFinite(x)) ? 0 : x;
+  if (!isObj(obj) || obj.v !== 1 || !isObj(obj.data)) throw new Error(BACKUP_BAD);
+  const data = {};
+  for (const k in obj.data){
+    if (!BACKUP_KEY.test(k)) continue;
+    const v = clean(obj.data[k]);
+    if (k === 'dugup:skin'){ if (typeof v === 'string') data[k] = v; }
+    else if (k === 'dugup:muted'){ if (typeof v === 'boolean') data[k] = v; }
+    else if (k === 'dugup:stats'){
+      if (!isObj(v)) throw new Error(BACKUP_BAD);
+      const st = {};
+      ['streak', 'best', 'digs', 'bestStreak', 'maxDepth', 'perfect'].forEach(f => { if (isNum(v[f])) st[f] = v[f]; });
+      if (typeof v.last === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v.last)) st.last = v.last;
+      data[k] = st;
+    } else if (k === 'dugup:museum'){
+      if (!isObj(v)) throw new Error(BACKUP_BAD);
+      const m = {};
+      for (const mk in v){
+        const e = v[mk];
+        if (isObj(e) && isTier(e.t) && e.t >= 1 && ['p', 'q', 'w', 'a'].every(f => typeof e[f] === 'string') && (e.n === undefined || isNum(e.n))) m[mk] = e;
+      }
+      data[k] = m;
+    } else {
+      if (isObj(v) && isNum(v.score) && Array.isArray(v.rows) && v.rows.every(r => isObj(r) && isTier(r.tier) && isNum(r.pts))) data[k] = v;
+    }
+  }
+  if (!Object.keys(data).length) throw new Error('The code holds no progress.');
+  return data;
+}
+function backupCode(){ const data = {}; store.keys().filter(k => BACKUP_KEY.test(k)).forEach(k => { data[k] = store.get(k, null); }); return encodeBackup(data); }
+// Replaces this device's progress with the code's. Throws (and changes nothing) when the code is bad.
+function restoreBackup(code){
+  const data = decodeBackup(code);
+  store.keys().filter(k => BACKUP_KEY.test(k)).forEach(k => store.remove(k));
+  for (const k in data) store.set(k, data[k]);
+  return data;
+}
+function openBackup(){
+  $('backupCode').value = backupCode();
+  $('backupMsg').textContent = '';
+  show('backup'); window.scrollTo(0, 0);
+}
 
 function renderTitle(){
   const key = dateKey(), num = dayNumber();
@@ -1953,6 +2022,22 @@ $('btnHome').addEventListener('click', goCamp);
 $('btnArchive').addEventListener('click', () => { Sound.click(); openArchive(); });
 $('btnMuseum').addEventListener('click', () => { Sound.click(); openMuseum(); });
 $('btnWardrobe').addEventListener('click', () => { Sound.click(); openWardrobe(); });
+$('btnBackup').addEventListener('click', () => { Sound.click(); openBackup(); });
+$('btnBackupCopy').addEventListener('click', () => {
+  const ta = $('backupCode'), msg = $('backupMsg');
+  const fallback = () => { ta.focus(); ta.select(); msg.textContent = 'Selected. Copy it and keep it somewhere safe.'; };
+  try{
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(() => { msg.textContent = 'Copied. Keep it somewhere safe, like a note or an email to yourself.'; }, fallback);
+    else fallback();
+  }catch(e){ fallback(); }
+});
+$('btnBackupRestore').addEventListener('click', () => {
+  const msg = $('backupMsg');
+  try{ decodeBackup($('backupCode').value); }catch(e){ msg.textContent = e.message; return; }
+  if (!window.confirm('Replace the progress on this device with the progress in this code?')) return;
+  restoreBackup($('backupCode').value);
+  location.reload(); // every screen, the outfit and the sound setting start again from the restored data
+});
 $('btnResMuseum').addEventListener('click', () => { Sound.click(); clearInterval(countdown); openMuseum(); });
 document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', goCamp));
 $('btnSound').addEventListener('click', () => { Sound.init(); Sound.setMuted(!Sound.isMuted()); renderSoundBtn(); Sound.click(); });
@@ -1971,6 +2056,6 @@ document.addEventListener('keydown', e => {
 });
 
 // test hook (harmless in production)
-window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, summaryFor, suggestURL, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
+window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, summaryFor, suggestURL, encodeBackup, decodeBackup, backupCode, restoreBackup, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
 })();
 

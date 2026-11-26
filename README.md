@@ -37,6 +37,7 @@ Dug Up is a daily history trivia game in cosy pixel art. You get seven prompts a
 - **Wardrobe.** Unlock outfits by playing: Miner, Legionary, Historically Inaccurate Viking, Pharaoh, Knight, Gentleman Antiquarian, Dino Suit, Royal and Golden Digger.
 - **Forgiving answers.** The game accepts small typos, alternative names, and Roman or Arabic numerals (Henry VIII = Henry 8). It warns you if your answer is ambiguous and explains near misses.
 - **Streaks and stats.** Day streak, deepest dig and total digs.
+- **Backup.** Copy all your progress as one code, and paste it on another phone or browser, or after clearing your browser.
 - Hand-built pixel art and animation, plus synthesized sound effects that you can mute.
 
 ## How rarity works
@@ -94,7 +95,7 @@ Then run `node tools/summaries.mjs` (about four minutes, and always after `rarit
 
 ## Privacy
 
-Your progress (streak, stats, museum, outfit and past results) is stored only in your own browser, in `localStorage`. There are no accounts and no cookies. Clearing your browser data resets your progress.
+Your progress (streak, stats, museum, outfit and past results) is stored only in your own browser, in `localStorage`. There are no accounts and no cookies. Clearing your browser data resets your progress, so use **Back up or move your progress** at camp to keep a copy.
 
 ## Credits and licences
 

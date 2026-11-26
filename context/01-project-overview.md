@@ -15,8 +15,8 @@ Dug Up er et daglig historie-quizspill i pikselkunst (dugup.eu). Spilleren får 
 2. Trykker **Today's Dig** → runde med 7 prompts (`startRound('daily')`).
 3. Per prompt: skriver svar → `matchAnswer` (normalisering, typo-toleranse, aliaser, romertall) → gravanimasjon → **reveal** med tier, meter og Wikipedia-lenker, og 1–2 setninger fra Wikipedia når funnet er sjeldent (tier ≥ 4).
 4. Etter 7 prompts → **Results**: total dybde, era, delbar tekst (emoji, ingen spoilere), evt. nye outfits låst opp.
-5. Resultat lagres (`dugup:daily`, `dugup:stats`, `dugup:museum`). Streak oppdateres kun for dagens dig.
-6. Sekundære flyter: **Practice Dig** (faste 7, teller ikke), **Past digs** (siste 7 dager, teller ikke for streak), **Museum**, **Wardrobe**.
+5. Resultat lagres (`dugup:daily:<dato>`, `dugup:stats`, `dugup:museum`). Streak oppdateres kun for dagens dig.
+6. Sekundære flyter: **Practice Dig** (faste 7, teller ikke), **Past digs** (siste 7 dager, teller ikke for streak), **Museum**, **Wardrobe**, **Backup** (all fremdrift som én kode, Spec 16).
 
 ## In Scope
 - Daglig dig, practice, past digs, museum, wardrobe/outfits, streaks/stats, deling.

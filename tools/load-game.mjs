@@ -50,8 +50,11 @@ export function loadGame(htmlFile, html, overrides = {}){
     localStorage: {
       getItem: k => (mem.has(k) ? mem.get(k) : null),
       setItem: (k, v) => { mem.set(k, String(v)); },
-      removeItem: k => { mem.delete(k); }
+      removeItem: k => { mem.delete(k); },
+      key: i => [...mem.keys()][i] ?? null,
+      get length(){ return mem.size; }
     },
+    btoa, atob,
     // Wikipedia is "down": the game must fall back to offline tiers (invariant 7).
     fetch: () => Promise.reject(new Error('offline (test)')),
     AbortController,
@@ -77,6 +80,7 @@ export function loadGame(htmlFile, html, overrides = {}){
     RARITY: vm.runInContext('typeof RARITY === "undefined" ? null : RARITY', ctx),
     SUMMARIES: vm.runInContext('typeof SUMMARIES === "undefined" ? null : SUMMARIES', ctx),
     PRACTICE_IDS: hook.practicePrompts().map(p => p.id),
+    localStorage: sandbox.localStorage,
     ...hook
   };
 }

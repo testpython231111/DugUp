@@ -537,6 +537,48 @@ test('summaries: the reveal shows a summary only for finds with tier >= 4, and n
   assert.ok(Array.from(g.PROMPTS).every(p => Array.from(p.answers).every(a => g.summaryFor(p, a) === '')));
 });
 
+test('backup: a code restores exactly the same progress, and replaces what was there (Spec 16)', () => {
+  const g = loadGame(HTML);
+  const res = { mode: 'daily', key: '2026-11-25', num: 4, score: 185, live: true,
+    rows: [{ q: 'Name a Roman emperor', cat: 'Rulers', input: 'pertinax', answer: 'Pertinax', wiki: 'Pertinax', tier: 5, pts: 85, timeout: false, views: 1234 }] };
+  const before = {
+    'dugup:stats': { streak: 3, last: '2026-11-25', best: 400, digs: 4, bestStreak: 3, maxDepth: 400, perfect: 0 },
+    'dugup:museum': { 'japanemp|Ōgimachi': { t: 6, p: 'japanemp', q: 'Name an emperor of Japan', w: 'Emperor Ōgimachi', a: 'Ōgimachi', n: 2, d: '2026-11-25' } },
+    'dugup:daily:2026-11-25': res, 'dugup:skin': 'viking', 'dugup:muted': true
+  };
+  const set = obj => { for (const k in obj) g.localStorage.setItem(k, JSON.stringify(obj[k])); };
+  set(before);
+  const code = g.backupCode();
+  assert.match(code, /^DUGUP1\.[A-Za-z0-9+/=]+$/);
+  // another device with other progress, plus a key the backup does not touch
+  for (const k of Object.keys(before)) g.localStorage.removeItem(k);
+  set({ 'dugup:stats': { streak: 9, digs: 9 }, 'dugup:daily:2026-11-20': res });
+  g.restoreBackup(code.replace(/(.{40})/g, '$1\n'));   // line breaks from copying are fine
+  const after = {};
+  for (let i = 0; i < g.localStorage.length; i++){ const k = g.localStorage.key(i); after[k] = JSON.parse(g.localStorage.getItem(k)); }
+  assert.deepEqual(after, JSON.parse(JSON.stringify(before)));
+});
+
+test('backup: bad codes are refused and change nothing; strings lose <>" and wrong types are dropped (Spec 16)', () => {
+  const g = loadGame(HTML);
+  g.localStorage.setItem('dugup:stats', JSON.stringify({ streak: 5 }));
+  for (const bad of ['', 'hello', 'DUGUP1.not-base64!!', g.encodeBackup('x'), g.encodeBackup({ 'other:key': 1 })]){
+    assert.throws(() => g.restoreBackup(bad));
+  }
+  assert.equal(g.localStorage.getItem('dugup:stats'), JSON.stringify({ streak: 5 }));
+  const data = g.decodeBackup(g.encodeBackup({
+    'dugup:stats': { streak: '<img src=x onerror=alert(1)>', best: 50, last: '<b>' },
+    'dugup:museum': { 'rome|Nero': { t: 6, p: 'rome', q: 'q', w: 'Nero', a: '<script>"x"</script>', n: 1 }, 'rome|Bad': { t: '<i>', p: 'rome', q: 'q', w: 'w', a: 'a' } },
+    'dugup:daily:2026-11-24': { score: '<b>9</b>', rows: [] },
+    'dugup:skin': 'pharaoh', 'dugup:evil': '<x>'
+  }));
+  assert.deepEqual(JSON.parse(JSON.stringify(data)), {
+    'dugup:stats': { best: 50 },
+    'dugup:museum': { 'rome|Nero': { t: 6, p: 'rome', q: 'q', w: 'Nero', a: 'scriptx/script', n: 1 } },
+    'dugup:skin': 'pharaoh'
+  });
+});
+
 test('feedback: "Should this count?" opens a prefilled GitHub issue with the prompt and the answer (Spec 14)', () => {
   const p = G.PROMPTS.find(x => x.id === 'rome');
   const u = new URL(G.suggestURL(p, '  Nerva <b>"&</b>  '));

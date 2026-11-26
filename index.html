@@ -39,6 +39,7 @@
           <button id="btnWardrobe" class="btn btn-wood small-btn" type="button">Wardrobe</button>
         </div>
         <div class="stats" id="stats"></div>
+        <button id="btnBackup" class="linkish backup-link" type="button">Back up or move your progress</button>
       </div>
 
       <div class="panel frame-parch how">
@@ -141,6 +142,23 @@
         <h2>Wardrobe</h2>
         <p class="small"><span id="wardSummary"></span> Keep digging to unlock more &mdash; practice digs don't count.</p>
         <div class="ward-grid" id="wardGrid"></div>
+        <button class="linkish" type="button" data-back>&larr; Back to camp</button>
+      </div>
+    </section>
+
+    <!-- BACKUP -->
+    <section id="screen-backup" class="screen hidden">
+      <div class="panel frame-parch">
+        <h2>Backup</h2>
+        <p class="small">Your streak, museum and outfits live only in this browser. Copy this code and keep it somewhere safe. To move to another phone or browser, or to get your progress back after clearing your browser, paste the code here and press Restore.</p>
+        <div class="share-box frame-inset">
+          <textarea id="backupCode" class="backup-code" rows="5" spellcheck="false" autocomplete="off" aria-label="Backup code"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-gold" id="btnBackupCopy" type="button">Copy code</button>
+          <button class="btn btn-wood" id="btnBackupRestore" type="button">Restore</button>
+        </div>
+        <p class="small" id="backupMsg" aria-live="polite"></p>
         <button class="linkish" type="button" data-back>&larr; Back to camp</button>
       </div>
     </section>
