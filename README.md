@@ -34,7 +34,7 @@ Dug Up is a daily history trivia game in cosy pixel art. You get seven prompts a
 - **Practice dig.** The same seven prompts every time, kept out of the daily rotation so practice never spoils a real dig. Practice doesn't count toward the museum or outfits.
 - **Learn as you dig.** Dig up something rare and the reveal shows a sentence or two about it from Wikipedia, with a link to read more.
 - **Museum.** Every real answer you dig up gets a place on your shelves, sorted by rarity.
-- **Wardrobe.** Unlock outfits by playing: Miner, Legionary, Historically Inaccurate Viking, Pharaoh, Knight, Gentleman Antiquarian, Dino Suit, Royal and Golden Digger.
+- **Wardrobe.** Unlock outfits by playing: Miner, Legionary, Historically Inaccurate Viking, Pharaoh, Knight, Gentleman Antiquarian, Dino Suit, Royal, Aviator, Samurai, Monk, Pirate and Golden Digger.
 - **Forgiving answers.** The game accepts small typos, alternative names, and Roman or Arabic numerals (Henry VIII = Henry 8). It warns you if your answer is ambiguous and explains near misses.
 - **Streaks and stats.** Day streak, deepest dig and total digs.
 - **Backup.** Copy all your progress as one code, and paste it on another phone or browser, or after clearing your browser.

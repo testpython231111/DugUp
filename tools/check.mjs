@@ -595,6 +595,19 @@ test('backup: bad codes are refused and change nothing; strings lose <>" and wro
   });
 });
 
+test('outfits: unique ids, 12-wide torso rows and a goal the game knows (Spec 19)', () => {
+  const ids = G.SKINS.map(s => s.id);
+  assert.equal(new Set(ids).size, ids.length, 'two outfits share an id');
+  assert.equal(ids[0], 'explorer');
+  for (const s of G.SKINS){
+    for (const k in s.rows || {}){ assert.ok(+k >= 0 && +k < 14, `${s.id}: row ${k}`); assert.equal(s.rows[k].length, 12, `${s.id}: row ${k} is not 12 wide`); }
+    if (s.req){ assert.ok(['digs', 'streak', 'museum', 'depth', 'perfect'].includes(s.req.type), `${s.id}: goal ${s.req.type}`); assert.ok(s.req.n >= 1); }
+    if (s.req && s.req.type === 'depth') assert.ok(s.req.n <= 7 * 100, `${s.id}: deeper than a perfect dig can reach`);
+    for (const c of Object.values(s.pal || {})) assert.match(c, /^#[0-9a-f]{6}$/i, `${s.id}: colour ${c}`);
+  }
+  for (const id of ['aviator', 'samurai', 'monk', 'pirate']) assert.ok(ids.includes(id), `${id} is missing`);
+});
+
 test('feedback: "Should this count?" opens a prefilled GitHub issue with the prompt and the answer (Spec 14)', () => {
   const p = G.PROMPTS.find(x => x.id === 'rome');
   const u = new URL(G.suggestURL(p, '  Nerva <b>"&</b>  '));
