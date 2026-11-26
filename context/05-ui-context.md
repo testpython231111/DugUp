@@ -17,12 +17,14 @@ Koselig, varm pikselkunst — «arkeologisk utgravning». Pergament, tre, gull o
 | `--gold` / `--gold-2` | `#f6b627` / `#d9860f` | Primærknapper, highlights |
 | `--green` / `--red` | `#5fae2c` / `#c8442f` | Riktig / feil |
 | `--night` | `#24150c` | Bakgrunn |
+| `--link` / `--link-visited` | `= --wood-2` / `= --ink-soft` | Lenker (Spec 18). Ikke nettleserblått. |
 | `--px` | `3px` | Pikselenhet for rammer |
 
 Canvas-farger ligger i `PAL` (JS) og skal harmonere med tokens over.
 
 ## Typografi
 - `Pixelify Sans` (variabel woff2 i `fonts/`, 400–700, på eget domene, ikke Google Fonts) for all tekst.
+- Ligaturer er slått av (`font-variant-ligatures:none` på `body`): Pixelify Sans tegner «fi» så det ligner en «A» (Spec 18).
 - `DugUp Digits` (innebygd base64, kun 0–9) foran i font-stack for tall med omtegnede 2, 3 og 5.
 
 ## Komponentkonvensjoner
@@ -32,4 +34,6 @@ Canvas-farger ligger i `PAL` (JS) og skal harmonere med tokens over.
 - Tier-ikoner er sprites (`TIERS[n].spr`), emoji brukes kun i delingstekst.
 - Reveal-oppsummering (Spec 06): `.reveal-body .summary`, med tekst i `--ink-soft`, venstrekant `var(--px)` i `--parch-3` og en liten «Wikipedia»-lenke til slutt. **Aldri bilder fra Wikipedia**: de bryter pikselstilen (eiers beslutning).
 - Tilgjengelighet: `aria-live` på toast/reveal, `aria-label` på ikonknapper, tastatur (Enter/mellomrom for skip/next) må fortsatt virke.
+- Camp: Past digs, Museum, Wardrobe og Backup i et 2×2-rutenett (`.camp-row`). Tre på én rad får ikke plass under ~460 px (Spec 18).
+- Favicon, apple-touch-icon og `og.png` er laget av spillets egen grafikk (logo-hodet og scenen). Lag dem på samme måte hvis grafikken endres.
 - Mobil først: én kolonne, store trykkflater, `inputmode`/`enterkeyhint` på svarfeltet.

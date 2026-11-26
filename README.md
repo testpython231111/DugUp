@@ -95,7 +95,7 @@ Then run `node tools/summaries.mjs` (about four minutes, and always after `rarit
 
 ## Privacy
 
-Your progress (streak, stats, museum, outfit and past results) is stored only in your own browser, in `localStorage`. There are no accounts and no cookies. Clearing your browser data resets your progress, so use **Back up or move your progress** at camp to keep a copy.
+Your progress (streak, stats, museum, outfit and past results) is stored only in your own browser, in `localStorage`. There are no accounts and no cookies. Clearing your browser data resets your progress, so use **Backup** at camp to keep a copy.
 
 ## Credits and licences
 

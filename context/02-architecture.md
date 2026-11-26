@@ -18,6 +18,7 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 |---|---|
 | `index.html` (~160 linjer) | `<head>` (Vercel Analytics), HTML: header, `#scene`, seks `<section class="screen">`, footer, og script-taggene nederst i `<body>` |
 | `css/style.css` | `@font-face` (`DugUp Digits` som base64, `Pixelify Sans` fra `fonts/`), all CSS (`:root`-tokens øverst) |
+| `favicon.png`, `apple-touch-icon.png`, `og.png` | Fanen, hjemskjermen og forhåndsvisning av lenker (1200×630). Laget av logo-hodet og scenen (Spec 18). |
 | `fonts/` | `pixelify-sans-latin.woff2` og `-latin-ext.woff2` (variable, 400–700) og `OFL.txt` (Spec 15). |
 | `.vercelignore` | Holder `context/`, `tools/`, `.github/`, `CLAUDE.md`, `README.md` og `package.json` utenfor dugup.eu (Spec 15). Bare spillet publiseres. |
 | `.gitattributes` | LF overalt, også i Windows-arbeidskopier (Spec 15). |

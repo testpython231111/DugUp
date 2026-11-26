@@ -4,6 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dug Up — the daily history dig</title>
+<meta name="description" content="A daily history trivia game in cosy pixel art. Seven prompts, thirty seconds each — the rarer your correct answer, the deeper you dig.">
+<meta name="theme-color" content="#24150c">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- link previews in chats and social media (Spec 18); og:image must be an absolute URL -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dug Up">
+<meta property="og:title" content="Dug Up — the daily history dig">
+<meta property="og:description" content="Seven history prompts, thirty seconds each. Obvious answers are just dirt — the rarer your correct answer, the deeper you dig.">
+<meta property="og:url" content="https://www.dugup.eu/">
+<meta property="og:image" content="https://www.dugup.eu/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A pixel-art explorer with a spade at a dig site, under the title Dug Up">
+<meta name="twitter:card" content="summary_large_image">
 <!-- Vercel Web Analytics (only works when hosted on Vercel) -->
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -37,9 +52,9 @@
           <button id="btnArchive" class="btn btn-wood small-btn hidden" type="button">Past digs</button>
           <button id="btnMuseum" class="btn btn-wood small-btn" type="button">Museum</button>
           <button id="btnWardrobe" class="btn btn-wood small-btn" type="button">Wardrobe</button>
+          <button id="btnBackup" class="btn btn-wood small-btn" type="button">Backup</button>
         </div>
         <div class="stats" id="stats"></div>
-        <button id="btnBackup" class="linkish backup-link" type="button">Back up or move your progress</button>
       </div>
 
       <div class="panel frame-parch how">
@@ -166,7 +181,7 @@
 
   <footer class="foot">
     <span class="badge" id="dataBadge">Checking Wikipedia&hellip;</span>
-    <span class="foot-note">Prototype &middot; answers link to Wikipedia &middot; not affiliated with Wikimedia</span>
+    <span class="foot-note">Answers link to Wikipedia &middot; not affiliated with Wikimedia</span>
   </footer>
 </div>
 <script src="js/data/prompts.js"></script>
