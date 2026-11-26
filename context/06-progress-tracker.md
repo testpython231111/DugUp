@@ -6,9 +6,10 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–11 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Alle 150 prompts har fått skrivemåter fra Wikipedia (Spec 11). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- **Spec 13 — Månedlig oppdatering som GitHub Action.** Workflowen er skrevet og ligger på branchen `feature/13-monthly-automation` (PR #2). Gjenstår: eier slår på Actions-innstillingen (se sesjonsnotatet), og en første manuell kjøring.
+_Ingenting._
 
 ## Completed
+- [x] 2026-11-26: **Spec 13 — Månedlig oppdatering som GitHub Action.** Pushet rett til `main` etter eiers beslutning («ja kjør på med alt»). PR #2 ble lukket. Actions-innstillingen er slått på. Første manuelle kjøring (run 45792650792) var grønn på ~11 min, åpnet PR #3 med `rarity.js` og `summaries.js`, og «Tests» kjørte grønt på branchen (run 45794344447).
 - [x] 2026-11-26: **Spec 12 — Fulle lister for herskere (pilot: `pope`, `japanemp`, `byzantine`, `france`).** Eier ba om commit og merge («gjør alt i 1-3 nå med en gang»). Committet i to deler (verktøy og data), og merget via PR #1 da «test» var grønn (run 45791995688). Vercel preview ble bygget uten feil. bench før merge: 78 / 73, som i sesjonsnotatet.
 - [x] 2026-11-23: **Spec 11 — Skrivemåter fra Wikipedia for alle prompts** (punkt 1 i planen under). Eier sa «ja kjør på». Merget til `main` 2026-11-23 etter eiers beslutning («push merge og kjør ut»). GitHub Action var grønn på branchen (run 45199011504) og på `main` (run 45199024425). Publisert `prompts.js`, `app.js` og `index.html` på dugup.eu er identiske med `main`.
   - **Data:** 5 127 nye aliaser for 3 114 svar i 148 prompts. Ingen nye svar og ingen display endret. Eksempler: «Marc Aurel», «Axumites», «Tiwaz», «Sakyamuni», «Marshal Ney», «Hiuen Tsang» og «Fax machine».
@@ -82,8 +83,8 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
   - **Spec 12:** committet og merget via PR #1 (se Completed).
   - **Spec 13:** `.github/workflows/monthly-data.yml` er skrevet. En push gjort med `GITHUB_TOKEN` starter ikke `test.yml`, så workflowen starter den selv med `workflow_dispatch` på data-branchen. Ellers ville PR-en mangle «test»-sjekken.
   - **Eiers beslutning:** ingen branch protection på `main`. Eier vil kunne pushe rett til `main` herfra.
-  - **Ikke gjort av meg (tillatelse avslått):** «Allow GitHub Actions to create and approve pull requests». Eier må slå den på selv. Uten den siste kan workflowen pushe branchen, men ikke åpne PR-en, og kjøringen blir rød.
-  - **Ikke verifisert:** en ekte kjøring av `monthly-data.yml` (tar ~10 min og krever innstillingen over).
+  - **Actions-innstillingen:** Første `gh api`-kall med `-F` ga ingen feil, men lagret ikke verdien. Det virket først med JSON via `--input`.
+  - **Kjent støy:** PR-er som boten åpner, får også en `pull_request`-kjøring av Tests med «action_required». Den kan ignoreres, for den ekte sjekken er `workflow_dispatch`-kjøringen på branchen. Den vises ikke under `gh pr checks`, men under Actions.
 - **2026-11-23 (Spec 12):**
   - **Data:** pope 81 → 265 (alle personer; Wikipedias 267 teller pontifikater, og Benedict IX satt tre ganger). japanemp 53 → 129 (124 personer, siden Kōken/Shōtoku og Kōgyoku/Saimei er de samme, pluss 5 i nordhoffet; Kōbun lagt til for hånd). byzantine 73 → 83 (nøyaktig de 10 som manglet, inkludert 4 i Nikaia). france 59 → 76. Navn som deles av flere spør «Which …?» (pope 28, byzantine 3, france 11). «Clovis» gir fortsatt Clovis I.
   - **Utelatt:** motpaver, Jingū, medkeisere og keiserinner som ikke styrte alene, frankiske småkonger før Clovis (unntatt Chlodio) og konger over delriker.
