@@ -8,6 +8,7 @@ const ROUND_SIZE = 7;
 const TIME_LIMIT = 30;           // seconds per prompt
 const SHARE_URL = 'dugup.eu';
 const EPOCH = Date.UTC(2026, 10, 22); // Dig #1 = 22 Nov 2026
+const FEEDBACK_URL = 'https://github.com/testpython231111/DugUp/issues/new'; // "Should this count?" (Spec 14): a link, no backend
 
 const TIERS = [
   {name:'Just a Rock',          pts:0,   emoji:'🪨', spr:'rock'},
@@ -40,6 +41,12 @@ function dateKey(d){ d = d || new Date(); return d.getFullYear() + '-' + pad2(d.
 function dayNumber(d){ d = d || new Date(); return Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - EPOCH) / 86400000) + 1; }
 function yesterdayKey(){ const d = new Date(); d.setDate(d.getDate()-1); return dateKey(d); }
 function wikiURL(title){ return 'https://en.wikipedia.org/wiki/' + encodeURIComponent(title.replace(/ /g,'_')); }
+function suggestURL(p, input){
+  const ans = String(input).trim().slice(0, 80);
+  const title = 'Should "' + ans + '" count? (' + p.id + ')';
+  const body = 'Prompt: ' + p.q + '\nAnswer: ' + ans + '\nPrompt id: ' + p.id + '\n\nWhy it should count (a Wikipedia link helps):\n';
+  return FEEDBACK_URL + '?title=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(body);
+}
 function hx(h){ h = h.replace('#',''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
 function mix(a, b, t){ const A = hx(a), B = hx(b); return '#' + A.map((v,i) => Math.round(v + (B[i]-v)*t).toString(16).padStart(2,'0')).join(''); }
 
@@ -1741,7 +1748,10 @@ function renderReveal(p, input, timeout, res, a, tier){
   } else {
     if (timeout) h += '<p>The whistle blew before you struck anything.</p>';
     else if (res && res.type === 'nope') h += '<p class="found">' + esc(input) + '?</p><p>' + res.msg + '</p>';
-    else h += '<p class="found">' + esc(input) + '?</p><p>Not in our dig records for this one. Check your spelling &mdash; or our records may be missing it.</p>';
+    else {
+      h += '<p class="found">' + esc(input) + '?</p><p>Not in our dig records for this one. Check your spelling &mdash; or our records may be missing it.</p>';
+      if (String(input).trim()) h += '<p class="note"><a href="' + esc(suggestURL(p, input)) + '" target="_blank" rel="noopener">Should this count? Tell us</a></p>';
+    }
     const ex = [];
     const common = p.answers.filter(x => tierOf(x) <= 2), mid = p.answers.filter(x => tierOf(x) >= 3 && tierOf(x) <= 4), rare = p.answers.filter(x => tierOf(x) >= 5);
     [common, mid, rare].forEach(arr => { if (arr.length) ex.push(arr[Math.floor(Math.random()*arr.length)]); });
@@ -1961,6 +1971,6 @@ document.addEventListener('keydown', e => {
 });
 
 // test hook (harmless in production)
-window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, summaryFor, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
+window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, summaryFor, suggestURL, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
 })();
 

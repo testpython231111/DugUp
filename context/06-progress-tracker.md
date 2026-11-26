@@ -6,9 +6,10 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–11 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Alle 150 prompts har fått skrivemåter fra Wikipedia (Spec 11). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-_Ingenting._
+- **Spec 15–17** (opprydding, eksport/import, herskere fra Wikidata). Eier: «3,4,5 kjør ut».
 
 ## Completed
+- [x] 2026-11-26: **Spec 14 — «Should this count?»** Ved et svar som ikke finnes, vises en lenke til en ferdig utfylt GitHub-issue med prompt og svar (`suggestURL`). Ikke ved `nope`, riktige svar eller tidsavbrudd. 31 tester grønne. Headless Edge (practice): lenken vises ved feil svar og ikke ved riktig, `<b>"&</b>` blir escapet, og den eneste konsollfeilen er Vercel-analytics over `file://`. Pushet rett til `main` etter eiers beslutning.
 - [x] 2026-11-26: **Spec 13 — Månedlig oppdatering som GitHub Action.** Pushet rett til `main` etter eiers beslutning («ja kjør på med alt»). PR #2 ble lukket. Actions-innstillingen er slått på. Første manuelle kjøring (run 45792650792) var grønn på ~11 min, åpnet PR #3 med `rarity.js` og `summaries.js`, og «Tests» kjørte grønt på branchen (run 45794344447).
 - [x] 2026-11-26: **Spec 12 — Fulle lister for herskere (pilot: `pope`, `japanemp`, `byzantine`, `france`).** Eier ba om commit og merge («gjør alt i 1-3 nå med en gang»). Committet i to deler (verktøy og data), og merget via PR #1 da «test» var grønn (run 45791995688). Vercel preview ble bygget uten feil. bench før merge: 78 / 73, som i sesjonsnotatet.
 - [x] 2026-11-23: **Spec 11 — Skrivemåter fra Wikipedia for alle prompts** (punkt 1 i planen under). Eier sa «ja kjør på». Merget til `main` 2026-11-23 etter eiers beslutning («push merge og kjør ut»). GitHub Action var grønn på branchen (run 45199011504) og på `main` (run 45199024425). Publisert `prompts.js`, `app.js` og `index.html` på dugup.eu er identiske med `main`.

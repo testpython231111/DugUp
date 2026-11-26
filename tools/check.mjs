@@ -536,3 +536,13 @@ test('summaries: the reveal shows a summary only for finds with tier >= 4, and n
   const g = loadGame(HTML, { 'js/data/summaries.js': '' });
   assert.ok(Array.from(g.PROMPTS).every(p => Array.from(p.answers).every(a => g.summaryFor(p, a) === '')));
 });
+
+test('feedback: "Should this count?" opens a prefilled GitHub issue with the prompt and the answer (Spec 14)', () => {
+  const p = G.PROMPTS.find(x => x.id === 'rome');
+  const u = new URL(G.suggestURL(p, '  Nerva <b>"&</b>  '));
+  assert.equal(u.origin + u.pathname, 'https://github.com/testpython231111/DugUp/issues/new');
+  assert.equal(u.searchParams.get('title'), 'Should "Nerva <b>"&</b>" count? (rome)');
+  assert.match(u.searchParams.get('body'), /^Prompt: Name a Roman emperor\nAnswer: Nerva <b>"&<\/b>\nPrompt id: rome\n/);
+  assert.ok(!/[<>"\s]/.test(G.suggestURL(p, '<x> "y"')), 'the URL has raw characters');
+  assert.equal(new URL(G.suggestURL(p, 'x'.repeat(500))).searchParams.get('title').length, 'Should "" count? (rome)'.length + 80);
+});
