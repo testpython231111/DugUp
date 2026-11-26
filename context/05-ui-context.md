@@ -22,7 +22,7 @@ Koselig, varm pikselkunst — «arkeologisk utgravning». Pergament, tre, gull o
 Canvas-farger ligger i `PAL` (JS) og skal harmonere med tokens over.
 
 ## Typografi
-- `Pixelify Sans` (Google Fonts, 400–700) for all tekst.
+- `Pixelify Sans` (variabel woff2 i `fonts/`, 400–700, på eget domene, ikke Google Fonts) for all tekst.
 - `DugUp Digits` (innebygd base64, kun 0–9) foran i font-stack for tall med omtegnede 2, 3 og 5.
 
 ## Komponentkonvensjoner

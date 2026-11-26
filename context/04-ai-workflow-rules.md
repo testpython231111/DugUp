@@ -3,7 +3,7 @@
 1. **Én feature spec om gangen.** Jobb kun mot spec-en du er bedt om. Ikke rydd, refaktorer eller «forbedre» utenfor scope.
 2. **Aldri kombiner urelaterte systemgrenser** i ett steg (f.eks. endring i `PROMPT_DATA` + endring i Scene-animasjon).
 3. **Stopp og spør** når en beslutning mangler, eller når en endring kan bryte en invariant i `02-architecture.md`.
-4. **Les før du skriver.** `js/data/prompts.js` (~440 KB), `js/data/summaries.js` (~930 KB) og `js/app.js` er store — bruk søk (seksjonsheadere, funksjonsnavn, prompt-id) og les relevante deler i stedet for hele filen.
+4. **Les før du skriver.** `js/data/prompts.js` (~560 KB), `js/data/summaries.js` (~990 KB) og `js/app.js` er store — bruk søk (seksjonsheadere, funksjonsnavn, prompt-id) og les relevante deler i stedet for hele filen.
 5. **Rør aldri `PROMPT_DATA`-rekkefølgen, `EPOCH`, `ROUND_SIZE` eller rotasjons-seed** uten eksplisitt instruks.
 6. **Bakoverkompatibel lagring.** Endringer i `localStorage`-format krever migrering med default-verdier.
 7. **Verifiser før du sier ferdig:**

@@ -9,18 +9,21 @@
 | `localStorage` via `store.get/set` | All persistens | Aldri kall `localStorage` direkte — bruk `store` (har try/catch) |
 | Wikipedia API (pageviews, extracts) | Kun `tools/rarity.mjs` og `tools/summaries.mjs`, månedlig (Spec 05, 06) | Spillet selv kaller ingen eksterne API-er (`npm test` sjekker at ingen script bruker `fetch`) |
 | Vercel (statisk hosting + Web Analytics) | Deploy ved push til `main` | Ingen serverless functions |
-| Google Fonts (Pixelify Sans) + innebygd `DugUp Digits` (base64 woff2) | Typografi | — |
+| `fonts/` (Pixelify Sans, woff2 på eget domene, OFL i `fonts/OFL.txt`) + innebygd `DugUp Digits` (base64 woff2) | Typografi | Ikke hent fonter fra Google eller andre tredjeparter (Spec 15) |
 
 ## Filstruktur (etter Spec 09)
 Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.html` fungerer både på Vercel og åpnet direkte (`file://`). Klassiske scripts (ikke ES-moduler); de deler globalt scope, så `PROMPT_DATA`/`ROTATION`, `RARITY` og `SUMMARIES` fra data-filene er synlige for appen. Rekkefølge nederst i `index.html`: `prompts.js`, `rarity.js`, `app.js`, og til slutt `summaries.js` (`async`).
 
 | Fil | Innhold |
 |---|---|
-| `index.html` (~160 linjer) | `<head>` (Vercel Analytics, Google Fonts), HTML: header, `#scene`, seks `<section class="screen">`, footer, og script-taggene nederst i `<body>` |
-| `css/style.css` | `@font-face` (`DugUp Digits`, base64), all CSS (`:root`-tokens øverst) |
-| `js/data/prompts.js` (~440 KB) | **`PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er). Lastes **før** `app.js`. `tools/check.mjs --freeze-until` og `--add-prompt` skriver hit. |
-| `js/data/rarity.js` (~290 KB, ~125 KB gzip) | **`RARITY`** — tier og 60-dagers sidevisninger per `prompt-id` + `display`. **Generert** av `tools/rarity.mjs`; rediger aldri for hånd. Lastes etter `prompts.js`, før `app.js`. |
-| `js/data/summaries.js` (~930 KB, ~320 KB gzip) | **`SUMMARIES`** — 1–2 setninger fra Wikipedia (CC BY-SA) per svar med tier ≥ 4, nøkkel `prompt-id` + `display`. **Generert** av `tools/summaries.mjs`. Lastes `async` etter `app.js`; appen leser den først ved reveal (`summaryFor`), og uten den vises ingen oppsummering (Spec 06). |
+| `index.html` (~160 linjer) | `<head>` (Vercel Analytics), HTML: header, `#scene`, seks `<section class="screen">`, footer, og script-taggene nederst i `<body>` |
+| `css/style.css` | `@font-face` (`DugUp Digits` som base64, `Pixelify Sans` fra `fonts/`), all CSS (`:root`-tokens øverst) |
+| `fonts/` | `pixelify-sans-latin.woff2` og `-latin-ext.woff2` (variable, 400–700) og `OFL.txt` (Spec 15). |
+| `.vercelignore` | Holder `context/`, `tools/`, `.github/`, `CLAUDE.md`, `README.md` og `package.json` utenfor dugup.eu (Spec 15). Bare spillet publiseres. |
+| `.gitattributes` | LF overalt, også i Windows-arbeidskopier (Spec 15). |
+| `js/data/prompts.js` (~560 KB, ~210 KB gzip) | **`PROMPT_DATA`** — 150 prompts, ~11 000 svar — etterfulgt av **`ROTATION`** (frosne sesonger med prompt-id-er). Lastes **før** `app.js`. `tools/check.mjs --freeze-until` og `--add-prompt` skriver hit. |
+| `js/data/rarity.js` (~310 KB, ~130 KB gzip) | **`RARITY`** — tier og 60-dagers sidevisninger per `prompt-id` + `display`. **Generert** av `tools/rarity.mjs`; rediger aldri for hånd. Lastes etter `prompts.js`, før `app.js`. |
+| `js/data/summaries.js` (~990 KB, ~330 KB gzip) | **`SUMMARIES`** — 1–2 setninger fra Wikipedia (CC BY-SA) per svar med tier ≥ 4, nøkkel `prompt-id` + `display`. **Generert** av `tools/summaries.mjs`. Lastes `async` etter `app.js`; appen leser den først ved reveal (`summaryFor`), og uten den vises ingen oppsummering (Spec 06). |
 | `tools/check.mjs` | `npm test` (data, matching, rotasjon, rarity, summaries) og rotasjonskommandoene `--add-prompt`, `--freeze-until`, `--freeze-season`, `--write-snapshot`. |
 | `tools/load-game.mjs` | Laster `index.html` og script-filene i `node:vm` med en DOM-stub. Brukes av de andre verktøyene. |
 | `tools/suggest-answers.mjs` | Foreslår nye svar og aliaser fra Wikipedia-kategorier, -lister og -redirects (Spec 10). Skriver `tools/suggestions/<id>.txt` (ignoreres av git), som eier går gjennom. `--apply <id>` legger de godkjente linjene inn i `prompts.js`, men bare hvis hvert nytt navn leder til sitt eget svar. Kildene per prompt står i `SOURCES` i scriptet. `--all --aliases-only` (Spec 11) gir bare aliaser for alle prompts. Et alias må være samme type ting som svaret (familier av ord i `KINDS`), og redirects til en seksjon eller som Wikipedia merker som delemne, droppes. Et svar som bare er en del av artikkelen sin («Palace of Knossos» → Knossos), får ingen aliaser, og ett generisk ord («The Empire») avvises. |

@@ -1,0 +1,8 @@
+# Only the game is published on dugup.eu (Spec 15). index.html, css/, js/ and fonts/ are served;
+# docs, tools and their data stay in the repo.
+/context
+/tools
+/.github
+/CLAUDE.md
+/README.md
+/package.json

@@ -6,9 +6,10 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–11 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Alle 150 prompts har fått skrivemåter fra Wikipedia (Spec 11). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- **Spec 15–17** (opprydding, eksport/import, herskere fra Wikidata). Eier: «3,4,5 kjør ut».
+- **Spec 16–17** (eksport/import, herskere fra Wikidata). Eier: «3,4,5 kjør ut».
 
 ## Completed
+- [x] 2026-11-26: **Spec 15 — Opprydding.** Pixelify Sans ligger nå i `fonts/` (latin og latin-ext, variabel, med OFL), og siden henter ingenting fra Google. Nye filer: `.vercelignore` (dokumentasjon og verktøy publiseres ikke) og `.gitattributes` (LF). Størrelser og kilder i dokumentasjonen er oppdatert. `preload` ble prøvd og fjernet, fordi den gir CORS-feil over `file://`. Headless Edge: fonten er lastet og ingen nye konsollfeil. 31 tester grønne.
 - [x] 2026-11-26: **Spec 14 — «Should this count?»** Ved et svar som ikke finnes, vises en lenke til en ferdig utfylt GitHub-issue med prompt og svar (`suggestURL`). Ikke ved `nope`, riktige svar eller tidsavbrudd. 31 tester grønne. Headless Edge (practice): lenken vises ved feil svar og ikke ved riktig, `<b>"&</b>` blir escapet, og den eneste konsollfeilen er Vercel-analytics over `file://`. Pushet rett til `main` etter eiers beslutning.
 - [x] 2026-11-26: **Spec 13 — Månedlig oppdatering som GitHub Action.** Pushet rett til `main` etter eiers beslutning («ja kjør på med alt»). PR #2 ble lukket. Actions-innstillingen er slått på. Første manuelle kjøring (run 45792650792) var grønn på ~11 min, åpnet PR #3 med `rarity.js` og `summaries.js`, og «Tests» kjørte grønt på branchen (run 45794344447).
 - [x] 2026-11-26: **Spec 12 — Fulle lister for herskere (pilot: `pope`, `japanemp`, `byzantine`, `france`).** Eier ba om commit og merge («gjør alt i 1-3 nå med en gang»). Committet i to deler (verktøy og data), og merget via PR #1 da «test» var grønn (run 45791995688). Vercel preview ble bygget uten feil. bench før merge: 78 / 73, som i sesjonsnotatet.
@@ -73,10 +74,10 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - Frysing er fortsatt manuelt, men bare én gang i året (neste gang ca. desember 2027). `npm test` varsler, og GitHub Action kjører testene daglig og sender e-post når de feiler (Spec 08).
 - Legger man et prompt rett i `ROTATION` for hånd i stedet for med `--add-prompt`, havner det bare i én sesong. Testen «every frozen season that has not started holds every daily prompt» fanger det.
 - Sjeldenhet og oppsummeringer oppdateres av en GitHub Action hver måned, men PR-en må merges for hånd. Blir den liggende, blir tallene eldre, men ingenting går i stykker. Kjøres `summaries.mjs` før `rarity.mjs`, mangler nye sjeldne svar tekst til neste kjøring.
-- `js/data/summaries.js` (~930 KB) er den største filen. Den lastes `async` og bremser ikke oppstarten, men øker datatrafikken (~315 KB komprimert per besøk uten cache). Tier-grensen kan heves til ≥ 5 hvis det blir et problem.
+- `js/data/summaries.js` (~990 KB) er den største filen. Den lastes `async` og bremser ikke oppstarten, men øker datatrafikken (~330 KB komprimert per besøk uten cache). Tier-grensen kan heves til ≥ 5 hvis det blir et problem.
 - Oppsummeringene er Wikipedia-tekst under CC BY-SA 4.0. Kreditering: lenke til artikkelen på reveal og en linje i README. Fjernes lenken, brytes lisensen.
 - Testene dekker data, matching, rotasjon, rarity og summaries, men ikke UI/Scene/Sound — det verifiseres fortsatt manuelt i nettleser.
-- `js/data/prompts.js` (~440 KB) er fortsatt stor. Den kan senere deles opp per kategori, og `app.js` kan deles i moduler; det blir egne specs.
+- `js/data/prompts.js` (~560 KB) er fortsatt stor. Den kan senere deles opp per kategori, og `app.js` kan deles i moduler; det blir egne specs.
 - Etter Spec 03 er det ikke lenger nok å laste opp bare `index.html` via GitHub-webgrensesnittet (se README «Updating the site»).
 
 ## Sesjonsnotater

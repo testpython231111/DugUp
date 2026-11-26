@@ -1,0 +1,3 @@
+# LF everywhere, also in Windows working copies, like on GitHub Actions (Spec 15).
+* text=auto eol=lf
+*.woff2 binary
