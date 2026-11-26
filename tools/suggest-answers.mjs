@@ -37,6 +37,11 @@ const MAX_ACTIVE = 120;                                 // active new answers pe
 //   before: drop candidates whose title (or else description) starts with this year or later
 //   groups: sections for choices the owner makes once for many lines: {label, test(row), off}
 //   extra:  a separate section from other categories, commented out (e.g. demons for a gods prompt)
+// Full lists of rulers (Spec 12) also use:
+//   full:     everyone on the list is a right answer: no view threshold, no cap, no NOT_ANSWER check
+//   keep:     (title, desc) → whether a list link is one of the rulers (instead of desc/region)
+//   endAfter: drop candidates whose description ends in this year or earlier ("Roman emperor from 379 to 395")
+//   display:  title → the name shown in the game ("Pope Sixtus IV" → "Sixtus IV")
 // Every prompt also comments out candidates that look like something else than an answer (NOT_ANSWER).
 const SOURCES = {
   mesogods: {
@@ -58,6 +63,58 @@ const SOURCES = {
       { label: 'VALG 2 — Revolusjoner uten «war» i navnet. Spørsmålet sier «war». ' +
                'Anbefalt: bare de som var væpnet krig, f.eks. Haitian Revolution (kommentert ut nå).',
         test: r => /\bRevolution\b/i.test(r.display) && !/\bWars?\b/i.test(r.display), off: true }
+    ]
+  },
+  pope: {
+    lists: ['List of popes'],
+    full: true,
+    keep: (t, d) => /^Pope \p{Lu}/u.test(t) && /^(\d+\w* )?(Head of (the )?(Roman )?Catholic Church|Bishop of Rome)\b/i.test(d),
+    display: t => t.replace(/^Pope /, '')
+  },
+  japanemp: {
+    lists: ['List of emperors of Japan'],
+    full: true,
+    keep: (t, d) => /^(Emperor|Empress) \p{Lu}/u.test(t) && !/^(Emperor|Empress) of /.test(t) &&
+                    /((emperor|empress) of Japan|Northern Emperor|Great King of Yamato|empress regnant)/i.test(d) && !/^Wife of/i.test(d),
+    display: t => t.replace(/^Emperor /, ''),
+    groups: [
+      { label: 'VALG — Nordhoffets keisere (1331–1392). De regnes ikke med blant de 126, men kalles keisere. Anbefalt: ta med (aktive nå).',
+        test: r => /Northern Emperor/i.test(r.desc), off: false },
+      { label: 'VALG — Regenter og keisere som bare «noen ganger» regnes med (f.eks. Jingū). Anbefalt: ikke ta med (kommentert ut).',
+        test: r => /^Empress Jingū$/.test(r.title) || !/^((\d+\w* )?(Legendary (first )?)?(emperor|empress) of Japan|Northern Emperor|Great King of Yamato)/i.test(r.desc), off: true }
+    ]
+  },
+  byzantine: {
+    lists: ['List of Byzantine emperors'],
+    full: true,
+    // "Roman emperor" alone is left out: the ones from 395 on are answers already, the rest are western or earlier
+    keep: (t, d) => /^(Byzantine (co-)?(emperor|empress)|Eastern Roman emperor|Emperor of Nicaea)\b/i.test(d),
+    endAfter: 395,
+    before: 1454,
+    groups: [
+      // their descriptions say "Byzantine emperor", but they reigned only beside a senior emperor
+      { label: 'VALG — Medkeisere som aldri styrte alene. Anbefalt: ikke ta med (kommentert ut).',
+        test: r => /co-emperor/i.test(r.desc) || /^(Michael IX Palaiologos|Christopher Lekapenos|Constantine Lekapenos|Stephen Lekapenos|Konstantios Doukas|Marcus \(son of Basiliscus\)|Nikephoros Diogenes|Leo Diogenes|Constantine \(son of .*\)|Constantine Doukas \(co-emperor\))$/.test(r.title), off: true },
+      { label: 'VALG — Keiserinner. Noen styrte selv (Irene, Zoe og Theodora er svar i dag), andre var bare gift med keiseren (Theodora, Justinians kone, er «nope»). Ta med bare dem som styrte (kommentert ut).',
+        test: r => /empress/i.test(r.desc), off: true },
+      { label: 'VALG — Keisere i Nikaia 1205–1261 (eksil etter 1204). Wikipedia regner dem med. Anbefalt: ta med (aktive nå).',
+        test: r => /Nicaea/i.test(r.desc), off: false }
+    ]
+  },
+  france: {
+    lists: ['List of French monarchs', 'List of Frankish kings'],
+    full: true,
+    // not: Carolingian emperors who were not kings in the west (Lothair I), kings of Aquitaine, junior co-kings
+    // ("Philip of France (1116–1131)")
+    keep: (t, d) => /^(Disputed )?(King of (France|the Franks|West Francia|the French|France and Navarre|Neustria|Austrasia|Burgundy|Paris|Orl[eé]ans|Soissons|Metz|Reims)|Emperor of the French|Merovingian king|(\d+\w*|Fifth|Sixth|Seventh)-century Frankish (king|ruler)|Frankish king)\b/i.test(d) &&
+                    !/Aquitaine/.test(t + ' ' + d) && !/\(\d{3,4}–\d{3,4}\)$/.test(t),
+    before: 1871,
+    display: t => t.replace(/ of (France|the Franks)$/, ''),
+    groups: [
+      { label: 'VALG — Frankiske småkonger før Clovis (Ragnachar, Chararic …). Bare Chlodio, Merovech og Childeric I er forfedrene til Clovis. Anbefalt: ikke ta med (kommentert ut).',
+        test: r => /(Fifth|5th)-century/i.test(r.desc) && r.title !== 'Chlodio' || /^(Theodemer|Sigobert the Lame)/.test(r.title), off: true },
+      { label: 'VALG — Merovingerkonger over et delrike (Austrasia, Neustria, Burgund, Paris, Orléans, Soissons, Metz). Anbefalt: ikke ta med (kommentert ut).',
+        test: r => /\b(Austrasia|Neustria|Burgundy|Paris|Orl[eé]ans|Soissons|Metz|Reims)\b/i.test(r.desc) || /Merovingian king of/i.test(r.desc) || r.title === 'Childebert the Adopted', off: true }
     ]
   }
 };
@@ -138,10 +195,20 @@ function listRange(src, id){
   return { start, end };
 }
 // New answer lines go after the last line of the same or a lower tier; aliases are appended to their answer's line.
-function insertIntoList(src, id, newLines, aliasAdds){
+// Removals ([display, [alias …]]) take aliases off an answer: names it shares with new answers (Spec 12).
+function insertIntoList(src, id, newLines, aliasAdds, removals = []){
   const eol = src.includes('\r\n') ? '\r\n' : '\n';
   const { start, end } = listRange(src, id);
   const lines = src.slice(start, end).split(eol);            // first and last are the empty bits next to the backticks
+  for (const [display, aliases] of removals){
+    const i = lines.findIndex(l => l.split('|')[1] !== undefined && l.split('|')[1].trim() === display);
+    if (i < 0) throw new Error(`${id}: no answer called "${display}" to remove aliases from`);
+    const parts = lines[i].split('|'), had = parts[3] ? parts[3].split(';') : [];
+    const missing = aliases.filter(a => !had.includes(a));
+    if (missing.length) throw new Error(`${id}: "${display}" has no alias ${missing.map(a => `"${a}"`).join(', ')}`);
+    parts[3] = had.filter(a => !aliases.includes(a)).join(';');
+    lines[i] = (parts[3] ? parts.join('|') : parts.slice(0, 3).join('|')).replace(/\|+$/, '');
+  }
   for (const [display, aliases] of aliasAdds){
     const i = lines.findIndex(l => l.split('|')[1] !== undefined && l.split('|')[1].trim() === display);
     if (i < 0) throw new Error(`${id}: no answer called "${display}" for new aliases`);
@@ -178,9 +245,70 @@ function validate(G, id, displays, aliasPairs){
 }
 const loadWith = src => loadGame(HTML_FILE, fs.readFileSync(HTML_FILE, 'utf8'), { [DATA_SRC]: src });
 
+// Names without a number that several answers share ("Sixtus" for Sixtus I–V, "Michael" for Michael I Rangabe …):
+// normalized key → {base, answers}. The game should ask which one (amb) rather than pick one.
+const baseOf = d => { const m = d.match(/^(.+?)\s+[IVXL]+\b/); return m ? m[1] : null; };
+function sharedBases(G, p){
+  const m = new Map();
+  p.answers.forEach(a => {
+    const b = baseOf(a.display); if (!b) return;
+    const n = G.normalize(b); if (!n.letters || n.digits) return;
+    const e = m.get(n.key) || { base: b, answers: [] }; e.answers.push(a.display); m.set(n.key, e);
+  });
+  for (const [k, e] of m) if (e.answers.length < 2) m.delete(k);
+  return m;
+}
+// The aliases of one answer as written in PROMPT_DATA (4th field)
+function rawAliases(G, id, display){
+  const d = G.PROMPT_DATA.find(x => x.id === id);
+  const line = d.list.split(/\r?\n/).find(l => (l.split('|')[1] || '').trim() === display);
+  return line && line.split('|')[3] ? line.split('|')[3].split(';').map(s => s.trim()).filter(Boolean) : [];
+}
+// The answer that has exactly this name as a key (an alias such as "justinian" on Justinian I), if any
+const ownerOf = (p, key) => p.answers.find(a => a.keys.some(k => k.key === key));
+// What to do about each shared name in p1 (after) compared with p0 (before):
+//   amb:      [key, base, message] to add, so the game asks which one
+//   clashes:  a name that was one answer's alias and is now shared by new answers (the owner must choose)
+//   keep:     keys the owner chose to leave with their one answer ("=|clovis": Clovis is Clovis I, as Justinian is Justinian I)
+function ambPlan(G0, p0, G1, p1, keep = new Set()){
+  const before = sharedBases(G0, p0), after = sharedBases(G1, p1), amb = [], clashes = [];
+  for (const [k, e] of after){
+    if (p1.ambMap[k] || p1.nopeList.some(x => x.n.key === k)) continue;   // asked already, or "nope" ("Constantine")
+    const owner = ownerOf(p1, k);
+    if (owner){
+      if (!before.has(k) && !keep.has(k)){
+        const raw = rawAliases(G1, p1.id, owner.display).find(a => G1.normalize(a).key === k);
+        clashes.push({ key: k, base: e.base, owner: owner.display, alias: raw, answers: e.answers });
+      }
+      continue;
+    }
+    amb.push([e.base.toLowerCase(), e.base, `Which ${e.base}? Add a number.`]);
+  }
+  return { amb, clashes };
+}
+// Adds amb entries ([key, message]) to one prompt's amb:{…}, or gives it one
+function insertAmb(src, id, entries){
+  if (!entries.length) return src;
+  const eol = src.includes('\r\n') ? '\r\n' : '\n';
+  const { end } = listRange(src, id);
+  let next = src.indexOf(eol + "{id:'", end); if (next < 0) next = src.indexOf(eol + ']', end);
+  const close = src.lastIndexOf('}', next);                  // the prompt object's closing brace
+  const block = src.slice(end, close);
+  const text = entries.map(([k, msg]) => ` '${k}':'${msg}'`);
+  const ai = block.indexOf('amb:{');
+  if (ai >= 0){
+    const ac = src.indexOf('}', end + ai);                     // amb's own closing brace (messages hold no braces)
+    if (src.slice(ac + 1, close).trim()) throw new Error(`${id}: amb:{…} is not the last property; add these by hand`);
+    const body = src.slice(end + ai + 5, ac).replace(/\s+$/, '');
+    return src.slice(0, end + ai + 5) + body + ',' + eol + text.join(',' + eol) + eol + src.slice(ac);
+  }
+  return src.slice(0, close) + ',' + eol + 'amb:{' + eol + text.join(',' + eol) + eol + '}' + src.slice(close);
+}
+
 /* ---------- suggest ---------- */
 const clean = t => t.replace(/\s*\(([^)]*)\)\s*$/, (m, inner) => /\d/.test(inner) ? m : '');   // keep "(1768–1774)", drop "(god)"
 const firstYear = s => { const m = (s || '').match(/\b(\d{3,4})\b/); return m ? +m[1] : null; };
+const lastYear = s => { const m = (s || '').match(/\b\d{1,4}\b/g); return m ? +m[m.length - 1] : null; };   // "from AD 54 to 68" → 68
 const fmt = n => n.toLocaleString('en-US').replace(/,/g, ' ');
 const aliasText = t => clean(t).toLowerCase();
 const usableName = t => !/[:]|^List of|^Lists of|^Timeline of|^History of/i.test(t) && t.length <= 45 && t.split(/\s+/).length <= 6;
@@ -256,7 +384,8 @@ async function suggest(id, minArg, aliasesOnly){
   const rp = (G0.RARITY && G0.RARITY.p[id]) || {};
   const known = p.answers.map(a => rp[a.display]).filter(Boolean).map(([t, v]) => ({ t, v })).sort((x, y) => y.v - x.v);
   const tierFor = v => { const e = known.find(k => k.v <= v); return e ? e.t : 6; };
-  const min = minArg != null ? minArg : known.length ? known[Math.floor(known.length * 0.9)].v : 100;
+  const min = minArg != null ? minArg : S.full ? 0 : known.length ? known[Math.floor(known.length * 0.9)].v : 100;
+  const wf = (G0.PROMPT_DATA.find(x => x.id === id) || {}).wf;
 
   // every name the game knows in other prompts → its articles (to keep aliases from clashing with them)
   const elsewhere = new Map();
@@ -272,14 +401,17 @@ async function suggest(id, minArg, aliasesOnly){
     if (S.title && !titleOk(e.canon)){ dropped.title++; continue; }
     const section = from[t].section;
     if (S.desc && section === 'main' && from[t].label.startsWith('liste') && !(S.desc.test(e.desc) && (!S.region || S.region.test(e.desc)))){ dropped.desc++; continue; }
+    if (S.keep && !S.keep(e.canon, e.desc)){ dropped.desc++; continue; }
     if (S.before){ const y = firstYear(clean(e.canon).match(/\d/) ? e.canon : e.desc); if (y && y >= S.before && y < 2100){ dropped.before++; continue; } }
+    if (S.endAfter){ const y = lastYear(e.desc); if (y && y <= S.endAfter){ dropped.before++; continue; } }
     byCanon.add(e.canon);
-    const display = clean(e.canon);
+    const display = S.display ? S.display(clean(e.canon)) : clean(e.canon);
+    const wiki = display === e.canon ? '' : wf && wf.replace('{}', display) === e.canon ? '*' : e.canon;
     const m = G0.matchAnswer(p, display);
     // notes for the owner; any of them except "accepted today as …" also comments the line out
     const notes = [];
     let off = section === 'extra' || e.views < min;
-    if (NOT_ANSWER.desc.test(e.desc) || NOT_ANSWER.title.test(e.canon)){ notes.push('ser ikke ut som et svar (person, sted, tekst eller gruppe?)'); off = true; }
+    if (!S.full && (NOT_ANSWER.desc.test(e.desc) || NOT_ANSWER.title.test(e.canon))){ notes.push('ser ikke ut som et svar (person, sted, tekst eller gruppe?)'); off = true; }
     else if (S.region && !S.region.test(e.desc)){ notes.push('beskrivelsen nevner ikke Mesopotamia'); off = true; }
     let series = false;
     if (m.type === 'ok'){                                   // (the same article was dropped above, so this is another one)
@@ -287,18 +419,19 @@ async function suggest(id, minArg, aliasesOnly){
       else { notes.push(`godtas i dag som «${m.answer.display}»`); series = !!m.answer.group; }
     } else if (m.type === 'nope'){ notes.push('står som «nope» i dag'); off = true; }
     else if (m.type === 'amb'){ notes.push('står som tvetydig i dag'); off = true; }
-    rows.push({ title: e.canon, display, wiki: display === e.canon ? '' : e.canon, views: e.views, tier: tierFor(e.views), desc: e.desc, src: from[t].label, notes, off, section, series, redirects: e.redirects });
+    rows.push({ title: e.canon, display, wiki, views: e.views, tier: tierFor(e.views), desc: e.desc, src: from[t].label, notes, off, section, series, redirects: e.redirects });
   }
   rows.sort((a, b) => b.views - a.views);
   // choices made once for a whole group of lines, then a cap on how many plain new answers are active
   (S.groups || []).forEach((g, i) => rows.forEach(r => { if (r.section === 'main' && g.test(r)){ r.section = 'g' + i; if (g.off) r.off = true; } }));
   let shown = 0;
-  rows.forEach(r => { if (r.section === 'main' && !r.off && ++shown > MAX_ACTIVE){ r.off = true; r.notes.push(`utenfor de ${MAX_ACTIVE} mest leste`); } });
+  rows.forEach(r => { if (!S.full && r.section === 'main' && !r.off && ++shown > MAX_ACTIVE){ r.off = true; r.notes.push(`utenfor de ${MAX_ACTIVE} mest leste`); } });
 
   // aliases: redirects people use that the game (with the new answers in) does not accept yet
   const active = rows.filter(r => !r.off);
   const src1 = insertIntoList(src0, id, active.map(r => `${r.tier}|${r.display}|${r.wiki}`), []);
   const G1 = loadWith(src1), p1 = G1.PROMPTS.find(x => x.id === id);
+  const plan = ambPlan(G0, p, G1, p1), shared = sharedBases(G1, p1);
   const aliasCands = [];                                       // [display, redirect title]
   const aliasTitle = S.title ? new RegExp(S.title.source, 'i') : null;
   // kinds of thing that are normal in this prompt (castles for a castle prompt): in at least 10 % of its answers
@@ -324,6 +457,7 @@ async function suggest(id, minArg, aliasesOnly){
     if (plainWords(r).some(w => !['the', 'of', 'a', 'an', 'and', 'at', 'in', 'on'].includes(w) && !dw.has(w) && (() => { const m = G1.normalize(w); return !m.letters && !m.digits; })())) return;
     const n = G1.normalize(aliasText(r));
     if (n.letters.length < 3) return;
+    if (shared.has(n.key)) return;                                      // "Pope Sixtus": which one?
     // one word that only says what kind of thing it is ("The Empire", "Battle of the Capes" → "capes"): the game would
     // also take it as the start of any other name ("Cape Bon", "Empire of Japan")
     if (n.words.length === 1 && [n.words[0], n.words[0].replace(/s$/, '')].some(w => KIND_OF.has(w))){ skipped.kind++; return; }
@@ -366,6 +500,7 @@ async function suggest(id, minArg, aliasesOnly){
   L.push(`# Dug Up — forslag til «${p.q}» (${id})`);
   L.push(`# Generert ${new Date().toISOString().slice(0, 10)} av tools/suggest-answers.mjs fra Wikipedia. Visninger = sidevisninger siste ${DAYS} dager.`);
   if (aliasesOnly) L.push(`# Spillet har ${p.answers.length} svar i dag. Denne fila har bare nye aliaser for dem, ikke nye svar.`);
+  else if (S.full) L.push(`# Spillet har ${p.answers.length} svar i dag. Alle på Wikipedias liste er riktige svar, så alle er aktive, unntatt de med en OBS og VALG-bolkene som er kommentert ut.`);
   else L.push(`# Spillet har ${p.answers.length} svar i dag. Aktive forslag har minst ${fmt(min)} visninger (de 10 % minst leste svarene i dag ligger under), høyst ${MAX_ACTIVE} av dem.`);
   L.push('#');
   L.push('# Slik godkjenner du:');
@@ -401,6 +536,21 @@ async function suggest(id, minArg, aliasesOnly){
     }
     L.push('');
   }
+  if (plan.amb.length || plan.clashes.length){
+    L.push(`# ===== TVETYDIGE NAVN (${plan.amb.length}) =====   ?|navn uten nummer|det spillet svarer`);
+    L.push('#   Flere svar heter dette. Spillet spør da «Which …?» i stedet for å godta eller avvise. Slett en linje for å la være.');
+    plan.amb.forEach(([k, base, msg]) => L.push(`?|${k}|${msg}    # ${sharedBases(G1, p1).get(G1.normalize(base).key).answers.join(', ')}`));
+    plan.clashes.forEach(c => {
+      L.push('');
+      L.push(`# OBS: «${c.alias || c.key.replace(/#$/, '')}» gir «${c.owner}» i dag, men nå heter også ${c.answers.filter(d => d !== c.owner).join(', ')} det. Velg:`);
+      L.push(`#   a) spør hvilken (aktiv nå): fjern aliaset (--linja) og legg til ?-linja`);
+      L.push(`#   b) behold: «${c.alias || c.base}» gir fortsatt «${c.owner}», slik «Justinian» gir Justinian I. Kommenter ut a) og fjern # foran =-linja.`);
+      if (c.alias) L.push(`-|${c.owner}|${c.alias}`); else L.push(`#   (navnet er svarets eget display og kan ikke fjernes, så bare b) går)`);
+      L.push(`${c.alias ? '' : '#'}?|${c.base.toLowerCase()}|Which ${c.base}? Add a number.`);
+      L.push(`#=|${c.base.toLowerCase()}`);
+    });
+    L.push('');
+  }
   const existingAliases = p.answers.filter(a => aliasMap.has(a.display));
   const aliasCount = existingAliases.reduce((n, a) => n + aliasMap.get(a.display).length, 0);
   L.push(`# ===== NYE ALIASER for svar som finnes (${aliasCount}) =====   +|Navn på svaret|alias;alias`);
@@ -418,6 +568,7 @@ async function suggest(id, minArg, aliasesOnly){
     console.log(`  ${main.filter(r => !r.off).length} active new answers, ${main.filter(r => r.off).length} commented out` +
       (S.groups || []).map((g, i) => `, group ${i + 1}: ${rows.filter(r => r.section === 'g' + i).length}`).join('') +
       (S.extra ? `, ${rows.filter(r => r.section === 'extra').length} in the extra section` : ''));
+    if (plan.amb.length || plan.clashes.length) console.log(`  shared names: ${plan.amb.length} to ask about` + (plan.clashes.length ? `, ${plan.clashes.length} clashing with an alias (see OBS in the file)` : ''));
   }
   console.log(`  aliases: ${aliasCount} for ${existingAliases.length} answers; skipped ${skipped.sections} redirects to a section, ${skipped.kind} of another kind, ` +
     `${skipped.tag} tagged as a part or relative, ${skipped.views} under ${MIN_ALIAS_VIEWS} views, ${skipped.rejected} turned down before` + (common.size ? ` (normal here: ${[...common].join(', ')})` : ''));
@@ -430,7 +581,7 @@ async function suggest(id, minArg, aliasesOnly){
 function apply(id, srcIn){
   const file = path.join(OUT_DIR, id + '.txt');
   if (!fs.existsSync(file)) return { errors: [`no ${path.relative(ROOT, file)}: run node tools/suggest-answers.mjs ${id} first`] };
-  const newLines = [], aliasAdds = [], errors = [];
+  const newLines = [], aliasAdds = [], ambAdds = [], aliasRemovals = [], keepShared = new Set(), errors = [];
   const G0 = loadWith(srcIn);
   const rejected = new Set((REJECTS[id] || []).map(s => G0.normalize(s).key));   // turned down after the file was made
   let dropped = 0;
@@ -444,20 +595,35 @@ function apply(id, srcIn){
       keep.filter(a => UNSAFE.test(a)).forEach(a => errors.push(`line ${i + 1}: "${a}" has a character the answer list can't hold (\` \\ $ |)`));
       dropped += als.length - keep.length;
       if (keep.length) aliasAdds.push([parts[1], keep]);
+    } else if (parts[0] === '?'){
+      if (parts.length !== 3 || !parts[1] || !parts[2]){ errors.push(`line ${i + 1}: expected ?|name|message`); return; }
+      if (/['`\\${}]/.test(parts[1] + parts[2])){ errors.push(`line ${i + 1}: "${l}" has a character the amb list can't hold (' \` \\ $ { })`); return; }
+      ambAdds.push([parts[1], parts[2]]);
+    } else if (parts[0] === '-'){
+      if (parts.length !== 3 || !parts[1] || !parts[2]){ errors.push(`line ${i + 1}: expected -|Answer|alias;alias`); return; }
+      aliasRemovals.push([parts[1], parts[2].split(';').map(s => s.trim()).filter(Boolean)]);
+    } else if (parts[0] === '='){
+      if (parts.length !== 2 || !parts[1]){ errors.push(`line ${i + 1}: expected =|name`); return; }
+      keepShared.add(G0.normalize(parts[1]).key);
     } else if (/^[1-6]$/.test(parts[0]) && parts.length >= 2 && parts.length <= 4 && parts[1]){
       if (/[`\\$]/.test(l)) errors.push(`line ${i + 1}: "${l}" has a character the answer list can't hold (\` \\ $)`);
       else newLines.push(parts.join('|').replace(/\|+$/, ''));
     } else errors.push(`line ${i + 1}: expected tier|Name|Wikipedia title|aliases with tier 1–6: "${l}"`);
   });
-  if (!errors.length && !newLines.length && !aliasAdds.length) return { src: srcIn, errors: [], report: `${id}: nothing to add` };
+  if (!errors.length && !newLines.length && !aliasAdds.length && !ambAdds.length && !aliasRemovals.length) return { src: srcIn, errors: [], report: `${id}: nothing to add` };
   let src = null;
   if (!errors.length){
-    try { src = insertIntoList(srcIn, id, newLines, aliasAdds); }
+    try { src = insertAmb(insertIntoList(srcIn, id, newLines, aliasAdds, aliasRemovals), id, ambAdds); }
     catch (e){ errors.push(e.message); }
   }
   if (!errors.length){
     const G = loadWith(src);
     errors.push(...validate(G, id, newLines.map(l => l.split('|')[1]), aliasAdds.flatMap(([d, als]) => als.map(a => [d, a]))));
+    // a name that was one answer's alias and is now shared by new answers ("sixtus" on Sixtus IV, then Sixtus V comes in)
+    const p0 = G0.PROMPTS.find(x => x.id === id), p = G.PROMPTS.find(x => x.id === id);
+    ambPlan(G0, p0, G, p, keepShared).clashes.forEach(c => errors.push(`"${c.key.replace(/#$/, '')}" leads to "${c.owner}", but ${c.answers.filter(d => d !== c.owner).join(', ')} now share the name: ` +
+      `remove the alias and add ?|${c.base.toLowerCase()}|Which ${c.base}? Add a number., or leave the new answers out`));
+    ambAdds.forEach(([k, msg]) => { const m = G.matchAnswer(p, k); if (m.type !== 'amb') errors.push(`"${k}" should ask which one, gives ${m.type === 'ok' ? '"' + m.answer.display + '"' : m.type}`); });
   }
   if (errors.length) return { errors: errors.map(e => `${path.relative(ROOT, file)}: ${e}`) };
   // real names left out (commented-out candidates) that the new answers would now credit as something they are not
@@ -472,6 +638,8 @@ function apply(id, srcIn){
     if (after !== before && G1.matchAnswer(p1, name).type === 'ok') warnings.push(`"${name}" → ${after}`);
   });
   let report = `${id}: ${newLines.length} answers and ${aliasAdds.reduce((n, a) => n + a[1].length, 0)} aliases for ${aliasAdds.length} answers` +
+    (ambAdds.length ? `, ${ambAdds.length} shared names that ask which one` : '') +
+    (aliasRemovals.length ? `, removed ${aliasRemovals.reduce((n, r) => n + r[1].length, 0)} aliases that are now shared` : '') +
     (dropped ? ` (left out ${dropped} in ${path.relative(ROOT, REJECTS_FILE)})` : '');
   if (warnings.length) report += `\n  Check: ${warnings.length} names you left out are now credited as another answer. Add them too (remove #), or accept it:\n    ` + warnings.join('\n    ');
   return { src, errors: [], report };
