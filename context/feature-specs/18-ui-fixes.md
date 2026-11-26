@@ -25,5 +25,5 @@ Rette de fem feilene fra UI-vurderingen. **Ikke med:** endringer i scenegrafikke
 - [x] Ingen overflyt i camp-knappene ved 320–540 px, med «Museum (123)».
 - [x] Skjermbilder av camp, reveal og museum på 360 og 390 px.
 - [x] `npm test` grønn (34). Ingen nye konsollfeil.
-- [ ] Etter deploy: `og.png`, `favicon.png` og `apple-touch-icon.png` gir 200 på www.dugup.eu.
+- [x] Etter deploy: `og.png`, `favicon.png` og `apple-touch-icon.png` gir 200 (image/png) på www.dugup.eu (sjekket 2026-11-26).
 - [x] `06-progress-tracker.md` oppdatert.
