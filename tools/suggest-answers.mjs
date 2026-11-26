@@ -42,6 +42,10 @@ const MAX_ACTIVE = 120;                                 // active new answers pe
 //   keep:     (title, desc) → whether a list link is one of the rulers (instead of desc/region)
 //   endAfter: drop candidates whose description ends in this year or earlier ("Roman emperor from 379 to 395")
 //   display:  title → the name shown in the game ("Pope Sixtus IV" → "Sixtus IV")
+// Rulers from Wikidata (Spec 17):
+//   wikidata: position items (P39 "position held", subclasses included), e.g. ['Q37110'] for pharaoh. Everyone who
+//             held one and has an English Wikipedia article is a candidate. With `lists` as well, each line says
+//             whether it is only in Wikidata or only in the list, so the two check each other.
 // Every prompt also comments out candidates that look like something else than an answer (NOT_ANSWER).
 const SOURCES = {
   mesogods: {
@@ -116,8 +120,45 @@ const SOURCES = {
       { label: 'VALG — Merovingerkonger over et delrike (Austrasia, Neustria, Burgund, Paris, Orléans, Soissons, Metz). Anbefalt: ikke ta med (kommentert ut).',
         test: r => /\b(Austrasia|Neustria|Burgundy|Paris|Orl[eé]ans|Soissons|Metz|Reims)\b/i.test(r.desc) || /Merovingian king of/i.test(r.desc) || r.title === 'Childebert the Adopted', off: true }
     ]
+  },
+  // Spec 17: Wikidata says who held the office; the description must say so too, which drops queen consorts, priests
+  // and the Persian and Roman rulers Wikidata also counts as pharaohs ("King of the Achaemenid Empire", "Roman emperor")
+  pharaoh: {
+    wikidata: ['Q37110'],
+    lists: ['List of pharaohs'],
+    full: true,
+    keep: (t, d) => /\b(pharaoh|king of (upper |lower )?egypt|egyptian (king|ruler|queen regnant)|ruler of (ancient )?egypt|ptolemaic (king|queen|ruler|pharaoh)|theban king|king of the \w+ dynasty of egypt)\b/i.test(d) &&
+                    !/\b(consort|wife|daughter|son of|mother|priest|vizier|official|prince|princess|noble|roman emperor|achaemenid|persian)\b/i.test(d),
+    groups: [
+      { label: 'VALG — Herskere før 1. dynasti (Scorpion, Ka, Iry-Hor …). Navnene er usikre, men de står på lista. Anbefalt: ta med (aktive nå).',
+        test: r => /predynastic|protodynastic|dynasty 0|naqada/i.test(r.desc), off: false }
+    ]
+  },
+  chinaemp: {
+    wikidata: ['Q268218'],
+    lists: ['List of Chinese monarchs'],
+    full: true,
+    // emperors and empresses regnant; not consorts, dowagers, "Prince of …", "Heavenly King" or rebels
+    keep: (t, d) => (/\bemperor\b/i.test(d) || /\bempress regnant\b/i.test(d)) &&
+                    !/\b(consort|dowager|crown prince|prince of|heavenly king|rebel|father of|mother of|posthumously|retired)\b/i.test(d) &&
+                    !/\b(Japan|Korea|Vietnam|Roman|Byzantine|Mughal|Mongol Empire)\b/.test(d),
+    groups: [
+      { label: 'VALG — Keisere i små stater som ikke styrte hele Kina (De seksten kongedømmene, De ti rikene, Sør-Ming …). Spørsmålet sier «Any dynasty», og de kalte seg keisere. Anbefalt: ta med (aktive nå).',
+        test: r => /(Former|Later|Western|Eastern|Northern|Southern) (Yan|Qin|Liang|Zhao|Shu|Han|Tang|Jin|Zhou|Ming|Chu|Wei)|Han-Zhao|Cheng-Han|Xia \(Sixteen|Wu Zhou|Min\b|Wuyue|Chu \(Ten/i.test(r.desc) && !/Northern Wei|Eastern Jin|Western Jin|Northern Song|Southern Song|Later Han dynasty|Eastern Han/i.test(r.desc), off: false }
+    ]
   }
 };
+
+/* ---------- Wikidata (Spec 17) ---------- */
+const WDQS = 'https://query.wikidata.org/sparql';
+// English Wikipedia titles of everyone who held one of these positions, or a subclass of one (P39, P279*)
+async function wikidataHolders(positions){
+  const sparql = `SELECT DISTINCT ?t WHERE { VALUES ?top { ${positions.map(q => 'wd:' + q).join(' ')} } ` +
+    '?pos wdt:P279* ?top . ?p p:P39/ps:P39 ?pos . ?a schema:about ?p ; schema:isPartOf <https://en.wikipedia.org/> ; schema:name ?t . }';
+  const j = await getJSON(WDQS + '?format=json&query=' + encodeURIComponent(sparql));
+  await sleep(PAUSE_MS);
+  return j.results.bindings.map(b => b.t.value);
+}
 
 /* ---------- Wikipedia ---------- */
 async function query(params, collect){
@@ -367,9 +408,11 @@ async function suggest(id, minArg, aliasesOnly){
   // candidates, with where they came from
   const from = {};
   const add = (titles, label, section) => titles.forEach(t => { if (!from[t]) from[t] = { label, section }; });
+  const inWd = new Set(), inList = new Set();                 // titles per source, for the cross-check (Spec 17)
   if (!aliasesOnly){
+    if (S.wikidata){ const ts = await wikidataHolders(S.wikidata); ts.forEach(t => inWd.add(t)); add(ts, 'wikidata: ' + S.wikidata.join(', '), 'main'); }
     for (const c of S.cats || []) add(await categoryPages(c), c.replace('Category:', 'kategori: '), 'main');
-    for (const l of S.lists || []) add(await listLinks(l), 'liste: ' + l, 'main');
+    for (const l of S.lists || []){ const ts = await listLinks(l); ts.forEach(t => inList.add(t)); add(ts, 'liste: ' + l, 'main'); }
     for (const c of (S.extra && S.extra.cats) || []) add(await categoryPages(c), c.replace('Category:', 'kategori: '), 'extra');
   }
   const cands = Object.keys(from).filter(t => usableName(t) && (!S.title || S.title.test(t)));
@@ -393,6 +436,8 @@ async function suggest(id, minArg, aliasesOnly){
 
   // the article's own title must fit too: "Wars of Cyrus the Great" leads to Cyrus the Great, "Union Army" to "Union"
   const titleOk = t => { const s = t.replace(/\s*\([^)]*\)/g, '').trim(); return s.split(/\s+/).length >= 2 && S.title.test(s); };
+  const wdCanon = new Set(), listCanon = new Set();
+  for (const t of cands){ const e = info[t]; if (!e) continue; if (inWd.has(t)) wdCanon.add(e.canon); if (inList.has(t)) listCanon.add(e.canon); }
   const rows = [], dropped = { already: 0, before: 0, desc: 0, disamb: 0, title: 0 }, byCanon = new Set();
   for (const t of cands){
     const e = info[t]; if (!e) continue;
@@ -410,6 +455,7 @@ async function suggest(id, minArg, aliasesOnly){
     const m = G0.matchAnswer(p, display);
     // notes for the owner; any of them except "accepted today as …" also comments the line out
     const notes = [];
+    if (S.wikidata && (S.lists || []).length){ if (!listCanon.has(e.canon)) notes.push('bare i Wikidata'); else if (!wdCanon.has(e.canon)) notes.push('bare i Wikipedia-listen'); }
     let off = section === 'extra' || e.views < min;
     if (!S.full && (NOT_ANSWER.desc.test(e.desc) || NOT_ANSWER.title.test(e.canon))){ notes.push('ser ikke ut som et svar (person, sted, tekst eller gruppe?)'); off = true; }
     else if (S.region && !S.region.test(e.desc)){ notes.push('beskrivelsen nevner ikke Mesopotamia'); off = true; }
