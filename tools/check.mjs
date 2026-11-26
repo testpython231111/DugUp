@@ -336,6 +336,27 @@ test('matching: answers and aliases from Wikipedia are accepted', () => {
   assert.equal(G.matchAnswer(p, 'Mexican War').type, 'amb');         // two Mexican wars: the game asks which
 });
 
+// Spec 12: full lists of rulers. A name that several answers share asks which one; with a number it is that one.
+test('matching: full ruler lists ask which one for a shared name', () => {
+  const kind = (id, input) => G.matchAnswer(G.PROMPTS.find(x => x.id === id), input).type;
+  for (const [id, input] of [['pope', 'Sixtus'], ['pope', 'Gregory'], ['pope', 'Hadrian'], ['pope', 'Calixtus'],
+                             ['france', 'Dagobert'], ['france', 'Clotaire'], ['byzantine', 'Theodore']]) assert.equal(kind(id, input), 'amb', `${id}: "${input}" should ask which one`);
+  expectMatch('pope', 'Sixtus V', 'Sixtus V');
+  expectMatch('pope', 'Gregory 2', 'Gregory II');
+  expectMatch('pope', 'Anicetus', 'Anicetus');                       // before: credited as Anacletus
+  expectMatch('japanemp', 'Daigo', 'Daigo');
+  expectMatch('japanemp', 'Go-Daigo', 'Go-Daigo');
+  expectMatch('japanemp', 'Go-Fukakusa', 'Go-Fukakusa');
+  expectMatch('japanemp', 'Ogimachi', 'Ōgimachi');
+  expectMatch('japanemp', 'Murakami', 'Murakami');
+  expectMatch('japanemp', 'Go-Murakami', 'Go-Murakami');            // before: credited as Murakami
+  expectMatch('france', 'Clovis', 'Clovis I');                       // kept on purpose, like Justinian
+  expectMatch('france', 'Dagobert III', 'Dagobert III');
+  expectMatch('byzantine', 'Justinian', 'Justinian I');
+  expectMatch('byzantine', 'Theodore Laskaris', null);
+  assert.equal(kind('byzantine', 'Constantine'), 'nope');           // still "ruled before the split"
+});
+
 /* ---------- rotation (invariant 1) ---------- */
 
 const SNAP = readSnapshot();

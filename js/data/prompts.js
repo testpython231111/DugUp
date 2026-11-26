@@ -6610,7 +6610,7 @@ list:`
 1|Louis XIV|Louis XIV|louis 14;sun king;roi soleil;le roi soleil
 1|Napoleon|Napoleon|napoleon 1;napoleon bonaparte;bonaparte;nepolian;little corporal
 1|Louis XVI|Louis XVI|louis 16;louis-auguste;louis capet;citizen capet
-1|Charlemagne||charles great;karl der grosse;carolus magnus;charles i of france;karolus magnus;carlomagno
+1|Charlemagne||charles great;karl der grosse;carolus magnus;charles i of france;karolus magnus;carlomagno;karl the great
 2|Louis XV|Louis XV|louis 15
 2|Henry IV|*|henri 4;good king henry;henry iii of navarre;henry of navarre;henri de navarre
 2|Francis I|*|francois 1
@@ -6641,7 +6641,8 @@ list:`
 4|Louis VI|*|louis 6;louis fat
 4|Charles the Bald||charles bald;charles 2
 4|Louis the Pious||louis pious;louis 1;louis the fair;louis le pieux
-4|Dagobert I||dagobert
+4|Dagobert I
+4|Philip III|*
 5|Philip I|*|philip 1
 5|Robert II|*|robert 2;robert pious
 5|Henry I|*|henri 1
@@ -6651,12 +6652,13 @@ list:`
 5|Louis VIII|*|louis 8;louis lion
 5|Louis XVII|Louis XVII|louis 17;lost dauphin;louis-charles de france
 5|Napoleon II|Napoleon II|napoleon 2;aiglon;duke of reichstadt;napoléon françois joseph charles bonaparte;napoleon ii of france;duc de reichstadt
-5|Childeric I||childeric
-5|Chlothar I||chlothar;clotaire;clothar
+5|Childeric I
+5|Chlothar I
 5|Charles the Simple||charles simple;charles 3
+5|John I|*|john the posthumous;john i the posthumous
 6|Merovech||merovee
-6|Chilperic I||chilperic
-6|Childebert I||childebert
+6|Chilperic I
+6|Childebert I
 6|Odo|Odo of France|eudes;odo, count of paris
 6|Rudolph|Rudolph of France|raoul
 6|Louis IV|*|louis 4;louis outremer
@@ -6665,7 +6667,22 @@ list:`
 6|Robert I|*|robert 1
 6|Charles the Fat||charles fat
 6|Louis the Stammerer||louis stammerer;louis 2
-6|Carloman II||carloman
+6|Carloman II
+6|Childeric III
+6|Carloman I||carloman, son of pippin iii
+6|Chlothar II||clotaire ii
+6|Chlodio
+6|Clovis II
+6|Louis III|*
+6|Theuderic III
+6|Theuderic IV
+6|Chilperic II
+6|Chlothar III||clotaire iii
+6|Childebert III||childebert iv
+6|Dagobert III
+6|Clovis IV
+6|Childeric II
+6|Clovis III
 `,
 nope:{
  'marie antoinette|josephine':'A queen or empress consort &mdash; she never ruled.',
@@ -6679,7 +6696,18 @@ amb:{
  'charles':'Which Charles? Add a number.',
  'henry|henri':'Which Henry? Add a number.',
  'philip|philippe':'Which Philip? Add a number.',
- 'francis|francois':'Which Francis? Add a number.'
+ 'francis|francois':'Which Francis? Add a number.',
+ 'john':'Which John? Add a number.',
+ 'robert':'Which Robert? Add a number.',
+ 'theuderic':'Which Theuderic? Add a number.',
+ 'dagobert':'Which Dagobert? Add a number.',
+ 'childeric':'Which Childeric? Add a number.',
+ 'chlothar':'Which Chlothar? Add a number.',
+ 'clotaire':'Which Clotaire (Chlothar)? Add a number.',
+ 'clothar':'Which Chlothar? Add a number.',
+ 'chilperic':'Which Chilperic? Add a number.',
+ 'childebert':'Which Childebert? Add a number.',
+ 'carloman':'Which Carloman? Add a number.'
 }},
 
 {id:'hre', cat:'Rulers', q:'Name a Holy Roman Emperor', hint:'Crowned emperors from Charlemagne (800) to 1806', wf:'{}, Holy Roman Emperor',
@@ -6782,6 +6810,9 @@ list:`
 4|Romanos I Lekapenos||romanos 1;romanus lecapenus
 4|Theophilos|Theophilos (emperor)|theophilus
 4|Michael III||michael 3;michael drunkard
+4|Alexios II Komnenos
+4|Constantine IV
+4|Leo II|Leo II (emperor)
 5|Constans II||constans 2
 5|Leo I|Leo I (emperor)|leo 1;leo thracian
 5|Marcian||marcianus
@@ -6803,6 +6834,7 @@ list:`
 5|Andronikos II Palaiologos||andronikos 2;andronicus ii palaeologus
 5|John V Palaiologos||john 5
 5|John VI Kantakouzenos||john 6;cantacuzenus;john kantakouzenos;john vi cantacuzenus;john cantacuzenus;john vi cantacuzene
+5|Alexander|Alexander (Byzantine emperor)
 6|Leo IV the Khazar||leo 4
 6|Constantine VI||constantine 6
 6|Nikephoros I||nikephoros 1
@@ -6821,6 +6853,12 @@ list:`
 6|Andronikos III Palaiologos||andronikos 3;andronicus iii palaeologus
 6|John VII Palaiologos||john 7
 6|Basiliscus
+6|Andronikos IV Palaiologos
+6|Michael VI Bringas||michael vi;michael vi stratiotikos
+6|John III Doukas Vatatzes||john iii vatatzes;john iii ducas vatatzes;john vatatzes;john iii of nicaea
+6|Theodore I Laskaris||theodore i komnenos laskaris
+6|John IV Doukas Laskaris||john iv laskaris
+6|Theodore II Laskaris||theodore ii doukas laskaris
 `,
 nope:{
  'constantine great|constantine 1|constantine':'He founded Constantinople &mdash; but ruled the whole empire before the split of 395.',
@@ -6838,7 +6876,10 @@ amb:{
  'nikephoros|nicephorus':'Which Nikephoros? Add a number.',
  'manuel':'Which Manuel? Add a number.',
  'basil':'Which Basil? Add a number.',
- 'isaac':'Which Isaac? Add a number.'
+ 'isaac':'Which Isaac? Add a number.',
+ 'justin':'Which Justin? Add a number.',
+ 'tiberius':'Which Tiberius? Add a number.',
+ 'theodore':'Which Theodore? Add a number.'
 }},
 
 {id:'chinaemp', cat:'Asia', q:'Name a Chinese emperor or empress', hint:'Any dynasty, 221 BC&ndash;1912',
@@ -6983,6 +7024,7 @@ list:`
 2|Akihito||heisei
 2|Jimmu|*|jimmu tenno;wakamikenu no mikoto
 2|Taishō|*|yoshihito;taisho
+2|Go-Yōzei|*
 3|Kanmu|*|kammu
 3|Go-Daigo|*|go daigo;godaigo
 3|Shōmu|*|shomu
@@ -6990,6 +7032,10 @@ list:`
 3|Tenji|*|tenchi
 3|Empress Suiko||suiko;nukatabe
 3|Kōmei|*|komei;osahito
+3|Go-Momozono|*
+3|Ōgimachi|*
+3|Sujin|*
+3|Higashiyama|*
 4|Go-Toba|*|go toba
 4|Empress Jitō||jito;uno-no-sarara
 4|Empress Kōken||koken;shotoku
@@ -7002,6 +7048,16 @@ list:`
 4|Nintoku|*|nintoku
 4|Kinmei|*|kinmei
 4|Empress Genmei||genmei
+4|Momozono|*
+4|Sakuramachi|*
+4|Seiwa|*
+4|Nakamikado|*
+4|Chūai|*
+4|Go-Nara|*
+4|Annei|*
+4|Suinin|*
+4|Go-Sai|*
+4|Kōan|*
 5|Go-Mizunoo|*|go mizunoo
 5|Kōkaku|*|kokaku
 5|Ninkō|*|ninko
@@ -7015,6 +7071,22 @@ list:`
 5|Toba|*|toba
 5|Sutoku|*|sutoku
 5|Takakura|*|takakura
+5|Itoku|*
+5|Kōshō|*
+5|Kōrei|*
+5|Kōgen|*
+5|Go-Komatsu|*
+5|Go-Kashiwabara|*
+5|Go-Hanazono|*
+5|Kaika|*
+5|Go-Tsuchimikado|*
+5|Ankō|*
+5|Go-Uda|*
+5|Kenzō|*
+5|Go-Kameyama|*
+5|Richū|*
+5|Seimu|*
+5|Monmu|*
 6|Suizei|*|suizei
 6|Keikō|*|keiko
 6|Yūryaku|*|yuryaku
@@ -7030,6 +7102,51 @@ list:`
 6|Kazan|*|kazan
 6|Go-Kōmyō|*|go komyo
 6|Reigen|*|reigen
+6|Kōbun|Prince Ōtomo|otomo;prince otomo
+6|Tsuchimikado|*
+6|Seinei|*
+6|Ingyō|*
+6|Konoe|*
+6|Go-Fukakusa|*
+6|Senka|*
+6|Go-Murakami|*
+6|Buretsu|*
+6|Sushun|*
+6|Shōkō|*
+6|Ninmyō|*
+6|Go-Saga|*
+6|Hanzei|*
+6|Yōzei|*
+6|Ankan|*
+6|Nijō|*
+6|Ninken|*
+6|Fushimi|*
+6|Kameyama|*
+6|Go-Fushimi|*
+6|Juntoku|*
+6|Hanazono|*
+6|Horikawa|*
+6|Kōkō|*
+6|Go-Horikawa|*
+6|Chōkei|*
+6|Go-Ichijō|*|atsuhira
+6|Montoku|*
+6|Go-Suzaku|*
+6|Shijō|*
+6|Rokujō|*
+6|Chūkyō|*
+6|Junna|*
+6|Go-Nijō|*
+6|Go-Reizei|*
+6|Sanjō|*
+6|En'yū|*
+6|Reizei|*
+6|Suzaku|*
+6|Kōgon|*
+6|Go-Kōgon|*
+6|Sukō|*
+6|Kōmyō|*
+6|Go-En'yū|*
 `,
 nope:{
  'tokugawa ieyasu|ieyasu|yoritomo':'A shogun &mdash; the real power, but not the emperor.',
@@ -7226,13 +7343,13 @@ nope:{
 
 {id:'pope', cat:'Medieval', q:'Name a pope', hint:'Any pope, from Saint Peter to today', wf:'Pope {}',
 list:`
-1|Pope Francis||francis;jorge mario bergoglio;jorge bergoglio;cardinal jorge mario bergoglio;pope franciscus
-1|John Paul II|*|john paul 2;karol wojtyla;wojtyla;saint john paul ii;karol józef wojtyła;st. john paul ii;jan paweł ii
+1|Pope Francis||francis;jorge mario bergoglio;jorge bergoglio;cardinal jorge mario bergoglio;pope franciscus;papa francisco
+1|John Paul II|*|john paul 2;karol wojtyla;wojtyla;saint john paul ii;karol józef wojtyła;st. john paul ii;jan paweł ii;papa juan pablo ii;jpii;cardinal wojtyła
 1|Leo XIV|*|leo 14;robert prevost;prevost;robert francis prevost;pope leon xiv
 1|Benedict XVI|*|benedict 16;ratzinger
 2|Saint Peter||peter;simon peter;st peter;simon bar jonah;kephas;shamoon al-safa
 2|John XXIII|*|john 23;roncalli;saint john xxiii
-2|Gregory the Great|Pope Gregory I|gregory 1;gregory great;st gregory;saint gregory;saint gregory the great;st. gregory the great
+2|Gregory the Great|Pope Gregory I|gregory 1;gregory great;st gregory;saint gregory;saint gregory the great;st. gregory the great;gregory dialogus;gregorian mass
 2|Alexander VI|*|alexander 6;rodrigo borgia;borgia;roderic de borja;rodrigo de borja
 2|Urban II|*|urban 2
 2|Paul VI|*|paul 6;montini;pope saint paul vi;paulus vi
@@ -7252,6 +7369,10 @@ list:`
 3|Sixtus IV|*|sixtus 4;francesco della rovere;doctor acutissimus
 3|Pius X|*|pius 10;giuseppe sarto;saint pius x;pope st. pius x
 3|Pius XI|*|pius 11;achille ratti
+3|Benedict IX|*
+3|Benedict XII|*|jacques fournier
+3|Gregory III|*|saint gregory iii
+3|Benedict XIII|*
 4|Clement V|*|clement 5
 4|Pius II|*|pius 2;piccolomini
 4|Nicholas V|*|nicholas 5;tommaso parentucelli
@@ -7269,6 +7390,10 @@ list:`
 4|Sylvester I|*|sylvester 1;st. sylvester
 4|Stephen II|*|stephen 2
 4|Formosus|Pope Formosus|formosus
+4|John XXII|*
+4|Paul II|*|pietro barbo
+4|Alexander III|*
+4|Alexander II|*|anselm of baggio;anselmo da baggio;anselmo de baggio of lucca
 5|Calixtus III|*|callixtus 3;calixtus 3
 5|Innocent VIII|*|innocent 8
 5|Paul IV|*|paul 4;gian pietro carafa;giovanni pietro carafa
@@ -7287,6 +7412,15 @@ list:`
 5|Urban VI|*|urban 6
 5|Hadrian VI|*|adrian 6;hadrian 6;adrian of utrecht
 5|Damasus I|*|damasus 1;st. damasus
+5|Pius VI|*
+5|Gelasius I|*
+5|Miltiades|*|melchiades
+5|Paul V|*
+5|Leo VIII|*
+5|Clement VI|*
+5|Anicetus|*
+5|Sixtus II|*
+5|Hilarius|*
 6|Anacletus|Pope Anacletus|anacletus;cletus
 6|Evaristus|Pope Evaristus|evaristus
 6|Alexander I|*|alexander 1
@@ -7307,6 +7441,173 @@ list:`
 6|Honorius I|*|honorius 1
 6|Zachary|Pope Zachary|zachary;zacharias
 6|Nicholas I|*|nicholas 1
+6|Innocent VII|*
+6|Leo XII|*|annibale della genga
+6|John VIII|*
+6|Nicholas III|*
+6|Anterus|*
+6|Eleutherius|*
+6|Martin I|*|martin the confessor
+6|Soter|*
+6|Julius I|*
+6|Clement VIII|*
+6|Leo XI|*|alessandro ottaviano de' medici
+6|Mark|*
+6|Sergius III|*
+6|Clement XI|*|giovanni francesco albani
+6|Pius IV|*|giovanni angelo medici
+6|Alexander VII|*|fabio chigi
+6|Julius III|*
+6|Gregory XII|*|angelo correr
+6|Nicholas II|*
+6|Alexander IV|*
+6|Stephen I|*
+6|Nicholas IV|*
+6|Leo IV|*
+6|Caius|*
+6|Pius III|*
+6|Eusebius|*
+6|Innocent XI|*|benedetto odescalchi
+6|Stephen IX|*|frederick of lorraine
+6|Gregory V|*
+6|Silverius|*
+6|Paschal II|*
+6|Dionysius|*
+6|Gregory X|*|teobaldo visconti
+6|Benedict V|*
+6|Urban VII|*
+6|Lucius I|*
+6|Vigilius|*
+6|Agatho|*
+6|Anastasius II|*
+6|Zosimus|*
+6|John I|*
+6|Lando|*
+6|Constantine|*
+6|Boniface VI|*
+6|Honorius III|*
+6|John XI|*
+6|Felix I|*
+6|Victor II|*
+6|Innocent I|*
+6|Symmachus|*
+6|John XIII|*
+6|Paul I|*
+6|John II|*
+6|Boniface IV|*
+6|Innocent II|*
+6|Gregory II|*
+6|Adrian I|*|hadrian i
+6|Sergius I|*
+6|Anastasius I|*
+6|John IV|*
+6|Benedict III|*
+6|Clement XII|*|lorenzo corsini
+6|Victor III|*
+6|Leo V|*
+6|Stephen III|*
+6|John XXI|*|pietro ispano
+6|Eutychian|*
+6|Simplicius|*
+6|Leo II|*
+6|Conon|*
+6|Felix IV|*
+6|John VI|*
+6|Adrian II|*|pope hadrian ii
+6|Agapetus I|*
+6|Theodore II|*
+6|Gregory XV|*
+6|Celestine I|*
+6|Innocent XIII|*
+6|Sisinnius|*
+6|Adeodatus I|*|pope deusdedit
+6|Theodore I|*
+6|Clement XIII|*
+6|Stephen V|*
+6|Pius VIII|*|francesco castiglioni
+6|John XIV|*
+6|Felix III|*
+6|Sixtus III|*
+6|Pelagius II|*
+6|Romanus|*
+6|Urban V|*|guillaume grimoard
+6|Celestine III|*
+6|Gregory IV|*
+6|Valentine|*
+6|John VII|*
+6|Donus|*
+6|Boniface II|*
+6|Benedict VIII|*
+6|Eugene III|*|pope eugenius iii
+6|Benedict XI|*|niccolo boccasini
+6|Vitalian|*
+6|John IX|*
+6|Benedict I|*
+6|Boniface III|*
+6|Boniface IX|*
+6|Marcellus I|*
+6|Sabinian|*
+6|Leo VI|*
+6|Gregory VI|*
+6|Innocent XII|*
+6|Benedict IV|*
+6|Sergius II|*
+6|John III|*
+6|John V|*
+6|John X|*
+6|Stephen IV|*
+6|Callixtus II|*|guy of vienne;gui de bourgogne
+6|Marcellus II|*|marcello cervini
+6|Benedict II|*
+6|Severinus|*
+6|Alexander VIII|*|pietro ottoboni
+6|Clement II|*
+6|Paschal I|*
+6|Clement X|*
+6|Clement IV|*
+6|Urban IV|*|james pantaleon
+6|Clement IX|*|giulio rospigliosi
+6|Pelagius I|*
+6|Siricius|*
+6|Innocent VI|*
+6|Urban III|*
+6|John XIX|*
+6|Lucius III|*|ubaldo allucingoli
+6|Gregory VIII|*|alberto di morra
+6|Eugene I|*
+6|Innocent V|*
+6|Martin IV|*
+6|Boniface V|*
+6|Eugene II|*|pope eugenius ii
+6|Boniface I|*
+6|Adrian V|*|ottobuono de' fieschi
+6|Gregory XIV|*
+6|John XVII|*
+6|Honorius II|*
+6|Clement III|*
+6|Honorius IV|*
+6|Adrian III|*
+6|Anastasius IV|*
+6|Stephen VIII|*
+6|Innocent IX|*
+6|Damasus II|*
+6|Celestine IV|*
+6|Lucius II|*
+6|Gelasius II|*
+6|Sylvester III|*
+6|Celestine II|*
+6|Adeodatus II|*
+6|Benedict VI|*
+6|John XV|*
+6|Leo VII|*
+6|Benedict VII|*
+6|Marinus I|*|pope martin ii
+6|Sergius IV|*
+6|John XVIII|*
+6|Agapetus II|*
+6|Marinus II|*|pope martin iii
+6|Anastasius III|*
+6|Stephen VII|*
 `,
 nope:{
  'martin luther|luther|calvin':'He broke away from the papacy &mdash; definitely not a pope!',
@@ -7325,7 +7626,35 @@ amb:{
  'urban':'Which Urban? Add a number.',
  'paul':'Which Paul? Add a number.',
  'alexander':'Which Alexander? Add a number.',
- 'john paul':'First or second? Add a number.'
+ 'john paul':'First or second? Add a number.',
+ 'julius':'Which Julius? Add a number.',
+ 'boniface':'Which Boniface? Add a number.',
+ 'sixtus':'Which Sixtus? Add a number.',
+ 'nicholas':'Which Nicholas? Add a number.',
+ 'celestine':'Which Celestine? Add a number.',
+ 'adrian':'Which Adrian? Add a number.',
+ 'sylvester':'Which Sylvester? Add a number.',
+ 'stephen':'Which Stephen? Add a number.',
+ 'martin':'Which Martin? Add a number.',
+ 'eugene':'Which Eugene? Add a number.',
+ 'damasus':'Which Damasus? Add a number.',
+ 'gelasius':'Which Gelasius? Add a number.',
+ 'victor':'Which Victor? Add a number.',
+ 'callixtus':'Which Callixtus? Add a number.',
+ 'honorius':'Which Honorius? Add a number.',
+ 'sergius':'Which Sergius? Add a number.',
+ 'paschal':'Which Paschal? Add a number.',
+ 'lucius':'Which Lucius? Add a number.',
+ 'anastasius':'Which Anastasius? Add a number.',
+ 'felix':'Which Felix? Add a number.',
+ 'agapetus':'Which Agapetus? Add a number.',
+ 'theodore':'Which Theodore? Add a number.',
+ 'adeodatus':'Which Adeodatus? Add a number.',
+ 'pelagius':'Which Pelagius? Add a number.',
+ 'marcellus':'Which Marcellus? Add a number.',
+ 'marinus':'Which Marinus? Add a number.',
+ 'hadrian':'Which Hadrian? Add a number.',
+ 'calixtus':'Which Calixtus? Add a number.'
 }},
 
 {id:'norway', cat:'Rulers', q:'Name a king or queen of Norway', hint:'From Harald Fairhair to Haakon VIII', wf:'{} of Norway',

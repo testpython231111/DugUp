@@ -6,7 +6,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–11 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Alle 150 prompts har fått skrivemåter fra Wikipedia (Spec 11). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- (ingen)
+- **Spec 12 — Fulle lister for herskere (pilot: `pope`, `japanemp`, `byzantine`, `france`).** Ferdig og verifisert på branchen `feature/12-ruler-lists`, ikke committet. Venter på eiers beslutning om commit og merge.
 
 ## Completed
 - [x] 2026-11-23: **Spec 11 — Skrivemåter fra Wikipedia for alle prompts** (punkt 1 i planen under). Eier sa «ja kjør på». Merget til `main` 2026-11-23 etter eiers beslutning («push merge og kjør ut»). GitHub Action var grønn på branchen (run 45199011504) og på `main` (run 45199024425). Publisert `prompts.js`, `app.js` og `index.html` på dugup.eu er identiske med `main`.
@@ -45,7 +45,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 ## Neste (i prioritert rekkefølge)
 - **Flere svar for resten av promptene, i bolker.** Bygger på verktøyet fra Spec 10. Hver bolk får sin egen spec og trenger eiers grønt lys.
   1. ~~**Aliaser for alle 150 prompts.**~~ Ferdig i Spec 11.
-  2. **Fulle lister for herskere og embeter**, for eksempel paver (81 av 266), faraoer, japanske og kinesiske keisere, konger og statsministre. Kilden er Wikipedias «List of …», så alle på lista er objektivt riktige.
+  2. **Fulle lister for herskere og embeter** (pilot i Spec 12). Før neste bolk: bytt kilde fra Wikipedia-listesider til Wikidata (stilling + tidsrom), med Wikipedia-listen som kontroll. De håndskrevne filterreglene i Spec 12 var skjøre. Gjenstår: faraoer, kinesiske keisere, andre konger og statsministre.
   3. **Åpne kategorier** i bolker på cirka 10, på samme måte som piloten: guder, slag, byer, borger, oppfinnelser og lignende.
   4. **«Famous …»-prompts** (berømte taler, malerier, svindler og dyr) tas sist eller ikke i det hele tatt, fordi «berømt» ikke har en kategori.
 
@@ -77,6 +77,14 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 - Etter Spec 03 er det ikke lenger nok å laste opp bare `index.html` via GitHub-webgrensesnittet (se README «Updating the site»).
 
 ## Sesjonsnotater
+- **2026-11-23 (Spec 12):**
+  - **Data:** pope 81 → 265 (alle personer; Wikipedias 267 teller pontifikater, og Benedict IX satt tre ganger). japanemp 53 → 129 (124 personer, siden Kōken/Shōtoku og Kōgyoku/Saimei er de samme, pluss 5 i nordhoffet; Kōbun lagt til for hånd). byzantine 73 → 83 (nøyaktig de 10 som manglet, inkludert 4 i Nikaia). france 59 → 76. Navn som deles av flere spør «Which …?» (pope 28, byzantine 3, france 11). «Clovis» gir fortsatt Clovis I.
+  - **Utelatt:** motpaver, Jingū, medkeisere og keiserinner som ikke styrte alene, frankiske småkonger før Clovis (unntatt Chlodio) og konger over delriker.
+  - **Feil funnet underveis:** `[A-Z]` slapp ikke gjennom «Ō» (Ōgimachi, Kōbun manglet), årstall med to sifre ble ikke lest (Augustus og Nero slapp inn i byzantine), og medkeisere kom med som vanlige svar. Alle rettet før innlegging.
+  - **Måling:** 30 tester grønne. bench: 78 falske treff (uendret), kryss-treff 71 → 73 (begge riktige: «Constantine» gir Konstantin den store i `rome`, «Alexander» gir Aleksander den store i `commanders`). `--apply` uten `=|clovis` nekter og skriver ingenting (md5 uendret). rarity: 11 447 av 11 548 svar rangert, 0 feil. summaries: 5 909 tekster, 967 KB.
+  - **Headless Edge:** practice-runde med pope, japanemp, byzantine og france. «Gregory», «Theodore» og «Dagobert» gir toast «Which …?». Anicetus, Ōgimachi (skrevet «Ogimachi»), Theodore II Laskaris (med oppsummering), Clovis I og Formosus gir funn. Resultatskjermen stemmer. Ingen konsollfeil.
+  - **Lærdom:** Regex-filtre på kortbeskrivelser krever mye håndarbeid per prompt. Neste bolk bør bruke Wikidata.
+  - **Ikke verifisert:** ekte nettleser hos eier og Vercel preview.
 - **2026-11-23 (Spec 11):**
   - **Gjennomgang:** Verktøyet foreslo 5 870 aliaser. Jeg leste alle 1 952 som ikke deler et ord med svaret. Det som gikk igjen av feil:
     - slektninger og ektefeller («Black Buffalo Woman» → Crazy Horse)
