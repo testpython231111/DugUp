@@ -6,7 +6,7 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 **Fase 1 — Robusthet og vedlikeholdbarhet.** Spillet er lansert (Dig #1 = 22. nov 2026). Spec 01–11 er merget: tester, stabil rotasjon fryst til jan 2028, filer delt opp, sjeldenhet og oppsummeringer forhåndsberegnet, to visuelle feil rettet (Spec 07), GitHub kjører testene ved hver push og daglig (Spec 08), matchingen godkjenner ikke lenger feil navn som et annet svar (Spec 09), og guder og kriger har fått svar fra Wikipedia (Spec 10). Alle 150 prompts har fått skrivemåter fra Wikipedia (Spec 11). Eier har sjekket Spec 04–06 på dugup.eu og sier at alt ser bra ut.
 
 ## In Progress
-- **Spec 13 — Månedlig oppdatering som GitHub Action, og `main` bak grønne tester.** Workflowen er skrevet og ligger på branchen `feature/13-monthly-automation`. Gjenstår: eier slår på branch protection og Actions-innstillingen (se sesjonsnotatet), og en første manuell kjøring.
+- **Spec 13 — Månedlig oppdatering som GitHub Action.** Workflowen er skrevet og ligger på branchen `feature/13-monthly-automation` (PR #2). Gjenstår: eier slår på Actions-innstillingen (se sesjonsnotatet), og en første manuell kjøring.
 
 ## Completed
 - [x] 2026-11-26: **Spec 12 — Fulle lister for herskere (pilot: `pope`, `japanemp`, `byzantine`, `france`).** Eier ba om commit og merge («gjør alt i 1-3 nå med en gang»). Committet i to deler (verktøy og data), og merget via PR #1 da «test» var grønn (run 45791995688). Vercel preview ble bygget uten feil. bench før merge: 78 / 73, som i sesjonsnotatet.
@@ -80,8 +80,9 @@ _Eneste kontekstfil som oppdateres kontinuerlig. Oppdater før og etter hver arb
 ## Sesjonsnotater
 - **2026-11-26 (Spec 12 merge og Spec 13):**
   - **Spec 12:** committet og merget via PR #1 (se Completed).
-  - **Spec 13:** `.github/workflows/monthly-data.yml` er skrevet. En push gjort med `GITHUB_TOKEN` starter ikke `test.yml`, så workflowen starter den selv med `workflow_dispatch` på data-branchen. Ellers ville PR-en mangle «test»-sjekken og ikke kunne merges under branch protection.
-  - **Ikke gjort av meg (tillatelse avslått):** branch protection på `main` og «Allow GitHub Actions to create and approve pull requests». Eier må kjøre kommandoene selv. Uten den siste kan workflowen pushe branchen, men ikke åpne PR-en, og kjøringen blir rød.
+  - **Spec 13:** `.github/workflows/monthly-data.yml` er skrevet. En push gjort med `GITHUB_TOKEN` starter ikke `test.yml`, så workflowen starter den selv med `workflow_dispatch` på data-branchen. Ellers ville PR-en mangle «test»-sjekken.
+  - **Eiers beslutning:** ingen branch protection på `main`. Eier vil kunne pushe rett til `main` herfra.
+  - **Ikke gjort av meg (tillatelse avslått):** «Allow GitHub Actions to create and approve pull requests». Eier må slå den på selv. Uten den siste kan workflowen pushe branchen, men ikke åpne PR-en, og kjøringen blir rød.
   - **Ikke verifisert:** en ekte kjøring av `monthly-data.yml` (tar ~10 min og krever innstillingen over).
 - **2026-11-23 (Spec 12):**
   - **Data:** pope 81 → 265 (alle personer; Wikipedias 267 teller pontifikater, og Benedict IX satt tre ganger). japanemp 53 → 129 (124 personer, siden Kōken/Shōtoku og Kōgyoku/Saimei er de samme, pluss 5 i nordhoffet; Kōbun lagt til for hånd). byzantine 73 → 83 (nøyaktig de 10 som manglet, inkludert 4 i Nikaia). france 59 → 76. Navn som deles av flere spør «Which …?» (pope 28, byzantine 3, france 11). «Clovis» gir fortsatt Clovis I.

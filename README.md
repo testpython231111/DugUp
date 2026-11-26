@@ -64,7 +64,7 @@ Edit the file that holds what you want to change:
 | Game logic, pixel art, sound | `js/app.js` |
 | Page text and structure | `index.html` |
 
-Then push the change to a branch and open a pull request. `main` is protected: a pull request can only be merged when the `test` check is green, and Vercel publishes `main` within a minute of the merge. On the GitHub website, the pencil (**Edit**) button and **Add file → Upload files** offer to create a branch and a pull request for you. Uploading only `index.html` is no longer enough.
+Then push to `main` with git. If you use the GitHub website instead, open the file in its folder and use the pencil (**Edit**) button, or drag the changed file into the matching folder with **Add file → Upload files**. Uploading only `index.html` is no longer enough. Vercel publishes the new version within a minute.
 
 ### Running checks
 
@@ -74,7 +74,7 @@ Run the automated checks before every change. They need [Node.js](https://nodejs
 npm test            # or: node tools/check.mjs
 ```
 
-GitHub runs the same checks on every push and pull request, and once a day (`.github/workflows/test.yml`). Vercel doesn't run them, so `main` only accepts pull requests with a green `test` check. The daily run catches date-based deadlines, such as freezing the rotation, even when nobody pushes. GitHub emails you when a run fails.
+GitHub runs the same checks on every push and pull request, and once a day (`.github/workflows/test.yml`). Vercel deploys `main` without running them, so run `npm test` before you push. The daily run catches date-based deadlines, such as freezing the rotation, even when nobody pushes. GitHub emails you when a run fails.
 
 The checks load `index.html` and its scripts without a browser and verify the prompt data (unique ids, valid categories, tiers 1–6, no duplicate answers or clashing aliases), answer matching, the practice prompts, the daily rotation, and the generated rarity and summary files (and that the game never calls `fetch`). Daily digs that are already published (or due within 14 days) are pinned in `tools/rotation-snapshot.json`. If that test fails, the change would alter digs that players have already seen. The snapshot only ever grows: `node tools/check.mjs --write-snapshot` adds the digs up to 14 days ahead and refuses to rewrite an existing one.
 

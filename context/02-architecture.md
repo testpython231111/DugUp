@@ -28,7 +28,7 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 | `tools/match-bench.mjs`, `tools/match-bench-data.json` | `npm run bench`: måler matchingen mot ekte navn fra Wikipedia (Spec 09), altså falske treff blant navn som ikke er svar, og treffsikkerhet for skrivefeil og redirects. Kjøres offline mot den bufrede JSON-fila; `--fetch` henter på nytt. Kjør før og etter hver endring i matchingen. |
 | `tools/rarity.mjs`, `tools/summaries.mjs` | Månedlige generatorer for `rarity.js` og `summaries.js` (se «Månedlig oppdatering»). |
 | `tools/rotation-snapshot.json` | Append-only logg over låste digs (Spec 04). |
-| `.github/workflows/test.yml` | GitHub Action som kjører `npm test` ved hver push og pull request og daglig kl. 05:00 UTC (Spec 08). Jobben heter `test`, og branch protection krever at den er grønn før noe merges til `main` (Spec 13). |
+| `.github/workflows/test.yml` | GitHub Action som kjører `npm test` ved hver push og pull request og daglig kl. 05:00 UTC (Spec 08). Den blokkerer ikke Vercel-deploy, men varsler på e-post når noe er rødt. `main` har ingen branch protection: eier pusher rett dit (Spec 13). |
 | `.github/workflows/monthly-data.yml` | Den 22. hver måned: `rarity.mjs`, så `summaries.mjs`, så `npm test`, og deretter en PR fra `data/monthly-ÅÅÅÅ-MM` (Spec 13). Eier merger. |
 | `js/app.js` | **Appen** i én IIFE, delt i seksjoner: |
 | | `CONFIG` (ROUND_SIZE, TIME_LIMIT, EPOCH, TIERS) |
