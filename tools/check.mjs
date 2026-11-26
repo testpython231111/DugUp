@@ -595,12 +595,6 @@ test('backup: bad codes are refused and change nothing; strings lose <>" and wro
   });
 });
 
-test('dev mode: only with ?dev, not for players (Spec 20)', () => {
-  for (const q of ['?dev', '?dev=1', '?a=b&dev', '?dev=true&x=1']) assert.ok(G.devFromSearch(q), q);
-  for (const q of ['', '?', '?devil', '?x=dev', '?dev=0', '?developer=1']) assert.ok(!G.devFromSearch(q), q);
-  assert.equal(globalThis.document?.getElementById?.('devPanel') ?? null, null);
-});
-
 test('outfits: unique ids, 12-wide torso rows and a goal the game knows (Spec 19)', () => {
   const ids = G.SKINS.map(s => s.id);
   assert.equal(new Set(ids).size, ids.length, 'two outfits share an id');

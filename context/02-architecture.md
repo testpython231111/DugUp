@@ -103,8 +103,6 @@ Begge scriptene sender `User-Agent: DugUpRarity/1.0 (https://dugup.eu)`, venter 
 | `dugup:skin` | Valgt outfit-id |
 | `dugup:muted` | Bool |
 
-Utviklermodus (Spec 20): med `?dev` i adressen bygger `devPanel()` et panel for testing. Det bruker de vanlige nøklene over (det lager ingen egne) og kjører runder som practice. Uten `?dev` bygges ingenting.
-
 Backup (Spec 16): `backupCode()` pakker alle nøklene over som `DUGUP1.` + base64-JSON, og `restoreBackup()` erstatter dem etter at `decodeBackup()` har sjekket typer og fjernet `<>"`. En ny nøkkel må legges til i `BACKUP_KEY` og valideringen, ellers blir den ikke med.
 
 ## Invarianter (skal ALDRI brytes)
