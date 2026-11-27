@@ -341,6 +341,56 @@ function skinCanvas(name, sk){
   skinCache[key] = c; return c;
 }
 
+/* =========================================================
+   DIG SITES — themes for the scene above ground (Spec 21), all open from the start
+   ========================================================= */
+// hills: [far, far ridge, near, near ridge]. ground: the grass rows [top, middle, low]. land picks the backdrop shape.
+// Props are small sprites in the site's own palette (ppal), put only where they cover nothing (see drawCamp).
+const SITES = [
+  {id:'meadow', name:'Meadow', desc:'The original dig site: green hills, pine trees and a striped tent.',
+   land:'hills', hills:['#a7cf85', '#c3e3a0', '#7cb35a', '#98cc6e'], ground:['#8fd14f', '#6abe30', '#4e9a2c'],
+   tree:'pine', treeCols:['#3f7d3a', '#56994a', '#5a3a20'], tent:['#d9594a', '#b2463a'], flag:'#c8442f',
+   flowers:['#fff6dc', '#ffd84a', '#ef7fa0', '#9fd6ff']},
+  {id:'yule', name:'Christmas Camp', desc:'Fresh snow, a snowman and a tree with all the trimmings. Dig carefully around the presents.',
+   land:'hills', hills:['#cfdcea', '#eef4fa', '#e2ebf4', '#ffffff'], ground:['#ffffff', '#e6eef6', '#c5d3e0'],
+   tree:'xmas', treeCols:['#2f6b4a', '#3f8a5e', '#5a3a20'], tent:['#c8442f', '#9e3326'], flag:'#2f8a4a', snowy:true, fall:'snow',
+   ppal:{w:'#f4f8fc', W:'#c5d3e0', K:'#2b2b33', r:'#c8442f', f:'#f08a2c', g:'#3f8a5e', G:'#2f6b4a', y:'#ffd84a', v:'#e04848', u:'#4aa3df', T:'#5a3a20'},
+   props:[
+     ['..KKK..', '..KKK..', '.KKKKK.', '..wwW..', '.wKwKW.', '.wwfff.', '..wwW..', '.rrrrr.', '.wwrwW.', 'wwwKwwW', 'wwwwwwW', 'wwwKwwW', '.wwwwW.'],
+     ['....y....', '...yyy...', '....y....', '...wgG...', '...gvG...', '..wggGG..', '..gugyG..', '.wgggGGG.', '..ggvgG..', '.wgyggGG.', 'wggggguGG', 'gvggyggGG', '....T....', '....T....']
+   ]},
+  {id:'fjord', name:'Viking Fjord', desc:'Mountains, a longship on the water and a runestone nobody here can read.',
+   land:'fjord', hills:['#66738a', '#eef2f6', '#5f8a4a', '#77a35a'], water:['#3f6f95', '#79a6c4'], ground:['#7fbf4a', '#5fa03a', '#46802c'],
+   tree:'spruce', treeCols:['#24513a', '#336b4a', '#4a2e1a'], tent:['#3a6fd8', '#2d58ad'], flag:'#c8442f', bird:'#f4f4f0',
+   flowers:['#b07ac8', '#8e5aa8', '#fff6dc'],
+   ppal:{x:'#9aa0a6', z:'#c9ced2', X:'#6b7177', v:'#c8442f', w:'#efe6d2', B:'#4a2e1a', b:'#7d5230', k:'#3b2312', y:'#ffd84a', s:'#3a6fd8'},
+   props:[
+     ['..xx..', '.xzxX.', '.xvxX.', 'xxvxXX', 'xvxvXX', 'xxvxXX', 'xvxxXX', 'xxvxXX', 'XXXXXX'],
+     ['..BBB..', '.BvvwB.', 'BvvvwwB', 'BvvywwB', 'BwwvvvB', '.BwvvB.', '..BBB..']
+   ],
+   ship:['........k........', '...vvvvvkvvvvv...', '...wwwwwkwwwww...', '...vvvvvkvvvvv...', '...wwwwwkwwwww...', '...vvvvvkvvvvv...',
+         '.B......k......B.', 'BB......k......BB', '.BysysysysysysyB.', '..BbbbbbbbbbbbB..', '...BBBBBBBBBBB...']},
+  {id:'giza', name:'Giza', desc:'Sand dunes, two pyramids, palm trees and an obelisk. Bring water.',
+   land:'dunes', hills:['#e2c084', '#f0d6a0', '#d1a868', '#e6c487'], pyramid:['#ecd09a', '#c09a5e', '#d8b87e'], ground:['#ecd296', '#d6b475', '#b9965a'],
+   soil:{0:['#c49a5c', '#a47c44', '#d8b27a']}, clouds:1,
+   tree:'palm', treeCols:['#4e9a2c', '#6abe30', '#8a5a36', '#6b4024'], tent:['#3a6fd8', '#2d58ad'], flag:'#ffd84a',
+   ppal:{y:'#ffd84a', Y:'#d79a1e', q:'#e3c890', Q:'#b8935a', t:'#8a6a3a', a:'#c96b3a', A:'#8e4424'},
+   props:[
+     ['.yy.', 'yyyY', 'qqqQ', 'qtqQ', 'qqqQ', 'qqtQ', 'qtqQ', 'qqqQ', 'qtqQ', 'qqtQ', 'qqqQ', 'qtqQ', 'qqqQ', 'QQQQ'],
+     ['.A.A...A.A.', 'AaaaA.AaaaA', '.aaa...aaa.', 'aaaaa.aaaaa', 'aaaAA.aaaAA', '.aAA...aAA.', '..A.....A..']
+   ]},
+  {id:'sakura', name:'Cherry Blossom', desc:'Mount Fuji, a red torii gate and petals on the wind.',
+   land:'fuji', hills:['#a7cf85', '#c3e3a0', '#7cb35a', '#98cc6e'], fuji:['#7a86b0', '#f4f6fb', '#5f6a94', '#d4dbe8'], ground:['#8fd14f', '#6abe30', '#4e9a2c'],
+   tree:'sakura', treeCols:['#f4a7c0', '#ffd0de', '#d77fa0', '#4a2e22'], tent:['#d9594a', '#b2463a'], flag:'#f4f6fb', fall:'petals',
+   flowers:['#f7b6cb', '#ffd6e2', '#fff6dc'],
+   ppal:{v:'#d9452f', V:'#a8321f', K:'#2b1a10', x:'#9aa0a6', z:'#c9ced2', X:'#6b7177', f:'#ffcf6a'},
+   props:[
+     ['K...........K', 'KKKKKKKKKKKKK', '.vvvvvvvvvvv.', '..v...v...v..', 'vvvvvvvvvvvvv', '..v.......v..', '..v.......v..', '..v.......v..', '..v.......v..', '..v.......v..', '..V.......V..', '.KKK.....KKK.'],
+     ['..x..', '.xxx.', 'xxxxX', '.zfX.', '.xxX.', '..x..', '.xxX.', 'xxxxX']
+   ]}
+];
+function siteById(id){ return SITES.find(s => s.id === id) || SITES[0]; }
+
 /* 9-slice pixel frames for CSS border-image */
 function frameURL(n, rings, fill){
   // grid (2n+1)^2, ring d = distance to edge; ring entries are [topLeftColor, bottomRightColor]
@@ -921,7 +971,10 @@ const Scene = (function(){
   let item = null, floatTxt = null, job = null;
   let skin = SKINS[0], lampPos = null;
   let phase = phaseAt(new Date()), PH = PHASES[phase], phaseCheck = 0, forcedPhase = null, stars = [];
+  let site = SITES[0], fall = [];
   const hooks = {impact(){}, toss(){}, clonk(){}, find(){}};
+  // soil colours of an era; a site may recolour a layer (Giza's sandy topsoil)
+  const ecol = e => (site.soil && site.soil[ERAS.indexOf(e)]) || e.c;
 
   /* ---------- poses: shovel = grip point + angle; hands = point on the shovel (t) or free (x,y) ---------- */
   const RAW = {
@@ -1045,7 +1098,7 @@ const Scene = (function(){
     const HF = [fx + p.hf[0], fy + p.hf[1]], HB = [fx + p.hb[0], fy + p.hb[1]];
     arm(SB, HB, {o: PAL.o, sl: ac[0], hand: hc[0]});
     ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, fy); ctx.clip();
-    shovel([fx + p.p0[0], fy + p.p0[1]], p.ang, p.dirt, eraAt(depth).c);
+    shovel([fx + p.p0[0], fy + p.p0[1]], p.ang, p.dirt, ecol(eraAt(depth)));
     ctx.restore();
     arm(SF, HF, {o: PAL.o, sl: ac[1], hand: hc[1]});
     // sweat drop (timeout / miss)
@@ -1058,9 +1111,9 @@ const Scene = (function(){
   /* ---------- particles ---------- */
   function emit(o){ o.max = o.life; parts.push(o); }
   function impactFX(tipX, floorY, rock){
-    const e = eraAt(depth);
-    for (let i=0;i<9;i++) emit({type:'dirt', x: tipX + Math.random()*3 - 1.5, y: floorY - 1, vx: (Math.random()*2 - 1)*34 + 6, vy: -42 - Math.random()*62, g: 320, life: 0.5 + Math.random()*0.3, size: Math.random() < 0.2 ? 2 : 1, col: e.c[Math.random() < 0.5 ? 0 : 2]});
-    for (let i=0;i<2;i++) emit({type:'dust', x: tipX + Math.random()*4 - 2, y: floorY - 2, vx: (Math.random()*2 - 1)*10, vy: -6 - Math.random()*6, g: 0, life: 0.4, size: 1, col: mix(e.c[2], '#fff1d0', 0.4)});
+    const ec = ecol(eraAt(depth));
+    for (let i=0;i<9;i++) emit({type:'dirt', x: tipX + Math.random()*3 - 1.5, y: floorY - 1, vx: (Math.random()*2 - 1)*34 + 6, vy: -42 - Math.random()*62, g: 320, life: 0.5 + Math.random()*0.3, size: Math.random() < 0.2 ? 2 : 1, col: ec[Math.random() < 0.5 ? 0 : 2]});
+    for (let i=0;i<2;i++) emit({type:'dust', x: tipX + Math.random()*4 - 2, y: floorY - 2, vx: (Math.random()*2 - 1)*10, vy: -6 - Math.random()*6, g: 0, life: 0.4, size: 1, col: mix(ec[2], '#fff1d0', 0.4)});
     shakeT = Math.max(shakeT, 0.09);
     if (rock){
       for (let i=0;i<12;i++){ const a = -Math.PI*Math.random(), sp = 45 + Math.random()*75; emit({type:'spark', x: tipX, y: floorY - 1, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, g: 180, life: 0.22 + Math.random()*0.18, size: 1, col: Math.random() < 0.5 ? '#fff6c9' : '#ffd84a'}); }
@@ -1070,9 +1123,9 @@ const Scene = (function(){
   function tossFX(){
     const a = pose.ang * Math.PI / 180;
     const x = charX() + pose.p0[0] + Math.cos(a)*12, y = feetW() + pose.p0[1] + Math.sin(a)*12;
-    const e = eraAt(depth);
-    emit({type:'clump', x, y, vx: 14 + Math.random()*10, vy: -95 - Math.random()*25, g: 250, life: 0.45, size: 2, col: e.c[0]});
-    for (let i=0;i<4;i++) emit({type:'dirt', x, y, vx: 6 + Math.random()*24, vy: -75 - Math.random()*35, g: 250, life: 0.45, size: 1, col: e.c[2]});
+    const ec = ecol(eraAt(depth));
+    emit({type:'clump', x, y, vx: 14 + Math.random()*10, vy: -95 - Math.random()*25, g: 250, life: 0.45, size: 2, col: ec[0]});
+    for (let i=0;i<4;i++) emit({type:'dirt', x, y, vx: 6 + Math.random()*24, vy: -75 - Math.random()*35, g: 250, life: 0.45, size: 1, col: ec[2]});
     hooks.toss();
   }
   function celebrateFX(tier){
@@ -1169,10 +1222,79 @@ const Scene = (function(){
     const r = mulberry32(5);
     clouds = []; for (let i=0;i<3;i++) clouds.push({x: r()*W, y: 6 + Math.floor(r()*16), w: 10 + Math.floor(r()*10), v: 1.5 + r()*2});
     birds = []; for (let i=0;i<2;i++) birds.push({x: r()*W, y: 10 + Math.floor(r()*14), v: 4 + r()*4, ph: r()*6});
-    snapCam();
+    initFall(); snapCam();
   }
   function boundary(i, x){ return Math.floor(ERAS[i].top / MPX) + Math.round(1.3*Math.sin(x*0.23 + i*1.7) + 0.9*Math.sin(x*0.071 + i*0.9)); }
   function h2(x, y, s){ let h = Math.imul(x*374761393 + y*668265263 + (s || 0)*2147483647, 1274126177); h = (h ^ (h >>> 13)) >>> 0; return (h % 10000) / 10000; }
+  function stamp(g, rows, pal, x, y){
+    for (let j=0;j<rows.length;j++) for (let i=0;i<rows[j].length;i++){ const ch = rows[j][i]; if (ch === '.' || !pal[ch]) continue; g.fillStyle = pal[ch]; g.fillRect(x + i, y + j, 1, 1); }
+  }
+
+  /* ---------- dig sites: the land behind the camp (Spec 21) ---------- */
+  function backdrop(put, bay){
+    const L = site.land, c = site.hills.map(hx), cS = site.hills.map(h => hx(mix(h, '#1c2233', 0.22)));
+    const tri = k => Math.abs(((k % 2) + 2) % 2 - 1);
+    const peak = x => SKY - 14 - Math.round(14*tri(x*0.045 + 0.3) + 5*tri(x*0.13 + 1.1));
+    const fc = site.fuji && site.fuji.map(hx), fx = Math.round(W * 0.3);
+    const pc = site.pyramid && site.pyramid.map(hx), px = Math.round(W * 0.72), pyrs = [[px + 26, 13], [px, 24]];
+    const wc = site.water && site.water.map(hx);
+    for (let x=0;x<W;x++){
+      let hf = SKY - 16 - Math.round(4*Math.sin(x*0.045 + 0.5) + 3*Math.sin(x*0.11 + 2));
+      let hn = SKY - 8 - Math.round(3*Math.sin(x*0.07 + 1.3) + 2*Math.sin(x*0.19));
+      if (fc && Math.abs(x - fx) <= 40){
+        // Fuji: a flat crater top and concave slopes, snow above a ragged line, the right side in shade
+        const d = Math.abs(x - fx), top = SKY - 36 + (d <= 2 ? 0 : Math.round(Math.pow(d - 2, 1.5) / 8.4)), sh = x > fx;
+        const snowLine = SKY - 28 + Math.round(1.5 + 1.5*Math.sin(x*1.3));
+        for (let y=top;y<SKY;y++) put(x, y, y < snowLine ? fc[sh ? 3 : 1] : fc[sh ? 2 : 0]);
+      }
+      if (L === 'fjord'){
+        // jagged mountains with snow above a fixed height, then the water and a low shore
+        hf = peak(x); const sh = peak(x + 1) > hf;
+        for (let y=hf;y<SKY;y++){ const snow = y < SKY - 25 + (bay[y%4][x%4] < 6 ? 1 : 0); put(x, y, snow ? (sh ? cS[1] : c[1]) : (sh ? cS[0] : c[0])); }
+        for (let y=SKY-13;y<SKY;y++) put(x, y, h2(x >> 2, y, 21) < 0.16 ? wc[1] : wc[0]);
+        hn = SKY - 5 - Math.round(2*Math.sin(x*0.07 + 1.3) + 2*Math.sin(x*0.17));
+      } else {
+        if (L === 'dunes'){ hf = SKY - 13 - Math.round(3*Math.sin(x*0.03 + 0.5) + 2*Math.sin(x*0.09 + 2)); hn = SKY - 6 - Math.round(2*Math.sin(x*0.05 + 1.3) + Math.sin(x*0.13)); }
+        for (let y=hf;y<SKY;y++) put(x, y, y === hf ? c[1] : c[0]);
+      }
+      if (pc) for (const [p, hw] of pyrs){
+        const d = Math.abs(x - p); if (d > hw) continue;
+        const top = SKY - 7 - (hw - d), lit = x <= p;
+        for (let y=top;y<SKY;y++) put(x, y, lit ? ((SKY - y) % 3 === 0 && y > top ? pc[2] : pc[0]) : pc[1]);
+      }
+      for (let y=hn;y<SKY;y++) put(x, y, y === hn ? c[3] : c[2]);
+    }
+  }
+  function drawTree(g, x, ty){
+    const k = site.tree, c = site.treeCols, base = ty + 9;
+    if (k === 'pine' || k === 'xmas' || k === 'spruce'){
+      const rows = k === 'spruce' ? [1,3,3,5,5,7,7,9] : [1,3,3,5,5,7], y0 = ty - 1 - (rows.length - 6);
+      g.fillStyle = c[2]; g.fillRect(x, ty + 6, 1, 3);
+      rows.forEach((w, r) => {
+        g.fillStyle = c[0]; g.fillRect(x - (w >> 1), y0 + r, w, 1);
+        g.fillStyle = k === 'xmas' ? '#f4f8fc' : c[1]; g.fillRect(x - (w >> 1), y0 + r, 1, 1);
+        if (k === 'xmas' && r >= 2 && h2(x, r, 31) < 0.6){ g.fillStyle = ['#e04848', '#ffd84a', '#4aa3df'][Math.floor(h2(x, r, 32) * 3)]; g.fillRect(x - (w >> 1) + 1 + Math.floor(h2(x, r, 33) * (w - 1)), y0 + r, 1, 1); }
+      });
+      if (k === 'xmas'){ g.fillStyle = '#ffd84a'; g.fillRect(x, y0 - 1, 1, 1); }
+    } else if (k === 'palm'){
+      for (let j=0;j<11;j++){ g.fillStyle = c[j % 2 ? 2 : 3]; g.fillRect(x + (j > 6 ? 1 : 0), base - 1 - j, 1, 1); }
+      const tx = x + 1, top = base - 12;
+      g.fillStyle = c[0];
+      [[-1,0],[-2,0],[-3,1],[-4,2],[-5,3],[1,0],[2,0],[3,1],[4,2],[5,3],[0,-1],[-1,-2],[1,-2]].forEach(o => g.fillRect(tx + o[0], top + o[1], 1, 1));
+      g.fillStyle = c[1];
+      [[-1,-1],[-2,-1],[-3,-1],[-4,0],[1,-1],[2,-1],[3,-1],[4,0],[0,0]].forEach(o => g.fillRect(tx + o[0], top + o[1], 1, 1));
+      g.fillStyle = c[3]; g.fillRect(tx - 1, top + 1, 1, 1); g.fillRect(tx + 1, top + 1, 1, 1);
+    } else if (k === 'sakura'){
+      g.fillStyle = c[3]; g.fillRect(x, ty + 3, 1, 6); g.fillRect(x - 1, ty + 4, 1, 1); g.fillRect(x + 1, ty + 3, 1, 1);
+      [3,5,7,7,5].forEach((w, r) => {
+        for (let i=0;i<w;i++){
+          const px = x - (w >> 1) + i, v = h2(px, r, 34);
+          g.fillStyle = r === 4 || (i === w - 1 && r > 1) ? c[2] : (r <= 1 && i < 2) || v < 0.2 ? c[1] : c[0];
+          g.fillRect(px, ty - 2 + r, 1, 1);
+        }
+      });
+    }
+  }
 
   function build(){
     off = document.createElement('canvas'); off.width = W; off.height = SKY + DEPTH;
@@ -1211,14 +1333,9 @@ const Scene = (function(){
         else if (d <= 7.5 && d > 4.6 && bay[y%4][x%4] < 3) put(x, y, hx('#3a4677'));
       }
     }
-    const far = hx('#a7cf85'), farTop = hx('#c3e3a0'), near = hx('#7cb35a'), nearTop = hx('#98cc6e');
-    for (let x=0;x<W;x++){
-      const hf = SKY - 16 - Math.round(4*Math.sin(x*0.045 + 0.5) + 3*Math.sin(x*0.11 + 2));
-      for (let y=hf;y<SKY;y++) put(x, y, y === hf ? farTop : far);
-      const hn = SKY - 8 - Math.round(3*Math.sin(x*0.07 + 1.3) + 2*Math.sin(x*0.19));
-      for (let y=hn;y<SKY;y++) put(x, y, y === hn ? nearTop : near);
-    }
-    const eraCols = ERAS.map(e => e.c.map(hx)), lineCols = ERAS.map(e => hx(mix(e.c[1], '#000000', 0.25)));
+    backdrop(put, bay);
+    const gc = site.ground.map(hx);
+    const eraCols = ERAS.map(e => ecol(e).map(hx)), lineCols = ERAS.map(e => hx(mix(ecol(e)[1], '#000000', 0.25)));
     for (let x=0;x<W;x++){
       const bnd = ERAS.map((_, i) => i === 0 ? 0 : boundary(i, x));
       for (let y=0;y<DEPTH;y++){
@@ -1235,12 +1352,13 @@ const Scene = (function(){
         }
         put(x, SKY + y, col);
       }
-      put(x, SKY, hx(h2(x, 0, 2) < 0.25 ? '#6abe30' : '#8fd14f'));
-      put(x, SKY + 1, hx('#6abe30'));
-      put(x, SKY + 2, hx('#4e9a2c'));
-      if (h2(x, 1, 3) < 0.3) put(x, SKY + 3, hx('#4e9a2c'));
+      put(x, SKY, gc[h2(x, 0, 2) < 0.25 ? 1 : 0]);
+      put(x, SKY + 1, gc[1]);
+      put(x, SKY + 2, gc[2]);
+      if (h2(x, 1, 3) < 0.3) put(x, SKY + 3, gc[2]);
     }
     g.putImageData(img, 0, 0);
+    if (site.ship) stamp(g, site.ship, site.ppal, cx + 5, SKY - 12 - site.ship.length + 1);  // in the gap between the digger and the sign
 
     const rnd = mulberry32(20261122);
     const nearShaft = (x0, x1) => x1 > sL - 3 && x0 < sR + 3;
@@ -1267,7 +1385,7 @@ const Scene = (function(){
         const x = Math.floor(rnd()*(W - 3)), y = SKY + top + Math.floor(rnd()*(bot - top));
         const w = 2 + (rnd() < 0.4 ? 1 : 0), hh = rnd() < 0.5 ? 1 : 2;
         if (onLabel(x, y, x + w, y + hh + 1)) continue;
-        const base = mix(ERAS[i].c[2], '#9a9288', 0.55);
+        const base = mix(ecol(ERAS[i])[2], '#9a9288', 0.55);
         g.fillStyle = base; g.fillRect(x, y, w, hh);
         g.fillStyle = mix(base, '#ffffff', 0.3); g.fillRect(x, y, 1, 1);
         g.fillStyle = mix(base, '#000000', 0.35); g.fillRect(x, y + hh, w, 1);
@@ -1289,14 +1407,14 @@ const Scene = (function(){
     { const sp = sprCanvas('dino'); const x = sR + 6 + sp.width < W - 2 ? sR + 6 : 2; g.drawImage(sp, x, SKY + Math.floor(650 / MPX)); }
     for (let i=0;i<ERAS.length;i++){
       const e = ERAS[i], y = labels[i].y, lab = labels[i].lab;
-      const dark = mix(e.c[1], '#000000', 0.3);
-      drawText(g, lab, 2, y, mix(e.c[2], '#fff1d0', 0.5), dark);
-      drawText(g, e.top + 'M', 2, y + 7, mix(e.c[2], '#fff1d0', 0.25), dark);
+      const dark = mix(ecol(e)[1], '#000000', 0.3);
+      drawText(g, lab, 2, y, mix(ecol(e)[2], '#fff1d0', 0.5), dark);
+      drawText(g, e.top + 'M', 2, y + 7, mix(ecol(e)[2], '#fff1d0', 0.25), dark);
     }
     for (let m=50;m<=860;m+=50){
       const y = SKY + Math.floor(m / MPX), e = eraAt(m);
-      g.fillStyle = mix(e.c[2], '#fff1d0', 0.35); g.fillRect(W - 3, y, 3, 1);
-      if (m % 100 === 0){ const s = m + 'M'; drawText(g, s, W - 5 - textW(s), y - 2, mix(e.c[2], '#fff1d0', 0.3), mix(e.c[1], '#000000', 0.3)); }
+      g.fillStyle = mix(ecol(e)[2], '#fff1d0', 0.35); g.fillRect(W - 3, y, 3, 1);
+      if (m % 100 === 0){ const s = m + 'M'; drawText(g, s, W - 5 - textW(s), y - 2, mix(ecol(e)[2], '#fff1d0', 0.3), mix(ecol(e)[1], '#000000', 0.3)); }
     }
     drawCamp(g, rnd);
   }
@@ -1306,27 +1424,29 @@ const Scene = (function(){
     for (let i=0;i<4;i++){
       const x = Math.floor(rnd()*W); if (x > cx - 30 && x < cx + 30) continue;
       const ty = base - 9 - Math.floor(rnd()*3);
-      g.fillStyle = '#5a3a20'; g.fillRect(x, ty + 6, 1, 3);
-      [1,3,3,5,5,7].forEach((w, r) => { g.fillStyle = '#3f7d3a'; g.fillRect(x - (w >> 1), ty - 1 + r, w, 1); g.fillStyle = '#56994a'; g.fillRect(x - (w >> 1), ty - 1 + r, 1, 1); });
+      drawTree(g, x, ty);
     }
+    const snow = '#f4f8fc', snowS = '#d8e3ee';
     const tx = Math.max(3, cx - 46), tw = 19, th = 12, apex = tx + 9;
     for (let r=0;r<th;r++){
       const half = Math.floor(r * 9 / (th - 1)), y = base - th + r;
       for (let x=apex-half;x<=apex+half;x++){
         let col = x < apex ? '#f1e3bd' : '#d7c38f';
-        if (r % 4 === 2) col = x < apex ? '#d9594a' : '#b2463a';
+        if (r % 4 === 2) col = site.tent[x < apex ? 0 : 1];
         if (x === apex - half || x === apex + half) col = '#5a3a20';
+        if (site.snowy && r <= 2 - (x % 2)) col = x < apex ? snow : snowS;
         g.fillStyle = col; g.fillRect(x, y, 1, 1);
       }
     }
     g.fillStyle = PH.lights ? '#ffcf6a' : '#3e2614';
     for (let r=6;r<th;r++){ const half = Math.floor((r - 6)*3/5); g.fillRect(apex - half, base - th + r, half*2 + 1, 1); }
     g.fillStyle = '#5a3a20'; g.fillRect(apex, base - th - 3, 1, 3);
-    g.fillStyle = '#c8442f'; g.fillRect(apex + 1, base - th - 3, 3, 2);
+    g.fillStyle = site.flag; g.fillRect(apex + 1, base - th - 3, 3, 2);
     const crx = tx + tw + 2;
     g.fillStyle = '#5a3a20'; g.fillRect(crx, base - 6, 7, 6);
     g.fillStyle = '#b07a42'; g.fillRect(crx + 1, base - 5, 5, 4);
     g.fillStyle = '#7d5230'; g.fillRect(crx + 1, base - 3, 5, 1); g.fillRect(crx + 3, base - 5, 1, 4);
+    if (site.snowy){ g.fillStyle = snow; g.fillRect(crx, base - 7, 7, 1); g.fillRect(crx + 1, base - 8, 4, 1); }
     const s = 'DUG UP', bw = textW(s) + 6, sx = cx + 22;
     if (sx + bw < W - 2){
       g.fillStyle = '#6e4524'; g.fillRect(sx + 2, base - 8, 1, 8); g.fillRect(sx + bw - 3, base - 8, 1, 8);
@@ -1334,14 +1454,23 @@ const Scene = (function(){
       g.fillStyle = '#c98a4a'; g.fillRect(sx + 1, base - 16, bw - 2, 8);
       g.fillStyle = '#e2a866'; g.fillRect(sx + 1, base - 16, bw - 2, 1);
       drawText(g, s, sx + 3, base - 14, '#3b2312');
+      if (site.snowy){ g.fillStyle = snow; g.fillRect(sx, base - 18, bw, 1); g.fillRect(sx + 2, base - 19, bw - 7, 1); }
     }
-    const fcols = ['#fff6dc','#ffd84a','#ef7fa0','#9fd6ff'];
+    const fcols = site.flowers;
     for (let x=1;x<W-1;x++){
       if (x > sL - 2 && x < sR + 10) continue;
       const v = h2(x, 7, 9);
-      if (v < 0.12){ g.fillStyle = '#6abe30'; g.fillRect(x, base - 1, 1, 1); if (v < 0.05) g.fillRect(x + 1, base - 2, 1, 1); }
-      else if (v > 0.94){ g.fillStyle = '#4e9a2c'; g.fillRect(x, base - 2, 1, 2); g.fillStyle = fcols[Math.floor(h2(x, 3, 4) * 4)]; g.fillRect(x, base - 3, 1, 1); }
+      if (v < 0.12){ g.fillStyle = site.ground[1]; g.fillRect(x, base - 1, 1, 1); if (v < 0.05) g.fillRect(x + 1, base - 2, 1, 1); }
+      else if (v > 0.94 && fcols){ g.fillStyle = site.ground[2]; g.fillRect(x, base - 2, 1, 2); g.fillStyle = fcols[Math.floor(h2(x, 3, 4) * fcols.length)]; g.fillRect(x, base - 3, 1, 1); }
     }
+    // props: left of the tent first, then right of the sign, so they never cover the shaft, the sign or the digger
+    let left = tx - 2, right = sx + bw + 2;
+    (site.props || []).forEach((rows, i) => {
+      const w = rows[0].length, y = base - rows.length;
+      const fitL = left - w >= 1, fitR = right + w <= W - 2;
+      if (fitL && (i % 2 === 0 || !fitR)){ stamp(g, rows, site.ppal, left - w, y); left -= w + 3; }
+      else if (fitR){ stamp(g, rows, site.ppal, right, y); right += w + 3; }
+    });
   }
 
   /* ---------- per-frame drawing ---------- */
@@ -1379,25 +1508,42 @@ const Scene = (function(){
       ctx.drawImage(sprCanvas('lantern'), lx, ly);
     }
     // rim + floor
-    if (top >= 0 && top < H){ ctx.fillStyle = '#5e3a1f'; ctx.fillRect(sL - 1, top, sR - sL + 3, 1); }
+    if (top >= 0 && top < H){ ctx.fillStyle = ecol(ERAS[0])[1]; ctx.fillRect(sL - 1, top, sR - sL + 3, 1); }
     if (bot >= 0 && bot < H){
-      const e = eraAt(depth);
-      ctx.fillStyle = e.c[1]; ctx.fillRect(sL, bot, sR - sL + 1, 1);
-      ctx.fillStyle = e.c[2];
+      const ec = ecol(eraAt(depth));
+      ctx.fillStyle = ec[1]; ctx.fillRect(sL, bot, sR - sL + 1, 1);
+      ctx.fillStyle = ec[2];
       for (let x=sL+1;x<sR;x++) if (h2(x, feet, 7) < 0.25) ctx.fillRect(x, bot - 1, 1, 1);
     }
   }
   function drawHeap(camR){
     const mh = Math.min(8, Math.floor(depth / 45)); if (!mh) return;
-    const gy = -camR;
+    const gy = -camR, hc = ecol(ERAS[0]);
     for (let r=0;r<mh;r++){
       const y = gy - 1 - r; if (y < 0 || y >= H) continue;
       const w = (mh - r) * 2 + 1;
-      for (let k=0;k<w;k++){ const x = sR + 2 + k; ctx.fillStyle = h2(x, r, 8) < 0.2 ? '#5e3a1f' : (r === mh - 1 || k === w - 1 ? '#95633a' : '#7c4f2c'); ctx.fillRect(x, y, 1, 1); }
+      for (let k=0;k<w;k++){ const x = sR + 2 + k; ctx.fillStyle = h2(x, r, 8) < 0.2 ? hc[1] : (r === mh - 1 || k === w - 1 ? hc[2] : hc[0]); ctx.fillRect(x, y, 1, 1); }
+    }
+  }
+  // snow or petals over the camp; cosmetic, so Math.random is fine (nothing here has to match between players)
+  function initFall(){
+    fall = [];
+    if (!site.fall) return;
+    const petals = site.fall === 'petals', n = Math.round(W * (petals ? 0.18 : 0.35));
+    for (let i=0;i<n;i++) fall.push({x: Math.random() * W, y: -Math.random() * SKY, v: petals ? 4 + Math.random() * 4 : 5 + Math.random() * 7,
+      drift: petals ? 5 + Math.random() * 4 : 0, ph: Math.random() * 6.28, big: Math.random() < 0.2});
+  }
+  function drawFall(camR){
+    if (!fall.length || camR >= 0) return;
+    const petals = site.fall === 'petals';
+    for (const f of fall){
+      const x = Math.round(f.x), y = Math.round(f.y - camR); if (y < 0 || y >= H) continue;
+      if (petals){ ctx.fillStyle = f.big ? '#f7b6cb' : '#ffd6e2'; if (Math.floor(t * 3 + f.ph) % 2) ctx.fillRect(x, y, 2, 1); else ctx.fillRect(x, y, 1, 1); }
+      else { ctx.fillStyle = '#ffffff'; ctx.fillRect(x, y, 1, 1); if (f.big){ ctx.globalAlpha = 0.5; ctx.fillRect(x - 1, y, 3, 1); ctx.fillRect(x, y - 1, 1, 3); ctx.globalAlpha = 1; } }
     }
   }
   function drawSky(camR){
-    for (const c of clouds){
+    for (const c of clouds.slice(0, site.clouds != null ? site.clouds : clouds.length)){
       const y = Math.round(c.y - SKY - camR); if (y > H || y < -8) continue;
       const x = Math.round(c.x), w = c.w;
       ctx.fillStyle = PH.cloud[0]; ctx.fillRect(x + 3, y, w - 7, 1); ctx.fillRect(x + 1, y + 1, w - 3, 1); ctx.fillRect(x, y + 2, w, 2);
@@ -1409,7 +1555,7 @@ const Scene = (function(){
       if (v > 0.55){ ctx.fillStyle = s.c; ctx.fillRect(s.x, y, 1, 1); if (v > 0.93){ ctx.globalAlpha = 0.5; ctx.fillRect(s.x - 1, y, 3, 1); ctx.fillRect(s.x, y - 1, 1, 3); ctx.globalAlpha = 1; } }
     }
     if (!PH.birds) return;
-    ctx.fillStyle = '#3b2a2a';
+    ctx.fillStyle = site.bird || '#3b2a2a';
     for (const b of birds){
       const y = Math.round(b.y - SKY - camR), x = Math.round(b.x); if (y > H || y < -4) continue;
       if (Math.floor(t * 4 + b.ph) % 2){ ctx.fillRect(x - 2, y, 1, 1); ctx.fillRect(x + 2, y, 1, 1); ctx.fillRect(x - 1, y + 1, 1, 1); ctx.fillRect(x + 1, y + 1, 1, 1); }
@@ -1428,6 +1574,11 @@ const Scene = (function(){
     updateParts(dt);
     for (const c of clouds){ c.x += c.v * dt; if (c.x > W + 4) c.x = -c.w - 4; }
     for (const b of birds){ b.x += b.v * dt; if (b.x > W + 6){ b.x = -6; b.y = 12 + Math.random()*22; } }
+    for (const f of fall){
+      f.y += f.v * dt; f.x += (Math.sin(t * 1.4 + f.ph) * 3 + f.drift) * dt;
+      if (f.y >= -0.5){ f.y = -SKY - Math.random() * 8; f.x = Math.random() * W; }
+      if (f.x > W + 2) f.x -= W + 4; else if (f.x < -2) f.x += W + 4;
+    }
     blink -= dt; if (blink < -0.14) blink = 2.5 + Math.random()*3;
     if (skin.sparkle && Math.random() < dt * 2.2) emit({type:'twinkle', x: charX() + Math.random()*16 - 8, y: feetW() - 3 - Math.random()*18, vx: 0, vy: -5, g: 0, life: 0.5, size: 1, col: '#fff6c9', ph: Math.random()*6});
     shakeT = Math.max(0, shakeT - dt);
@@ -1445,6 +1596,7 @@ const Scene = (function(){
     const fx = charX(), fy = feet - camR;
     drawRig(fx, fy);
     drawParts(camR, false);
+    drawFall(camR);
     if (PH.amb){
       const gy = -camR + 4;
       if (gy > 0){
@@ -1573,6 +1725,22 @@ const Scene = (function(){
       queue('holdup', 0.24, 'out', () => celebrateFX(tier)); queue('holdup', 1.8, 'lin'); queue('idle', 0.3, 'io', release);
     },
     setSkin(id){ skin = skinById(id); },
+    // dig site (Spec 21); before init() it is only remembered, and layout() builds it
+    setSite(id){ const s = siteById(id); if (s === site) return; site = s; if (off){ build(); initFall(); } },
+    site(){ return site.id; },
+    // the camp of a site with the digger in front, for the wardrobe; the real scene is put back afterwards
+    previewSite(c2, id, skinId){
+      const keep = [ctx, site, skin, pose, blink, sweatT, exclT, lampPos, W, cx, sL, sR, off, stars];
+      try{
+        W = c2.width; cx = Math.floor(W / 2); sL = cx - 13; sR = cx + 12; site = siteById(id);
+        build();
+        ctx = c2.getContext('2d'); ctx.imageSmoothingEnabled = false; ctx.clearRect(0, 0, W, c2.height);
+        const top = SKY + 4 - c2.height;
+        ctx.drawImage(off, 0, top, W, c2.height, 0, 0, W, c2.height);
+        skin = skinById(skinId); pose = P.idle; blink = 1; sweatT = -99; exclT = -99;
+        drawRig(charX(), SKY - top);
+      } finally { [ctx, site, skin, pose, blink, sweatT, exclT, lampPos, W, cx, sL, sR, off, stars] = keep; }
+    },
     // force a time of day (tests); null goes back to the clock
     setPhase(name){ forcedPhase = PHASES[name] ? name : null; phaseCheck = 0; },
     phase(){ return phase; },
@@ -1624,11 +1792,15 @@ function unlockedIds(){ const st = getStats(), mus = museumCount(); return SKINS
 function currentSkin(){ const id = store.get('dugup:skin', 'explorer'); return unlockedIds().includes(id) ? id : 'explorer'; }
 function applySkin(){ const id = currentSkin(); Scene.setSkin(id); $('logoIcon').src = headURL(skinById(id)); }
 
+/* ---------- dig sites (Spec 21): no goals, every site is open ---------- */
+function currentSite(){ const id = store.get('dugup:site', 'meadow'); return SITES.some(s => s.id === id) ? id : 'meadow'; }
+function applySite(){ Scene.setSite(currentSite()); }
+
 /* ---------- backup: all progress as one text code (Spec 16) ---------- */
 // The storage format is unchanged; the code is just its keys and values. A code can come from anyone, and the
 // renderers put stored numbers into HTML unescaped, so decodeBackup checks the types and strips <>" from strings.
 const BACKUP_PREFIX = 'DUGUP1.';
-const BACKUP_KEY = /^dugup:(stats|museum|skin|muted|daily:\d{4}-\d{2}-\d{2})$/;
+const BACKUP_KEY = /^dugup:(stats|museum|skin|site|muted|daily:\d{4}-\d{2}-\d{2})$/;
 const BACKUP_BAD = 'The code is damaged. Copy all of it and try again.';
 function encodeBackup(data){
   const bytes = new TextEncoder().encode(JSON.stringify({v: 1, data}));
@@ -1654,7 +1826,7 @@ function decodeBackup(code){
   for (const k in obj.data){
     if (!BACKUP_KEY.test(k)) continue;
     const v = clean(obj.data[k]);
-    if (k === 'dugup:skin'){ if (typeof v === 'string') data[k] = v; }
+    if (k === 'dugup:skin' || k === 'dugup:site'){ if (typeof v === 'string') data[k] = v; }
     else if (k === 'dugup:muted'){ if (typeof v === 'boolean') data[k] = v; }
     else if (k === 'dugup:stats'){
       if (!isObj(v)) throw new Error(BACKUP_BAD);
@@ -1965,7 +2137,25 @@ function openMuseum(){
 
 /* ---------- wardrobe ---------- */
 function openWardrobe(){
-  const st = getStats(), mus = museumCount(), cur = currentSkin();
+  const st = getStats(), mus = museumCount(), cur = currentSkin(), curSite = currentSite();
+  const sg = $('siteGrid'); sg.innerHTML = '';
+  for (const si of SITES){
+    const card = document.createElement('div');
+    card.className = 'ward-card site-card' + (si.id === curSite ? ' on' : '');
+    const cv = document.createElement('canvas'); cv.width = 150; cv.height = 44; cv.className = 'px site-pic';
+    Scene.previewSite(cv, si.id, cur);
+    card.appendChild(cv);
+    const info = document.createElement('div'); info.className = 'ward-info';
+    info.innerHTML = '<b>' + esc(si.name) + '</b><span class="ward-desc">' + esc(si.desc) + '</span>';
+    card.appendChild(info);
+    const b = document.createElement('button'); b.type = 'button';
+    b.className = 'btn small-btn ' + (si.id === curSite ? 'btn-wood' : 'btn-gold');
+    b.textContent = si.id === curSite ? 'Digging here' : 'Dig here';
+    b.disabled = si.id === curSite;
+    b.addEventListener('click', () => { store.set('dugup:site', si.id); applySite(); Sound.click(); openWardrobe(); });
+    card.appendChild(b);
+    sg.appendChild(card);
+  }
   const g = $('wardGrid'); g.innerHTML = '';
   for (const sk of SKINS){
     const ok = skinUnlocked(sk, st, mus), have = skinHave(sk, st, mus);
@@ -2026,6 +2216,7 @@ Scene.hooks.impact = d => Sound.dig(d);
 Scene.hooks.toss = () => Sound.toss();
 Scene.hooks.clonk = () => Sound.clonk();
 Scene.hooks.find = tier => Sound.find(tier);
+applySite();
 Scene.init();
 applySkin();
 updateBadge();
@@ -2074,6 +2265,6 @@ document.addEventListener('keydown', e => {
 });
 
 // test hook (harmless in production)
-window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, summaryFor, suggestURL, encodeBackup, decodeBackup, backupCode, restoreBackup, state, Scene, Sound, SKINS, unlockedIds, openWardrobe, openMuseum, openArchive};
+window.__dugup = {PROMPTS, matchAnswer, normalize, pickRound, dailyPrompts, practicePrompts, seasonOrder, seasonIds, FROZEN_SEASONS, RARITY_MONTH, summaryFor, suggestURL, encodeBackup, decodeBackup, backupCode, restoreBackup, state, Scene, Sound, SKINS, SITES, currentSite, unlockedIds, openWardrobe, openMuseum, openArchive};
 })();
 

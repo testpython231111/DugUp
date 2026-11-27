@@ -608,6 +608,42 @@ test('outfits: unique ids, 12-wide torso rows and a goal the game knows (Spec 19
   for (const id of ['aviator', 'samurai', 'monk', 'pirate']) assert.ok(ids.includes(id), `${id} is missing`);
 });
 
+test('dig sites: unique ids, meadow first, valid colours and sprites drawn only from their own palette (Spec 21)', () => {
+  const ids = G.SITES.map(s => s.id);
+  assert.equal(new Set(ids).size, ids.length, 'two sites share an id');
+  assert.equal(ids[0], 'meadow');
+  for (const id of ['yule', 'fjord', 'giza', 'sakura']) assert.ok(ids.includes(id), `${id} is missing`);
+  const hex = /^#[0-9a-f]{6}$/i;
+  for (const s of G.SITES){
+    assert.ok(!('req' in s), `${s.id}: dig sites have no goals`);
+    assert.ok(['hills', 'fjord', 'dunes', 'fuji'].includes(s.land), `${s.id}: land ${s.land}`);
+    assert.equal(s.hills.length, 4, `${s.id}: hills`); assert.equal(s.ground.length, 3, `${s.id}: ground`); assert.equal(s.tent.length, 2, `${s.id}: tent`);
+    assert.ok(['pine', 'xmas', 'spruce', 'palm', 'sakura'].includes(s.tree), `${s.id}: tree ${s.tree}`);
+    if (s.land === 'fjord') assert.ok(s.water && s.ship, `${s.id}: a fjord needs water and a ship`);
+    if (s.land === 'fuji') assert.equal(s.fuji.length, 4, `${s.id}: fuji`);
+    if (s.land === 'dunes') assert.equal(s.pyramid.length, 3, `${s.id}: pyramid`);
+    if (s.fall) assert.ok(['snow', 'petals'].includes(s.fall), `${s.id}: fall ${s.fall}`);
+    const cols = [s.hills, s.ground, s.tent, s.treeCols, s.flowers || [], s.water || [], s.fuji || [], s.pyramid || [], Object.values(s.ppal || {}),
+      Object.values(s.soil || {}).flat(), [s.flag], s.bird ? [s.bird] : []].flat();
+    for (const c of cols) assert.match(c, hex, `${s.id}: colour ${c}`);
+    for (const rows of [...(s.props || []), ...(s.ship ? [s.ship] : [])]){
+      assert.ok(rows.length >= 1 && rows.length <= 16, `${s.id}: a prop is ${rows.length} tall`);
+      for (const r of rows){
+        assert.equal(r.length, rows[0].length, `${s.id}: ragged sprite row "${r}"`);
+        for (const ch of r) assert.ok(ch === '.' || (s.ppal && s.ppal[ch]), `${s.id}: "${ch}" is not in its palette`);
+      }
+    }
+  }
+});
+
+test('dig sites: the choice is in the backup, and anything but a string is dropped (Spec 21)', () => {
+  const ok = G.decodeBackup(G.encodeBackup({ 'dugup:site': 'fjord', 'dugup:skin': 'viking' }));
+  assert.equal(ok['dugup:site'], 'fjord');
+  const bad = G.decodeBackup(G.encodeBackup({ 'dugup:site': { x: 1 }, 'dugup:skin': 'viking' }));
+  assert.ok(!('dugup:site' in bad));
+  assert.equal(G.currentSite(), 'meadow', 'no choice stored means the original site');
+});
+
 test('feedback: "Should this count?" opens a prefilled GitHub issue with the prompt and the answer (Spec 14)', () => {
   const p = G.PROMPTS.find(x => x.id === 'rome');
   const u = new URL(G.suggestURL(p, '  Nerva <b>"&</b>  '));

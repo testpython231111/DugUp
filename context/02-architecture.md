@@ -39,6 +39,7 @@ Ingen byggesteg: vanlige `<link>`/`<script src>` med relative stier, så `index.
 | | `SMALL UTILS` (store, hashStr, mulberry32, shuffle, esc, datoer) |
 | | `PIXEL ART` (PAL, SPR, sprCanvas, frames) |
 | | `OUTFITS` (SKINS, palettbytter) |
+| | `DIG SITES` (SITES: temaer for scenen over bakken, Spec 21) |
 | | `TEXT NORMALISATION & MATCHING` (normalize, lev, buildPrompts, matchAnswer, fuzzyFind, KNOWN, pickRound, seasonOrder, generateSeason, dailyPrompts) |
 | | `RARITY` (RARITY_DATA, RARITY_MONTH, applyRarity, summaryFor, updateBadge) |
 | | `SOUND` |
@@ -91,7 +92,7 @@ Begge scriptene sender `User-Agent: DugUpRarity/1.0 (https://dugup.eu)`, venter 
 ## System Boundaries
 - **Data** (`PROMPT_DATA`) inneholder ingen logikk.
 - **Matching** (`normalize`, `matchAnswer`) er rene funksjoner uten DOM — skal forbli testbare i Node.
-- **Scene** og **Sound** eksponerer kun et lite API (`Scene.setDepth/setSkin/skip/hooks`, `Sound.dig/find/click…`) og vet ingenting om spillregler.
+- **Scene** og **Sound** eksponerer kun et lite API (`Scene.setDepth/setSkin/setSite/skip/hooks`, `Sound.dig/find/click…`) og vet ingenting om spillregler.
 - **GAME** er eneste lag som leser/skriver `state` og `localStorage`.
 
 ## Storage Model (`localStorage`, nøkler med prefiks `dugup:`)
@@ -101,6 +102,7 @@ Begge scriptene sender `User-Agent: DugUpRarity/1.0 (https://dugup.eu)`, venter 
 | `dugup:daily:YYYY-MM-DD` | Resultatet av digen den dagen (én nøkkel per dag) |
 | `dugup:museum` | `{ "<promptId>|<display>": {t, p, q, w, a, n, d} }` |
 | `dugup:skin` | Valgt outfit-id |
+| `dugup:site` | Valgt dig site-id (Spec 21). Ukjent eller manglende gir `meadow` |
 | `dugup:muted` | Bool |
 
 Backup (Spec 16): `backupCode()` pakker alle nøklene over som `DUGUP1.` + base64-JSON, og `restoreBackup()` erstatter dem etter at `decodeBackup()` har sjekket typer og fjernet `<>"`. En ny nøkkel må legges til i `BACKUP_KEY` og valideringen, ellers blir den ikke med.
